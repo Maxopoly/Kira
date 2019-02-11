@@ -19,6 +19,10 @@ public class KiraRole {
 		return permissions.containsKey(permission.toLowerCase());
 	}
 	
+	public boolean hasPermission(KiraPermission permission) {
+		return hasPermission(permission.getName());
+	}
+	
 	public void addPermission(KiraPermission perm) {
 		permissions.put(perm.getName(), perm);
 	}

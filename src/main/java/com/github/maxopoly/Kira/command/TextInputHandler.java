@@ -1,17 +1,19 @@
 package com.github.maxopoly.Kira.command;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
-public abstract class TextInputHandler {
+public abstract class TextInputHandler <T extends TextInput> {
 
-	protected Map<String, TextInput> commands;
+	protected Map<String, T> commands;
 	protected Logger logger;
 
 	public TextInputHandler(Logger logger) {
-		this.commands = new HashMap<String, TextInput>();
+		this.commands = new HashMap<String, T>();
 		this.logger = logger;
 		registerCommands();
 	}
@@ -27,7 +29,7 @@ public abstract class TextInputHandler {
 
 	protected abstract void handleError(InputSupplier supplier, String input);
 
-	public synchronized void registerCommand(TextInput command) {
+	public void registerCommand(T command) {
 		commands.put(command.getIdentifier().toLowerCase(), command);
 		if (command.getAlternativeIdentifiers() != null) {
 			for (String alt : command.getAlternativeIdentifiers()) {
@@ -36,7 +38,7 @@ public abstract class TextInputHandler {
 		}
 	}
 
-	public synchronized void unregisterCommand(TextInput command) {
+	public void unregisterCommand(T command) {
 		String key = command.getIdentifier().toLowerCase();
 		if (commands.get(key) == command) {
 			commands.remove(key);
@@ -49,6 +51,11 @@ public abstract class TextInputHandler {
 				}
 			}
 		}
+	}
+	
+	public Collection<T> getAllInputs() {
+		//new set to remove duplicates because of aliases
+		return new HashSet<>(commands.values());
 	}
 
 	public void handle(String input, InputSupplier supplier) {
@@ -66,6 +73,7 @@ public abstract class TextInputHandler {
 			arguments = input.substring(spaceIndex + 1);
 			command = input.substring(0, spaceIndex);
 		}
+		command = command.trim().toLowerCase();
 		TextInput comm = commands.get(command);
 		if (comm == null) {
 			handleError(supplier, input);

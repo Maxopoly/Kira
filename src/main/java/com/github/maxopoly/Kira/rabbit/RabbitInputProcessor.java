@@ -9,7 +9,7 @@ import com.github.maxopoly.Kira.command.TextInputHandler;
 import com.github.maxopoly.Kira.rabbit.input.AddAuthMessage;
 import com.github.maxopoly.Kira.rabbit.input.RabbitMessage;
 
-public class RabbitInputProcessor extends TextInputHandler {
+public class RabbitInputProcessor extends TextInputHandler <RabbitMessage> {
 
 	public RabbitInputProcessor(Logger logger) {
 		super(logger);

@@ -12,7 +12,6 @@ public class SyncUsernameCommand extends Command {
 
 	public SyncUsernameCommand() {
 		super("syncusernames", 0, 0);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -20,6 +19,7 @@ public class SyncUsernameCommand extends Command {
 		UserManager userMan = KiraMain.getInstance().getUserManager();
 		Guild guild = KiraMain.getInstance().getGuild();
 		Member self = KiraMain.getInstance().getGuild().getSelfMember();
+		StringBuilder sb = new StringBuilder();
 		userMan.getAllUsers().stream().forEach(user -> {
 			if (!user.hasIngameAccount()) {
 				return;
@@ -28,13 +28,18 @@ public class SyncUsernameCommand extends Command {
 			if (member == null) {
 				return; // not in the discord
 			}
+			if (member.getNickname().equals(user.getName())) {
+				return; //already correct
+			}
 			if (!self.canInteract(member)) {
 				return; //no perm
 			}
-			guild.getController().setNickname(member, user.getName()).queue();;
+			sb.append("Changing name of " + user.toString() + " from " + member.getNickname() + " to " + user.getName() + "\n");
+			guild.getController().setNickname(member, user.getName()).queue();
 
 		});
-		return "Updated all usernames";
+		sb.append("Successfully updated all usernames");
+		return sb.toString();
 	}
 
 	@Override

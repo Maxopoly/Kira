@@ -7,8 +7,6 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
-import com.github.maxopoly.Kira.database.DAO;
-
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
@@ -51,6 +49,7 @@ public class DiscordRoleManager {
 					+ " did not exist");
 			return false;
 		}
+		logger.info("Taking auth role from " + member.getEffectiveName());
 		guild.getController().removeSingleRoleFromMember(member, role).queue();
 		return true;
 	}
@@ -65,10 +64,11 @@ public class DiscordRoleManager {
 			logger.warn("Could not add role to " + user.toString() + ", no name was tied");
 			return;
 		}
+		logger.info("Giving auth role to " + user.getName());
 		Member member = guild.getMemberById(user.getDiscordID());
 		Member self = guild.getSelfMember();
 		if (self.canInteract(member)) {
-			guild.getController().setNickname(member, user.getName()).queue();;
+			guild.getController().setNickname(member, user.getName()).queue();
 		}
 		guild.getController().addSingleRoleToMember(member, role).queue();
 	}
@@ -91,16 +91,13 @@ public class DiscordRoleManager {
 			if (member.isOwner()) {
 				return;
 			}
-			logger.info("Taking auth role from " + member.getEffectiveName());
-			guild.getController().removeRolesFromMember(member, role).queue();
+			takeDiscordRole(member);
 		});
-		;
 
 		// same thing other way around, get the users which should be added and give it
 		// to them
 		authUsers.stream().filter(us -> us.hasIngameAccount() && !memberByDiscordID.containsKey(us.getDiscordID()))
 				.forEach(user -> {
-					logger.info("Giving auth role to " + user.getName());
 					Member member = guild.getMemberById(user.getDiscordID());
 					if (member == null || member.isOwner()) {
 						return;

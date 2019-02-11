@@ -2,13 +2,18 @@ package com.github.maxopoly.Kira.command;
 
 import org.apache.logging.log4j.Logger;
 
+import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.commands.AuthCommand;
+import com.github.maxopoly.Kira.command.commands.CreateDefaultPermsCommand;
 import com.github.maxopoly.Kira.command.commands.DeauthDiscordCommand;
+import com.github.maxopoly.Kira.command.commands.GiveDefaultPermission;
+import com.github.maxopoly.Kira.command.commands.HelpCommand;
+import com.github.maxopoly.Kira.command.commands.ReloadPermissionCommand;
 import com.github.maxopoly.Kira.command.commands.SelfInfoCommand;
 import com.github.maxopoly.Kira.command.commands.StopCommand;
 import com.github.maxopoly.Kira.command.commands.SyncUsernameCommand;
 
-public class CommandHandler extends TextInputHandler {
+public class CommandHandler extends TextInputHandler<Command> {
 
 	public CommandHandler(Logger logger) {
 		super(logger);
@@ -21,7 +26,18 @@ public class CommandHandler extends TextInputHandler {
 		registerCommand(new DeauthDiscordCommand());
 		registerCommand(new SelfInfoCommand());
 		registerCommand(new SyncUsernameCommand());
+		registerCommand(new ReloadPermissionCommand());
+		registerCommand(new CreateDefaultPermsCommand());
+		registerCommand(new HelpCommand());
+		registerCommand(new GiveDefaultPermission());
 		logger.info("Loaded total of " + commands.values().size() + " commands");
+	}
+
+	public void registerCommand(Command command) {
+		if (command.getRequiredPermission() != null) {
+			KiraMain.getInstance().getKiraRoleManager().getOrCreatePermission(command.getRequiredPermission());
+		}
+		super.registerCommand(command);
 	}
 
 	@Override

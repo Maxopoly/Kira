@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.apache.logging.log4j.Logger;
 
 import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.permission.KiraRoleManager;
 
 import net.dv8tion.jda.core.JDA;
 
@@ -32,18 +33,34 @@ public class UserManager {
 	}
 
 	public User getOrCreateUserByDiscordID(long discordID) {
+		KiraMain main = KiraMain.getInstance();
 		User user = userByDiscordID.get(discordID);
 		if (user == null) {
 			logger.info("Creating db entry for user with discord id " + discordID);
-			int userID = KiraMain.getInstance().getDAO().createUser(discordID);
+			int userID = main.getDAO().createUser(discordID);
 			if (userID == -1) {
 				logger.error("Failed to create user with discord id " + discordID);
 				return null;
 			}
+			main.getDAO().addUserToRole(user, main.getKiraRoleManager().getDefaultRole());
 			user = new User(userID, null, discordID, null, null);
 			addUser(user);
 		}
 		return user;
+	}
+
+	public boolean createUser(long discordID) {
+		logger.info("Creating db entry for user with discord id " + discordID);
+		int userID = KiraMain.getInstance().getDAO().createUser(discordID);
+		if (userID == -1) {
+			logger.error("Failed to create user with discord id " + discordID);
+			return false;
+		}
+		User user = new User(userID, null, discordID, null, null);
+		addUser(user);
+		KiraRoleManager roleMan = KiraMain.getInstance().getKiraRoleManager();
+		roleMan.addRole(user, roleMan.getDefaultRole());
+		return true;
 	}
 
 	public User getUserByIngameUUID(UUID uuid) {
@@ -68,7 +85,7 @@ public class UserManager {
 		String lower = input.toLowerCase().trim();
 		if (lower.contains(":")) {
 			String[] parts = input.split(":");
-			if (input.length() != 2) {
+			if (parts.length != 2) {
 				feedback.append("Could not parse input user, ':' found, but split length was " + input.length()
 						+ " for input " + input + "\n");
 				return null;

@@ -47,8 +47,8 @@ public class DAO {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS group_chat_members "
-					+ "(user_id references users(id), group_id references group_chats(id)," + timestampField
-					+ ", unique(group_id, user_id);")) {
+					+ "(user_id int references users(id), group_id int references group_chats(id)," + timestampField
+					+ ", unique(group_id, user_id));")) {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS permissions "
@@ -60,13 +60,13 @@ public class DAO {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS role_permissions "
-					+ "(role_id references role(id), permission_id references permissions(id)," + timestampField
-					+ ", unique(role_id, permission_id);")) {
+					+ "(role_id int references roles(id), permission_id int references permissions(id)," + timestampField
+					+ ", unique(role_id, permission_id));")) {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS role_members "
-					+ "(user_id references users(id), role_id references roles(id)," + timestampField
-					+ ", unique(role_id, user_id);")) {
+					+ "(user_id int references users(id), role_id int references roles(id)," + timestampField
+					+ ", unique(role_id, user_id));")) {
 				prep.execute();
 			}
 		} catch (SQLException e) {
@@ -138,7 +138,43 @@ public class DAO {
 			logger.error("Failed to update user", e);
 		}
 	}
+
+	public KiraPermission retrieveOrCreatePermission(String name) {
+		try (Connection conn = db.getConnection()) {
+			try (PreparedStatement ps = conn.prepareStatement("select id from permissions where name = ?;")) {
+				ps.setString(1, name);
+				try (ResultSet rs = ps.executeQuery()) {
+					if (rs.next()) {
+						int id = rs.getInt(1);
+						return new KiraPermission(id, name);
+					}
+				}
+			}
+		} catch (SQLException e) {
+			logger.error("Failed to retrieve permission", e);
+			return null;
+		}
+		return registerPermission(name);
+	}
 	
+	public KiraRole retrieveOrCreateRole(String name) {
+		try (Connection conn = db.getConnection()) {
+			try (PreparedStatement ps = conn.prepareStatement("select id from roles where name = ?;")) {
+				ps.setString(1, name);
+				try (ResultSet rs = ps.executeQuery()) {
+					if (rs.next()) {
+						int id = rs.getInt(1);
+						return new KiraRole(name, id);
+					}
+				}
+			}
+		} catch (SQLException e) {
+			logger.error("Failed to retrieve role", e);
+			return null;
+		}
+		return registerRole(name);
+	}
+
 	public KiraPermission registerPermission(String perm) {
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn.prepareStatement("insert into permissions (name) values (?);",
@@ -158,7 +194,7 @@ public class DAO {
 			return null;
 		}
 	}
-	
+
 	public KiraRole registerRole(String name) {
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn.prepareStatement("insert into roles (name) values (?);",
@@ -178,11 +214,11 @@ public class DAO {
 			return null;
 		}
 	}
-	
+
 	public void addPermissionToRole(KiraPermission permission, KiraRole role) {
 		try (Connection conn = db.getConnection();
-				PreparedStatement prep = conn.prepareStatement("insert into role_permissions (role_id, permission_id) "
-						+ "values (?, ?);")) {
+				PreparedStatement prep = conn.prepareStatement(
+						"insert into role_permissions (role_id, permission_id) " + "values (?, ?);")) {
 			prep.setInt(1, role.getID());
 			prep.setInt(2, permission.getID());
 			prep.execute();
@@ -190,11 +226,11 @@ public class DAO {
 			logger.error("Failed to insert role permission", e);
 		}
 	}
-	
+
 	public void removePermissionFromRole(KiraPermission permission, KiraRole role) {
 		try (Connection conn = db.getConnection();
-				PreparedStatement prep = conn.prepareStatement("insert into role_permissions (role_id, permission_id) "
-						+ "values (?, ?);")) {
+				PreparedStatement prep = conn.prepareStatement(
+						"insert into role_permissions (role_id, permission_id) " + "values (?, ?);")) {
 			prep.setInt(1, role.getID());
 			prep.setInt(2, permission.getID());
 			prep.execute();
@@ -202,11 +238,11 @@ public class DAO {
 			logger.error("Failed to insert role permission", e);
 		}
 	}
-	
+
 	public void addUserToRole(User user, KiraRole role) {
 		try (Connection conn = db.getConnection();
-				PreparedStatement prep = conn.prepareStatement("insert into role_members (role_id, user_id) "
-						+ "values (?, ?);")) {
+				PreparedStatement prep = conn
+						.prepareStatement("insert into role_members (role_id, user_id) " + "values (?, ?);")) {
 			prep.setInt(1, role.getID());
 			prep.setInt(2, user.getID());
 			prep.execute();
@@ -214,10 +250,11 @@ public class DAO {
 			logger.error("Failed to insert role addition for user", e);
 		}
 	}
-	
+
 	public void takeRoleFromUser(User user, KiraRole role) {
 		try (Connection conn = db.getConnection();
-				PreparedStatement prep = conn.prepareStatement("delete from role_members where role_id=?, user_id=?;")) {
+				PreparedStatement prep = conn
+						.prepareStatement("delete from role_members where role_id=?, user_id=?;")) {
 			prep.setInt(1, role.getID());
 			prep.setInt(2, user.getID());
 			prep.execute();
@@ -233,7 +270,7 @@ public class DAO {
 		try (Connection conn = db.getConnection()) {
 			try (PreparedStatement ps = conn.prepareStatement("select id, name from permissions;");
 					ResultSet rs = ps.executeQuery()) {
-				while(rs.next()) {
+				while (rs.next()) {
 					int id = rs.getInt(1);
 					String name = rs.getString(2);
 					KiraPermission perm = new KiraPermission(id, name);
@@ -242,7 +279,7 @@ public class DAO {
 			}
 			try (PreparedStatement ps = conn.prepareStatement("select id, name from roles;");
 					ResultSet rs = ps.executeQuery()) {
-				while(rs.next()) {
+				while (rs.next()) {
 					int id = rs.getInt(1);
 					String name = rs.getString(2);
 					KiraRole role = new KiraRole(name, id);
@@ -252,7 +289,7 @@ public class DAO {
 			}
 			try (PreparedStatement ps = conn.prepareStatement("select role_id, permission_id from role_permissions;");
 					ResultSet rs = ps.executeQuery()) {
-				while(rs.next()) {
+				while (rs.next()) {
 					int roleID = rs.getInt(1);
 					int permissionID = rs.getInt(2);
 					KiraRole role = roleById.get(roleID);
@@ -262,11 +299,11 @@ public class DAO {
 			}
 			try (PreparedStatement ps = conn.prepareStatement("select user_id, role_id from role_members;");
 					ResultSet rs = ps.executeQuery()) {
-				while(rs.next()) {
+				while (rs.next()) {
 					int userID = rs.getInt(1);
 					int roleID = rs.getInt(2);
 					KiraRole role = roleById.get(roleID);
-					manager.addRole(userID, role);
+					manager.addRole(userID, role, false);
 				}
 			}
 		} catch (SQLException e) {

@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.github.maxopoly.Kira.command.CommandHandler;
 import com.github.maxopoly.Kira.command.CommandLineInputSupplier;
-import com.github.maxopoly.Kira.command.TextInputHandler;
 import com.github.maxopoly.Kira.database.DAO;
 import com.github.maxopoly.Kira.database.DBConnection;
 import com.github.maxopoly.Kira.listener.DiscordMessageListener;
@@ -57,8 +56,10 @@ public class KiraMain {
 		}
 		instance.authManager = new AuthManager();
 		instance.userManager = new UserManager(instance.logger);
-		instance.commandHandler = new CommandHandler(instance.logger);
 		if (!instance.loadDatabase()) {
+			return;
+		}
+		if (!instance.loadPermission()) {
 			return;
 		}
 		if (!instance.startJDA()) {
@@ -70,6 +71,7 @@ public class KiraMain {
 		if (!instance.startRabbit()) {
 			return;
 		}
+		instance.commandHandler = new CommandHandler(instance.logger);
 		if (!instance.setupListeners()) {
 			return;
 		}
@@ -140,6 +142,14 @@ public class KiraMain {
 				new DiscordMessageListener(commandHandler, logger, userManager, jda.getSelfUser().getIdLong()));
 		return true;
 	}
+	
+	private boolean loadPermission() {
+		kiraRoleManager = dao.loadAllRoles();
+		if (kiraRoleManager == null) {
+			return false;
+		}
+		return true;
+	}
 
 	private boolean startRabbit() {
 		String incomingQueue = configManager.getIncomingQueueName();
@@ -169,7 +179,7 @@ public class KiraMain {
 			if (c == null) {
 				msg = scanner.nextLine();
 			} else {
-				msg = c.readLine("> ");
+				msg = c.readLine("");
 			}
 			if (msg == null) {
 				continue;
@@ -201,7 +211,7 @@ public class KiraMain {
 		return logger;
 	}
 
-	public TextInputHandler getCommandHandler() {
+	public CommandHandler getCommandHandler() {
 		return commandHandler;
 	}
 
