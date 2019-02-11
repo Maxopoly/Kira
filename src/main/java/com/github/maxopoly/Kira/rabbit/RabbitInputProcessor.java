@@ -8,6 +8,7 @@ import com.github.maxopoly.Kira.command.TextInput;
 import com.github.maxopoly.Kira.command.TextInputHandler;
 import com.github.maxopoly.Kira.rabbit.input.AddAuthMessage;
 import com.github.maxopoly.Kira.rabbit.input.RabbitMessage;
+import com.github.maxopoly.Kira.rabbit.input.SendGroupChatMessage;
 
 public class RabbitInputProcessor extends TextInputHandler <RabbitMessage> {
 
@@ -18,6 +19,7 @@ public class RabbitInputProcessor extends TextInputHandler <RabbitMessage> {
 	@Override
 	protected void registerCommands() {
 		registerCommand(new AddAuthMessage());
+		registerCommand(new SendGroupChatMessage());
 	}
 
 	@Override

@@ -7,7 +7,9 @@ import com.github.maxopoly.Kira.command.commands.AuthCommand;
 import com.github.maxopoly.Kira.command.commands.CreateDefaultPermsCommand;
 import com.github.maxopoly.Kira.command.commands.DeauthDiscordCommand;
 import com.github.maxopoly.Kira.command.commands.GiveDefaultPermission;
+import com.github.maxopoly.Kira.command.commands.GiveRoleCommand;
 import com.github.maxopoly.Kira.command.commands.HelpCommand;
+import com.github.maxopoly.Kira.command.commands.ListPermissionsForUserCommand;
 import com.github.maxopoly.Kira.command.commands.ReloadPermissionCommand;
 import com.github.maxopoly.Kira.command.commands.SelfInfoCommand;
 import com.github.maxopoly.Kira.command.commands.StopCommand;
@@ -30,6 +32,8 @@ public class CommandHandler extends TextInputHandler<Command> {
 		registerCommand(new CreateDefaultPermsCommand());
 		registerCommand(new HelpCommand());
 		registerCommand(new GiveDefaultPermission());
+		registerCommand(new ListPermissionsForUserCommand());
+		registerCommand(new GiveRoleCommand());
 		logger.info("Loaded total of " + commands.values().size() + " commands");
 	}
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Logger;
 
@@ -19,6 +20,7 @@ public class UserManager {
 	private Map<Long, User> userByDiscordID;
 	private Map<Integer, User> userByID;
 	private Map<UUID, User> userByUUID;
+	private Map<String, User> userByName;
 	private Logger logger;
 
 	public UserManager(Logger logger) {
@@ -26,6 +28,7 @@ public class UserManager {
 		this.logger = logger;
 		userByID = new HashMap<>();
 		userByUUID = new HashMap<>();
+		userByName = new HashMap<>();
 	}
 
 	public User getUser(int userID) {
@@ -42,8 +45,8 @@ public class UserManager {
 				logger.error("Failed to create user with discord id " + discordID);
 				return null;
 			}
-			main.getDAO().addUserToRole(user, main.getKiraRoleManager().getDefaultRole());
 			user = new User(userID, null, discordID, null, null);
+			main.getDAO().addUserToRole(user, main.getKiraRoleManager().getDefaultRole());
 			addUser(user);
 		}
 		return user;
@@ -74,6 +77,7 @@ public class UserManager {
 		}
 		if (user.hasIngameAccount()) {
 			userByUUID.put(user.getIngameUUID(), user);
+			userByName.put(user.getName().toLowerCase(), user);
 		}
 	}
 
@@ -90,7 +94,7 @@ public class UserManager {
 						+ " for input " + input + "\n");
 				return null;
 			}
-			switch (parts[0]) {
+			switch (parts[0].toLowerCase()) {
 			case "discord":
 				return parseDiscordUser(parts[1], feedback);
 			case "reddit":
@@ -103,16 +107,15 @@ public class UserManager {
 				return parseIngameUser(parts[1], feedback);
 			}
 		}
-		if (lower.startsWith("@")) {
-			// discord
-			return parseDiscordUser(input, feedback);
-		}
-		return parseIngameUser(input, feedback);
+		return parseDiscordUser(input, feedback);
 	}
 
 	private User parseDiscordUser(String input, StringBuilder feedback) {
 		if (input.contains("#")) {
 			// normal discord user name in the form of "Anon#1234"
+			if (input.startsWith("@")) {
+				input = input.substring(1);
+			}
 			if (input.startsWith("@")) {
 				input = input.substring(1);
 			}
@@ -138,6 +141,9 @@ public class UserManager {
 			feedback.append("No user with given name found\n");
 			return null;
 		} else {
+			if (input.startsWith("<@") && input.endsWith(">")) {
+				input = input.substring(2, input.length() - 1);
+			}
 			try {
 				long id = Long.parseLong(input);
 				User user = getOrCreateUserByDiscordID(id);
@@ -150,18 +156,33 @@ public class UserManager {
 				return user;
 			} catch (NumberFormatException e) {
 				feedback.append("Tried to parse " + input
-						+ " as discord account, but it was neither a user id, nor a user name");
+						+ " as discord account, but it was neither a user id, nor a user name\n");
 				return null;
 			}
 		}
 	}
 
 	private User parseRedditUser(String input, StringBuilder feedback) {
+		feedback.append("Tried to parse " + input + " as reddit account, but this is not implemented yet\n");
 		return null;
 	}
 
 	private User parseIngameUser(String input, StringBuilder feedback) {
-		return null;
+		String lower = input.toLowerCase();
+		String regex = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+		if (Pattern.matches(regex, lower)) {
+			UUID uuid = UUID.fromString(lower);
+			User user = userByUUID.get(uuid);
+			if (user == null) {
+				feedback.append("Parsed " + input + " as minecraft uuid, but it was not a known UUID\n");
+			}
+			return user;
+		}
+		User user = userByName.get(lower);
+		if (user == null) {
+			feedback.append("Tried to parse " + input + " as minecraft account, but no match was found\n");
+		}
+		return user;
 	}
 
 }

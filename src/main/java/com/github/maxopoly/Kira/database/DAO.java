@@ -5,7 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -13,6 +16,8 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
 
+import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.group.GroupChat;
 import com.github.maxopoly.Kira.permission.KiraPermission;
 import com.github.maxopoly.Kira.permission.KiraRole;
 import com.github.maxopoly.Kira.permission.KiraRoleManager;
@@ -41,18 +46,13 @@ public class DAO {
 					+ "uuid char(36) unique, reddit varchar(255) unique," + timestampField + ");")) {
 				prep.execute();
 			}
-			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS group_chats "
-					+ "(id serial primary key, channel_id bigint, guild_id bigint, name varchar(255) not null unique,"
-					+ timestampField + ");")) {
-				prep.execute();
-			}
-			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS group_chat_members "
-					+ "(user_id int references users(id), group_id int references group_chats(id)," + timestampField
-					+ ", unique(group_id, user_id));")) {
-				prep.execute();
-			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS permissions "
 					+ "(id serial primary key, name varchar(255) not null unique," + timestampField + ");")) {
+				prep.execute();
+			}
+			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS group_chats "
+					+ "(id serial primary key, channel_id bigint, guild_id bigint, name varchar(255) not null unique, "
+					+ "permission_id int references permissions(id) on delete cascade," + timestampField + ");")) {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS roles "
@@ -60,13 +60,15 @@ public class DAO {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS role_permissions "
-					+ "(role_id int references roles(id), permission_id int references permissions(id)," + timestampField
+					+ "(role_id int references roles(id) on delete cascade, "
+					+ "permission_id int references permissions(id) on delete cascade," + timestampField
 					+ ", unique(role_id, permission_id));")) {
 				prep.execute();
 			}
-			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS role_members "
-					+ "(user_id int references users(id), role_id int references roles(id)," + timestampField
-					+ ", unique(role_id, user_id));")) {
+			try (PreparedStatement prep = conn.prepareStatement(
+					"CREATE TABLE IF NOT EXISTS role_members " + "(user_id int references users(id) on delete cascade, "
+							+ "role_id int references roles(id) on delete cascade," + timestampField
+							+ ", unique(role_id, user_id));")) {
 				prep.execute();
 			}
 		} catch (SQLException e) {
@@ -74,6 +76,34 @@ public class DAO {
 			return false;
 		}
 		return true;
+	}
+
+	public Collection<GroupChat> loadGroupChats() {
+		List<GroupChat> result = new LinkedList<>();
+		KiraRoleManager roleMan = KiraMain.getInstance().getKiraRoleManager();
+		try (Connection conn = db.getConnection();
+				PreparedStatement prep = conn
+						.prepareStatement("select id, channel_id, guild_id, name, permission_id from group_chats;");
+				ResultSet rs = prep.executeQuery()) {
+			while (rs.next()) {
+				int id = rs.getInt(1);
+				long channelID = rs.getLong(2);
+				long guildID = rs.getLong(3);
+				String name = rs.getString(4);
+				int permID = rs.getInt(5);
+				KiraPermission perm = roleMan.getPermission(permID);
+				if (perm == null) {
+					logger.warn("Could not load group chat " + name + ", no permission found");
+					continue;
+				}
+				GroupChat group = new GroupChat(id, name, channelID, guildID, perm);
+				result.add(group);
+			}
+		} catch (SQLException e) {
+			logger.error("Failed to retrieve group chats", e);
+			return null;
+		}
+		return result;
 	}
 
 	public Set<User> loadUsers() {
@@ -156,7 +186,7 @@ public class DAO {
 		}
 		return registerPermission(name);
 	}
-	
+
 	public KiraRole retrieveOrCreateRole(String name) {
 		try (Connection conn = db.getConnection()) {
 			try (PreparedStatement ps = conn.prepareStatement("select id from roles where name = ?;")) {

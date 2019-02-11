@@ -32,6 +32,7 @@ public class AuthCommand extends Command {
 		String name = authMan.getName(uuid);
 		logger.info("Adding " + name + ":" + uuid.toString() + " as ingame account for " + user.toString());
 		user.updateIngame(uuid, name);
+		KiraMain.getInstance().getUserManager().addUser(user);
 		KiraMain.getInstance().getRoleManager().giveDiscordRole(user);
 		KiraMain.getInstance().getDAO().updateUser(user);
 		authMan.removeCode(code);

@@ -17,21 +17,28 @@ public class KiraRoleManager {
 	private Map<String, KiraRole> roleByName;
 	private Map<Integer, Set<KiraRole>> userRoles;
 	private Map<String, KiraPermission> permissionsByName;
+	private Map<Integer, KiraPermission> permissionsById;
 
 	public KiraRoleManager() {
 		roleById = new TreeMap<>();
 		userRoles = new TreeMap<>();
 		roleByName = new HashMap<String, KiraRole>();
 		permissionsByName = new HashMap<>();
+		permissionsById = new TreeMap<>();
 	}
 
 	public void setupDefaultPermissions() {
 		KiraRole defaultRole = getOrCreateRole("default");
 		KiraPermission defaultPerm = getOrCreatePermission("default");
+		KiraPermission canAuthPerm = getOrCreatePermission("canauth");
 		addPermissionToRole(defaultRole, defaultPerm, true);
+		addPermissionToRole(defaultRole, canAuthPerm, true);
 		KiraRole adminRole = getOrCreateRole("admin");
 		KiraPermission adminPerm = getOrCreatePermission("admin");
 		addPermissionToRole(adminRole, adminPerm, true);
+		KiraRole authRole = getOrCreateRole("auth");
+		KiraPermission authPerm = getOrCreatePermission("isAuth");
+		addPermissionToRole(authRole, authPerm, true);
 	}
 
 	public KiraPermission getOrCreatePermission(String name) {
@@ -40,7 +47,11 @@ public class KiraRoleManager {
 		if (perm != null) {
 			return perm;
 		}
-		return KiraMain.getInstance().getDAO().retrieveOrCreatePermission(name);
+		perm = KiraMain.getInstance().getDAO().retrieveOrCreatePermission(name);
+		if (perm != null) {
+			registerPermission(perm);
+		}
+		return perm;
 	}
 
 	public KiraRole getOrCreateRole(String name) {
@@ -49,7 +60,11 @@ public class KiraRoleManager {
 		if (role != null) {
 			return role;
 		}
-		return KiraMain.getInstance().getDAO().retrieveOrCreateRole(name);
+		role = KiraMain.getInstance().getDAO().retrieveOrCreateRole(name);
+		if (role != null) {
+			registerRole(role);
+		}
+		return role;
 	}
 
 	public void reload(KiraRoleManager newData) {
@@ -120,6 +135,14 @@ public class KiraRoleManager {
 
 	public void registerPermission(KiraPermission perm) {
 		permissionsByName.put(perm.getName(), perm);
+	}
+
+	public KiraPermission getPermission(int id) {
+		return permissionsById.get(id);
+	}
+	
+	public KiraPermission getPermission(String name) {
+		return permissionsByName.get(name);
 	}
 
 	public KiraRole getRole(int id) {

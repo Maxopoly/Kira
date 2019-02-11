@@ -12,6 +12,7 @@ import com.github.maxopoly.Kira.command.CommandHandler;
 import com.github.maxopoly.Kira.command.CommandLineInputSupplier;
 import com.github.maxopoly.Kira.database.DAO;
 import com.github.maxopoly.Kira.database.DBConnection;
+import com.github.maxopoly.Kira.group.GroupChatManager;
 import com.github.maxopoly.Kira.listener.DiscordMessageListener;
 import com.github.maxopoly.Kira.permission.KiraRoleManager;
 import com.github.maxopoly.Kira.rabbit.MinecraftRabbitGateway;
@@ -44,6 +45,7 @@ public class KiraMain {
 	private MinecraftRabbitGateway mcRabbit;
 	private AuthManager authManager;
 	private KiraRoleManager kiraRoleManager;
+	private GroupChatManager groupChatManager;
 
 	public static KiraMain getInstance() {
 		return instance;
@@ -72,6 +74,7 @@ public class KiraMain {
 			return;
 		}
 		instance.commandHandler = new CommandHandler(instance.logger);
+		instance.groupChatManager = new GroupChatManager(instance.dao);
 		if (!instance.setupListeners()) {
 			return;
 		}
@@ -245,6 +248,10 @@ public class KiraMain {
 
 	public MinecraftRabbitGateway getMCRabbitGateway() {
 		return mcRabbit;
+	}
+	
+	public GroupChatManager getGroupChatManager() {
+		return groupChatManager;
 	}
 
 	public JDA getJDA() {
