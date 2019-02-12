@@ -57,11 +57,21 @@ public class DiscordMessageListener extends ListenerAdapter {
 			GroupChatManager chatMan = KiraMain.getInstance().getGroupChatManager();
 			GroupChat chat = chatMan.getChatByChannelID(event.getChannel().getIdLong());
 			if (chat != null) {
+				String message = event.getMessage().getContentDisplay();
+				message = sanitize(message);
 				KiraMain.getInstance().getMCRabbitGateway().sendGroupChatMessage(user, chat,
-						event.getMessage().getContentDisplay());
-				event.getMessage().delete().queueAfter(100, TimeUnit.MILLISECONDS);
+						message);
+				event.getMessage().delete().queue();
 			}
 		}
 	}
-
+	
+	private String sanitize(String input) {
+		String result = input.replace("\n", "");
+		result = result.replace("\r", "");
+		result = result.replace("\t", "");
+		result = result.replace("§", "");
+		return result;
+	}
+ 
 }

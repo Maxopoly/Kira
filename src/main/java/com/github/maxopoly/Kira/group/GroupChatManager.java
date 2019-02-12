@@ -37,7 +37,7 @@ public class GroupChatManager {
 		this.logger = logger;
 		this.sectionID = sectionID;
 		for (GroupChat chat : dao.loadGroupChats()) {
-			groupChatByName.put(chat.getName(), chat);
+			putGroupChat(chat);
 		}
 		logger.info("Loaded " + groupChatByName.size() + " group chats from database");
 	}
@@ -64,6 +64,17 @@ public class GroupChatManager {
 			return null;
 		}
 		return createGroupChat(name, guild.getIdLong(), channel.getIdLong());
+	}
+	
+	public void deleteGroupChat(GroupChat chat) {
+		Channel channel = KiraMain.getInstance().getJDA().getTextChannelById(chat.getDiscordChannelId());
+		logger.info("Deleting channel for " + channel.getName());
+		if (channel.getGuild().getIdLong() == KiraMain.getInstance().getGuild().getIdLong()) {
+			channel.delete().queue();
+		}
+		groupChatByName.remove(chat.getName());
+		chatsByChannelId.remove(chat.getDiscordChannelId());
+		dao.deleteGroupChat(chat);
 	}
 
 	public void syncAccess(GroupChat chat, Set<Integer> intendedMembers) {

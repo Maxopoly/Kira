@@ -102,6 +102,11 @@ public class DAO {
 		}
 	}
 	
+	public void deleteGroupChat(GroupChat chat) {
+		//everything else will cascade
+		deleteRole(chat.getTiedRole());
+	}
+	
 	public Set<Integer> getGroupChatMembers(GroupChat groupchat) {
 		Set<Integer> result = new TreeSet<>();
 		try (Connection conn = db.getConnection();
@@ -308,6 +313,17 @@ public class DAO {
 			prep.execute();
 		} catch (SQLException e) {
 			logger.error("Failed to insert role permission", e);
+		}
+	}
+	
+	public void deleteRole(KiraRole role) {
+		try (Connection conn = db.getConnection();
+				PreparedStatement prep = conn.prepareStatement(
+						"delete from roles where id = ?;")) {
+			prep.setInt(1, role.getID());
+			prep.execute();
+		} catch (SQLException e) {
+			logger.error("Failed to delete role", e);
 		}
 	}
 

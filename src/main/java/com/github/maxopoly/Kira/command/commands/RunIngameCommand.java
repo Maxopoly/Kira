@@ -10,7 +10,7 @@ import com.github.maxopoly.Kira.command.InputSupplier;
 
 public class RunIngameCommand extends Command {
 
-	private String commandRegex = "[a-zA-Z0-9_- ]+";
+	private String commandRegex = "[a-zA-Z0-9_- !?\\.]+";
 
 	public RunIngameCommand() {
 		super("ingame", 1, 100, "mc");
