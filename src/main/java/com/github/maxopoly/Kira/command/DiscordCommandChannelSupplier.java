@@ -33,7 +33,7 @@ public class DiscordCommandChannelSupplier extends DiscordCommandSupplier {
 		Member member = guild.getMemberById(user.getDiscordID());
 		String tag = "";
 		if (member != null) {
-			tag = member.getAsMention() + " ";
+			tag = member.getAsMention() + "\n";
 		}
 		channel.sendMessage(tag + msg).queue();
 	}

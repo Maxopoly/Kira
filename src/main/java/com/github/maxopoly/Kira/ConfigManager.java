@@ -122,4 +122,13 @@ public class ConfigManager {
 		}
 	}
 
+	public long getRelaySectionID() {
+		try {
+			return config.getLong("relayCategory");
+		} catch (JSONException e) {
+			logger.error("No relay category set", e);
+			return -1L;
+		}
+	}
+
 }

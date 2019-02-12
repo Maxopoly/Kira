@@ -36,34 +36,25 @@ public class UserManager {
 	}
 
 	public User getOrCreateUserByDiscordID(long discordID) {
-		KiraMain main = KiraMain.getInstance();
 		User user = userByDiscordID.get(discordID);
 		if (user == null) {
-			logger.info("Creating db entry for user with discord id " + discordID);
-			int userID = main.getDAO().createUser(discordID);
-			if (userID == -1) {
-				logger.error("Failed to create user with discord id " + discordID);
-				return null;
-			}
-			user = new User(userID, null, discordID, null, null);
-			main.getDAO().addUserToRole(user, main.getKiraRoleManager().getDefaultRole());
-			addUser(user);
+			user = createUser(discordID);
 		}
 		return user;
 	}
 
-	public boolean createUser(long discordID) {
+	public User createUser(long discordID) {
 		logger.info("Creating db entry for user with discord id " + discordID);
 		int userID = KiraMain.getInstance().getDAO().createUser(discordID);
 		if (userID == -1) {
 			logger.error("Failed to create user with discord id " + discordID);
-			return false;
+			return null;
 		}
 		User user = new User(userID, null, discordID, null, null);
 		addUser(user);
 		KiraRoleManager roleMan = KiraMain.getInstance().getKiraRoleManager();
-		roleMan.addRole(user, roleMan.getDefaultRole());
-		return true;
+		roleMan.giveRoleToUser(user, roleMan.getDefaultRole());
+		return user;
 	}
 
 	public User getUserByIngameUUID(UUID uuid) {

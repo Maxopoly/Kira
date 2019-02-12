@@ -81,8 +81,17 @@ public class KiraRoleManager {
 		return Collections.unmodifiableCollection(roleSet);
 	}
 
-	public void addRole(User user, KiraRole role) {
+	public void giveRoleToUser(User user, KiraRole role) {
 		addRole(user.getID(), role, true);
+	}
+	
+	public void takeRoleFromUser(User user, KiraRole role) {
+		Set<KiraRole> existingRoles = userRoles.get(user.getID());
+		if (existingRoles == null) {
+			return;
+		}
+		existingRoles.remove(role);
+		KiraMain.getInstance().getDAO().takeRoleFromUser(user, role);
 	}
 
 	public void addRole(int userID, KiraRole role, boolean saveToDb) {

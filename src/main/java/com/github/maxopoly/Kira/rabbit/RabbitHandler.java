@@ -50,9 +50,14 @@ public class RabbitHandler {
 			@Override
 			public void run() {
 				DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-					String message = new String(delivery.getBody(), "UTF-8");
-					System.out.println(" [x] Received '" + message + "'");
-					inputHandler.handle(message, new RabbitInputSupplier());
+					try {
+						String message = new String(delivery.getBody(), "UTF-8");
+						System.out.println(" [x] Received '" + message + "'");
+						inputHandler.handle(message, new RabbitInputSupplier());
+					} catch (Exception e) {
+						//if we dont do this the exception falls back into rabbit, which causes tons of problems
+						logger.error("Exception in rabbit listener", e);
+					}
 				};
 				try {
 					incomingChannel.basicConsume(incomingQueue, true, deliverCallback, consumerTag -> {

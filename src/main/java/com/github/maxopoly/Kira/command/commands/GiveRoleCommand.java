@@ -30,7 +30,7 @@ public class GiveRoleCommand extends Command {
 		if (roleMan.getRoles(user).contains(role)) {
 			sb.append(user.toString() + " already has role " + role.getName());
 		} else {
-			roleMan.addRole(user, role);
+			roleMan.giveRoleToUser(user, role);
 			sb.append("Giving role " + role.getName() + " to " + user.toString());
 		}
 		return sb.toString();

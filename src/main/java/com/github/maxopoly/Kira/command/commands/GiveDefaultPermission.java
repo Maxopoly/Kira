@@ -19,7 +19,7 @@ public class GiveDefaultPermission extends Command {
 		StringBuilder sb = new StringBuilder();
 		KiraMain.getInstance().getUserManager().getAllUsers().forEach(u -> {
 			if (roleMan.getRoles(u).isEmpty()) {
-				roleMan.addRole(u, defaultRole);
+				roleMan.giveRoleToUser(u, defaultRole);
 				sb.append("Giving default role to " + u.toString() + "\n");
 			}
 			

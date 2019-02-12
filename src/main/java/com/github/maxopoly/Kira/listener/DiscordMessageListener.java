@@ -1,11 +1,16 @@
 package com.github.maxopoly.Kira.listener;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.logging.log4j.Logger;
 
+import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.CommandHandler;
 import com.github.maxopoly.Kira.command.DiscordCommandChannelSupplier;
 import com.github.maxopoly.Kira.command.DiscordCommandPMSupplier;
 import com.github.maxopoly.Kira.command.InputSupplier;
+import com.github.maxopoly.Kira.group.GroupChat;
+import com.github.maxopoly.Kira.group.GroupChatManager;
 import com.github.maxopoly.Kira.user.User;
 import com.github.maxopoly.Kira.user.UserManager;
 
@@ -47,6 +52,14 @@ public class DiscordMessageListener extends ListenerAdapter {
 				InputSupplier supplier = new DiscordCommandChannelSupplier(user, event.getGuild().getIdLong(),
 						event.getChannel().getIdLong());
 				cmdHandler.handle(content.substring(channelKeyword.length()), supplier);
+				return;
+			}
+			GroupChatManager chatMan = KiraMain.getInstance().getGroupChatManager();
+			GroupChat chat = chatMan.getChatByChannelID(event.getChannel().getIdLong());
+			if (chat != null) {
+				KiraMain.getInstance().getMCRabbitGateway().sendGroupChatMessage(user, chat,
+						event.getMessage().getContentDisplay());
+				event.getMessage().delete().queueAfter(100, TimeUnit.MILLISECONDS);
 			}
 		}
 	}

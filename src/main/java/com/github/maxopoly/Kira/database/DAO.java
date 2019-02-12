@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
@@ -52,7 +53,7 @@ public class DAO {
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS group_chats "
 					+ "(id serial primary key, channel_id bigint, guild_id bigint, name varchar(255) not null unique, "
-					+ "permission_id int references permissions(id) on delete cascade," + timestampField + ");")) {
+					+ "role_id int references roles(id) on delete cascade," + timestampField + ");")) {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS roles "
@@ -77,26 +78,67 @@ public class DAO {
 		}
 		return true;
 	}
+	
+	public int createGroupChat(long guildID, long channelID, String name, KiraRole tiedPerm) {
+		try (Connection conn = db.getConnection();
+				PreparedStatement prep = conn.prepareStatement("insert into group_chats (channel_id, guild_id, "
+						+ "role_id, name) values (?,?,?,?);",
+						Statement.RETURN_GENERATED_KEYS)) {
+			prep.setLong(1, channelID);
+			prep.setLong(2, guildID);
+			prep.setInt(3, tiedPerm.getID());
+			prep.setString(4, name);
+			prep.execute();
+			try (ResultSet rs = prep.getGeneratedKeys()) {
+				if (!rs.next()) {
+					logger.error("No key created for group chat?");
+					return -1;
+				}
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			logger.error("Failed to create group chat", e);
+			return -1;
+		}
+	}
+	
+	public Set<Integer> getGroupChatMembers(GroupChat groupchat) {
+		Set<Integer> result = new TreeSet<>();
+		try (Connection conn = db.getConnection();
+				PreparedStatement prep = conn.prepareStatement("select user_id from role_members where role_id = ?;")) {
+			prep.setInt(1, groupchat.getTiedRole().getID());
+			try (ResultSet rs = prep.executeQuery()) {
+				while (rs.next()) {
+					int id = rs.getInt(1);
+					result.add(id);
+				}
+			}
+		} catch (SQLException e) {
+			logger.error("Failed to retrieve group chat members", e);
+			return null;
+		}
+		return result;
+	}
 
 	public Collection<GroupChat> loadGroupChats() {
 		List<GroupChat> result = new LinkedList<>();
 		KiraRoleManager roleMan = KiraMain.getInstance().getKiraRoleManager();
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn
-						.prepareStatement("select id, channel_id, guild_id, name, permission_id from group_chats;");
+						.prepareStatement("select id, channel_id, guild_id, name, role_id from group_chats;");
 				ResultSet rs = prep.executeQuery()) {
 			while (rs.next()) {
 				int id = rs.getInt(1);
 				long channelID = rs.getLong(2);
 				long guildID = rs.getLong(3);
 				String name = rs.getString(4);
-				int permID = rs.getInt(5);
-				KiraPermission perm = roleMan.getPermission(permID);
-				if (perm == null) {
-					logger.warn("Could not load group chat " + name + ", no permission found");
+				int roleID = rs.getInt(5);
+				KiraRole role = roleMan.getRole(roleID);
+				if (role == null) {
+					logger.warn("Could not load group chat " + name + ", no role found");
 					continue;
 				}
-				GroupChat group = new GroupChat(id, name, channelID, guildID, perm);
+				GroupChat group = new GroupChat(id, name, channelID, guildID, role);
 				result.add(group);
 			}
 		} catch (SQLException e) {

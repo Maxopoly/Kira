@@ -74,7 +74,9 @@ public class KiraMain {
 			return;
 		}
 		instance.commandHandler = new CommandHandler(instance.logger);
-		instance.groupChatManager = new GroupChatManager(instance.dao);
+		if (!instance.loadGroupChats()) {
+			return;
+		}
 		if (!instance.setupListeners()) {
 			return;
 		}
@@ -151,6 +153,14 @@ public class KiraMain {
 		if (kiraRoleManager == null) {
 			return false;
 		}
+		return true;
+	}
+	
+	private boolean loadGroupChats() {
+		if (configManager.getRelaySectionID() == -1) {
+			return false;
+		}
+		groupChatManager = new GroupChatManager(dao, logger, configManager.getRelaySectionID());
 		return true;
 	}
 
