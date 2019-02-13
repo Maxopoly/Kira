@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.group.GroupChat;
 import com.github.maxopoly.Kira.group.GroupChatManager;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
 import com.github.maxopoly.Kira.user.UserManager;
 
 public class SyncGroupChatMembers extends RabbitMessage {
@@ -23,17 +23,24 @@ public class SyncGroupChatMembers extends RabbitMessage {
 	public void handle(JSONObject json) {
 		JSONArray memberArray = json.getJSONArray("members");
 		String group = json.getString("group");
+		UUID sender = UUID.fromString(json.getString("sender"));
 		GroupChatManager man = KiraMain.getInstance().getGroupChatManager();
 		UserManager userMan = KiraMain.getInstance().getUserManager();
 		GroupChat chat = man.getGroupChat(group);
 		if (chat == null) {
-			logger.warn("Tried to update members for group " + group + ", but it wasnt found");
+			KiraMain.getInstance().getMCRabbitGateway().sendMessage(sender,
+					"That group does not have a relay setup");
+			return;
+		}
+		if (KiraMain.getInstance().getGuild().getIdLong() != chat.getDiscordChannelId()) {
+			KiraMain.getInstance().getMCRabbitGateway().sendMessage(sender,
+					"This relay is not managed by Kira, it can not be synced");
 			return;
 		}
 		Set<Integer> shouldBeMembers = new HashSet<>();
 		for (int i = 0; i < memberArray.length(); i++) {
 			UUID uuid = UUID.fromString(memberArray.getString(i));
-			User user = userMan.getUserByIngameUUID(uuid);
+			KiraUser user = userMan.getUserByIngameUUID(uuid);
 			if (user == null) {
 				continue;
 			}

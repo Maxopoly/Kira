@@ -2,7 +2,7 @@ package com.github.maxopoly.Kira.user;
 
 import java.util.UUID;
 
-public class User {
+public class KiraUser {
 
 	private int id;
 	private String name;
@@ -10,7 +10,7 @@ public class User {
 	private UUID uuid;
 	private String redditAccount;
 
-	public User(int id, String name, long discordID, UUID uuid, String redditAccount) {
+	public KiraUser(int id, String name, long discordID, UUID uuid, String redditAccount) {
 		this.id = id;
 		this.name = name;
 		this.discordID = discordID;

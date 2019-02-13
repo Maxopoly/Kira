@@ -1,20 +1,20 @@
 package com.github.maxopoly.Kira.command;
 
 import com.github.maxopoly.Kira.KiraMain;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
 
 public abstract class DiscordCommandSupplier implements InputSupplier {
 	
-	protected User user;
+	protected KiraUser user;
 
-	public DiscordCommandSupplier(User user) {
+	public DiscordCommandSupplier(KiraUser user) {
 		if (user == null) {
 			throw new IllegalArgumentException("User can't be null");
 		}
 		this.user = user;
 	}
 
-	public User getUser() {
+	public KiraUser getUser() {
 		return user;
 	}
 

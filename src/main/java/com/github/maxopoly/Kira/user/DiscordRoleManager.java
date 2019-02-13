@@ -25,7 +25,7 @@ public class DiscordRoleManager {
 		this.logger = logger;
 	}
 
-	public boolean takeDiscordRole(User user) {
+	public boolean takeDiscordRole(KiraUser user) {
 		if (!user.hasDiscord()) {
 			logger.warn("Could not remove " + user.toString() + " from auth role, no discord account associated");
 			return false;
@@ -54,7 +54,7 @@ public class DiscordRoleManager {
 		return true;
 	}
 
-	public void giveDiscordRole(User user) {
+	public void giveDiscordRole(KiraUser user) {
 		Role role = guild.getRoleById(roleID);
 		if (role == null) {
 			logger.warn("Could not add role to " + user.toString() + ", role with id " + roleID + " did not exist");
@@ -74,12 +74,12 @@ public class DiscordRoleManager {
 	}
 
 	public void syncFully() {
-		Set<User> authUsers = userManager.getAllUsers();
+		Set<KiraUser> authUsers = userManager.getAllUsers();
 		authUsers.stream().filter(u -> u.hasIngameAccount());
 		Role role = guild.getRoleById(roleID);
 		List<Member> members = guild.getMembersWithRoles(role);
 
-		Map<Long, User> userByDiscordID = new HashMap<>();
+		Map<Long, KiraUser> userByDiscordID = new HashMap<>();
 		authUsers.forEach(u -> userByDiscordID.put(u.getDiscordID(), u));
 
 		Map<Long, Member> memberByDiscordID = new HashMap<>();

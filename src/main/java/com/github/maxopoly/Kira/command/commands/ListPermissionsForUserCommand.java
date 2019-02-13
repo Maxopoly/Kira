@@ -6,7 +6,7 @@ import com.github.maxopoly.Kira.command.InputSupplier;
 import com.github.maxopoly.Kira.permission.KiraPermission;
 import com.github.maxopoly.Kira.permission.KiraRole;
 import com.github.maxopoly.Kira.permission.KiraRoleManager;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
 
 public class ListPermissionsForUserCommand extends Command {
 
@@ -18,7 +18,7 @@ public class ListPermissionsForUserCommand extends Command {
 	public String execute(InputSupplier sender, String[] args) {
 		StringBuilder sb = new StringBuilder();
 		KiraRoleManager roleMan = KiraMain.getInstance().getKiraRoleManager();
-		User user = KiraMain.getInstance().getUserManager().parseUser(args[0], sb);
+		KiraUser user = KiraMain.getInstance().getUserManager().parseUser(args[0], sb);
 		if (user == null) {
 			sb.append("User not found");
 			return sb.toString();

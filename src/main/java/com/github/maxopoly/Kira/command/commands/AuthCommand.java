@@ -5,8 +5,10 @@ import java.util.UUID;
 import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.Command;
 import com.github.maxopoly.Kira.command.InputSupplier;
+import com.github.maxopoly.Kira.permission.KiraRole;
+import com.github.maxopoly.Kira.permission.KiraRoleManager;
 import com.github.maxopoly.Kira.user.AuthManager;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
 
 public class AuthCommand extends Command {
 
@@ -19,7 +21,7 @@ public class AuthCommand extends Command {
 		if (sender.getUser() == null) {
 			return "You can't auth, because you are not a user?";
 		}
-		User user = sender.getUser();
+		KiraUser user = sender.getUser();
 		if (user.hasIngameAccount()) {
 			return "You already have a linked ingame account";
 		}
@@ -32,9 +34,14 @@ public class AuthCommand extends Command {
 		String name = authMan.getName(uuid);
 		logger.info("Adding " + name + ":" + uuid.toString() + " as ingame account for " + user.toString());
 		user.updateIngame(uuid, name);
+		KiraRoleManager kiraRoleMan = KiraMain.getInstance().getKiraRoleManager();
 		KiraMain.getInstance().getUserManager().addUser(user);
 		KiraMain.getInstance().getRoleManager().giveDiscordRole(user);
 		KiraMain.getInstance().getDAO().updateUser(user);
+		KiraRole authRole = kiraRoleMan.getRole("auth");
+		if (authRole != null) {
+			kiraRoleMan.giveRoleToUser(user, authRole);
+		}
 		authMan.removeCode(code);
 		return "Successfully authenticated as " + name;
 	}

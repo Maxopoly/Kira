@@ -10,7 +10,9 @@ import com.github.maxopoly.Kira.rabbit.input.AddAuthMessage;
 import com.github.maxopoly.Kira.rabbit.input.CreateGroupChatMessage;
 import com.github.maxopoly.Kira.rabbit.input.DeleteGroupChatMessage;
 import com.github.maxopoly.Kira.rabbit.input.RabbitMessage;
+import com.github.maxopoly.Kira.rabbit.input.ReplyToUserMessage;
 import com.github.maxopoly.Kira.rabbit.input.SendGroupChatMessage;
+import com.github.maxopoly.Kira.rabbit.input.SnitchHitMessage;
 import com.github.maxopoly.Kira.rabbit.input.SyncGroupChatMembers;
 
 public class RabbitInputProcessor extends TextInputHandler<RabbitMessage> {
@@ -26,6 +28,8 @@ public class RabbitInputProcessor extends TextInputHandler<RabbitMessage> {
 		registerCommand(new CreateGroupChatMessage());
 		registerCommand(new SyncGroupChatMembers());
 		registerCommand(new DeleteGroupChatMessage());
+		registerCommand(new ReplyToUserMessage());
+		registerCommand(new SnitchHitMessage());
 	}
 
 	@Override

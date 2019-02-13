@@ -1,14 +1,14 @@
 package com.github.maxopoly.Kira.command;
 
 import com.github.maxopoly.Kira.KiraMain;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 
 public class DiscordCommandPMSupplier extends  DiscordCommandSupplier {
 
-	public DiscordCommandPMSupplier(User user) {
+	public DiscordCommandPMSupplier(KiraUser user) {
 		super(user);
 	}
 
@@ -20,4 +20,8 @@ public class DiscordCommandPMSupplier extends  DiscordCommandSupplier {
 		pm.sendMessage(msg).queue();
 	}
 
+	@Override
+	public long getChannelID() {
+		return -1L;
+	}
 }

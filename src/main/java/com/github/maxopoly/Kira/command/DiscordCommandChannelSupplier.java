@@ -1,7 +1,7 @@
 package com.github.maxopoly.Kira.command;
 
 import com.github.maxopoly.Kira.KiraMain;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
@@ -13,7 +13,7 @@ public class DiscordCommandChannelSupplier extends DiscordCommandSupplier {
 	private long channelID;
 	private long guildID;
 
-	public DiscordCommandChannelSupplier(User user, long guildID, long channelID) {
+	public DiscordCommandChannelSupplier(KiraUser user, long guildID, long channelID) {
 		super(user);
 		this.channelID = channelID;
 		this.guildID = guildID;
@@ -36,6 +36,11 @@ public class DiscordCommandChannelSupplier extends DiscordCommandSupplier {
 			tag = member.getAsMention() + "\n";
 		}
 		channel.sendMessage(tag + msg).queue();
+	}
+
+	@Override
+	public long getChannelID() {
+		return channelID;
 	}
 
 }

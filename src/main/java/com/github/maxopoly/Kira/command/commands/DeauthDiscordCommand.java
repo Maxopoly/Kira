@@ -4,7 +4,7 @@ import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.Command;
 import com.github.maxopoly.Kira.command.InputSupplier;
 import com.github.maxopoly.Kira.user.DiscordRoleManager;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
 import com.github.maxopoly.Kira.user.UserManager;
 
 public class DeauthDiscordCommand extends Command {
@@ -18,7 +18,7 @@ public class DeauthDiscordCommand extends Command {
 		StringBuilder reply = new StringBuilder();
 		UserManager userManager = KiraMain.getInstance().getUserManager();
 		DiscordRoleManager authManager = KiraMain.getInstance().getRoleManager();
-		User user = userManager.parseUser(args[0], reply);
+		KiraUser user = userManager.parseUser(args[0], reply);
 		if (user == null) {
 			reply.append("User not found, no action was taken\n");
 		} else {

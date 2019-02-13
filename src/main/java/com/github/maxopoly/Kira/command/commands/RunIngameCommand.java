@@ -10,7 +10,7 @@ import com.github.maxopoly.Kira.command.InputSupplier;
 
 public class RunIngameCommand extends Command {
 
-	private String commandRegex = "[a-zA-Z0-9_- !?\\.]+";
+	private String commandRegex = "[a-zA-Z0-9_\\- !?\\.]+";
 
 	public RunIngameCommand() {
 		super("ingame", 1, 100, "mc");
@@ -31,6 +31,9 @@ public class RunIngameCommand extends Command {
 		if (!Pattern.matches(commandRegex, commandString)) {
 			return "Your command contained illegal characters";
 		}
+		if (commandString.length() > 255) {
+			return "Your command is too long";
+		}
 		KiraMain.getInstance().getMCRabbitGateway().runCommand(uuid, commandString);
 		return "Ran command '" + commandString + "' as " + sender.getUser().getName();
 	}
@@ -47,6 +50,6 @@ public class RunIngameCommand extends Command {
 
 	@Override
 	public String getRequiredPermission() {
-		return "isauth";
+		return "test";
 	}
 }

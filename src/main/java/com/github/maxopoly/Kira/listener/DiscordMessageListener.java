@@ -1,7 +1,5 @@
 package com.github.maxopoly.Kira.listener;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.logging.log4j.Logger;
 
 import com.github.maxopoly.Kira.KiraMain;
@@ -11,7 +9,7 @@ import com.github.maxopoly.Kira.command.DiscordCommandPMSupplier;
 import com.github.maxopoly.Kira.command.InputSupplier;
 import com.github.maxopoly.Kira.group.GroupChat;
 import com.github.maxopoly.Kira.group.GroupChatManager;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
 import com.github.maxopoly.Kira.user.UserManager;
 
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -38,7 +36,7 @@ public class DiscordMessageListener extends ListenerAdapter {
 		if (event.getAuthor().isBot() || event.getAuthor().getIdLong() == ownID) {
 			return;
 		}
-		User user = userManager.getOrCreateUserByDiscordID(event.getAuthor().getIdLong());
+		KiraUser user = userManager.getOrCreateUserByDiscordID(event.getAuthor().getIdLong());
 		String content = event.getMessage().getContentRaw();
 		if (event.isFromType(ChannelType.PRIVATE)) {
 			logger.info(String.format("CHAT [PM] %s: %s", event.getAuthor().getName(),
@@ -59,19 +57,24 @@ public class DiscordMessageListener extends ListenerAdapter {
 			if (chat != null) {
 				String message = event.getMessage().getContentDisplay();
 				message = sanitize(message);
-				KiraMain.getInstance().getMCRabbitGateway().sendGroupChatMessage(user, chat,
-						message);
+				if (!message.equals("")) {
+					KiraMain.getInstance().getMCRabbitGateway().sendGroupChatMessage(user, chat, message);
+				}
 				event.getMessage().delete().queue();
 			}
 		}
 	}
-	
+
 	private String sanitize(String input) {
 		String result = input.replace("\n", "");
 		result = result.replace("\r", "");
 		result = result.replace("\t", "");
 		result = result.replace("§", "");
+		result = result.trim();
+		if (result.length() > 255) {
+			result = result.substring(0, 255);
+		}
 		return result;
 	}
- 
+
 }

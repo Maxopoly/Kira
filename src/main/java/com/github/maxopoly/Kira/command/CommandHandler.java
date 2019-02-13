@@ -5,12 +5,17 @@ import org.apache.logging.log4j.Logger;
 import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.commands.AuthCommand;
 import com.github.maxopoly.Kira.command.commands.CreateDefaultPermsCommand;
+import com.github.maxopoly.Kira.command.commands.CreateRelayChannelHereCommand;
 import com.github.maxopoly.Kira.command.commands.DeauthDiscordCommand;
+import com.github.maxopoly.Kira.command.commands.GetWeightCommand;
 import com.github.maxopoly.Kira.command.commands.GiveDefaultPermission;
 import com.github.maxopoly.Kira.command.commands.GiveRoleCommand;
 import com.github.maxopoly.Kira.command.commands.HelpCommand;
+import com.github.maxopoly.Kira.command.commands.JoinDiscordCommand;
 import com.github.maxopoly.Kira.command.commands.ListPermissionsForUserCommand;
+import com.github.maxopoly.Kira.command.commands.QuoteCommand;
 import com.github.maxopoly.Kira.command.commands.ReloadPermissionCommand;
+import com.github.maxopoly.Kira.command.commands.RunIngameCommand;
 import com.github.maxopoly.Kira.command.commands.SelfInfoCommand;
 import com.github.maxopoly.Kira.command.commands.StopCommand;
 import com.github.maxopoly.Kira.command.commands.SyncUsernameCommand;
@@ -23,7 +28,7 @@ public class CommandHandler extends TextInputHandler<Command> {
 
 	protected void registerCommands() {
 		registerCommand(new StopCommand());
-		// registerCommand(new RunIngameCommand());
+		registerCommand(new RunIngameCommand());
 		registerCommand(new AuthCommand());
 		registerCommand(new DeauthDiscordCommand());
 		registerCommand(new SelfInfoCommand());
@@ -34,6 +39,10 @@ public class CommandHandler extends TextInputHandler<Command> {
 		registerCommand(new GiveDefaultPermission());
 		registerCommand(new ListPermissionsForUserCommand());
 		registerCommand(new GiveRoleCommand());
+		registerCommand(new JoinDiscordCommand());
+		registerCommand(new CreateRelayChannelHereCommand());
+		registerCommand(new GetWeightCommand());
+		registerCommand(new QuoteCommand());
 		logger.info("Loaded total of " + commands.values().size() + " commands");
 	}
 

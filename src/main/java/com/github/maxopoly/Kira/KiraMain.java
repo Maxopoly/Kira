@@ -19,7 +19,7 @@ import com.github.maxopoly.Kira.rabbit.MinecraftRabbitGateway;
 import com.github.maxopoly.Kira.rabbit.RabbitHandler;
 import com.github.maxopoly.Kira.user.AuthManager;
 import com.github.maxopoly.Kira.user.DiscordRoleManager;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
 import com.github.maxopoly.Kira.user.UserManager;
 import com.rabbitmq.client.ConnectionFactory;
 
@@ -130,7 +130,7 @@ public class KiraMain {
 			return false;
 		}
 		dao = new DAO(dbConn, logger);
-		for (User user : dao.loadUsers()) {
+		for (KiraUser user : dao.loadUsers()) {
 			userManager.addUser(user);
 		}
 		return true;

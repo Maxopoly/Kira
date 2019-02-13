@@ -22,7 +22,8 @@ import com.github.maxopoly.Kira.group.GroupChat;
 import com.github.maxopoly.Kira.permission.KiraPermission;
 import com.github.maxopoly.Kira.permission.KiraRole;
 import com.github.maxopoly.Kira.permission.KiraRoleManager;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.Kira.user.UserManager;
 
 public class DAO {
 
@@ -53,7 +54,8 @@ public class DAO {
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS group_chats "
 					+ "(id serial primary key, channel_id bigint, guild_id bigint, name varchar(255) not null unique, "
-					+ "role_id int references roles(id) on delete cascade," + timestampField + ");")) {
+					+ "role_id int references roles(id) on delete cascade, creator_id int references users(id) "
+					+ "on delete cascade," + timestampField + ");")) {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS roles "
@@ -79,15 +81,16 @@ public class DAO {
 		return true;
 	}
 	
-	public int createGroupChat(long guildID, long channelID, String name, KiraRole tiedPerm) {
+	public int createGroupChat(long guildID, long channelID, String name, KiraRole tiedPerm, int creatorID) {
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn.prepareStatement("insert into group_chats (channel_id, guild_id, "
-						+ "role_id, name) values (?,?,?,?);",
+						+ "role_id, name, creator_id) values (?,?,?,?,?);",
 						Statement.RETURN_GENERATED_KEYS)) {
 			prep.setLong(1, channelID);
 			prep.setLong(2, guildID);
 			prep.setInt(3, tiedPerm.getID());
 			prep.setString(4, name);
+			prep.setInt(5, creatorID);
 			prep.execute();
 			try (ResultSet rs = prep.getGeneratedKeys()) {
 				if (!rs.next()) {
@@ -100,6 +103,24 @@ public class DAO {
 			logger.error("Failed to create group chat", e);
 			return -1;
 		}
+	}
+	
+	public Set<Long> getGroupChatChannelIdByCreator(KiraUser user) {
+		Set<Long> result = new TreeSet<>();
+		try (Connection conn = db.getConnection();
+				PreparedStatement prep = conn.prepareStatement("select channel_id from group_chats where creator_id = ?;")) {
+			prep.setInt(1, user.getID());
+			try (ResultSet rs = prep.executeQuery()) {
+				while (rs.next()) {
+					long id = rs.getLong(1);
+					result.add(id);
+				}
+			}
+		} catch (SQLException e) {
+			logger.error("Failed to retrieve group chats by creator", e);
+			return null;
+		}
+		return result;
 	}
 	
 	public void deleteGroupChat(GroupChat chat) {
@@ -128,9 +149,10 @@ public class DAO {
 	public Collection<GroupChat> loadGroupChats() {
 		List<GroupChat> result = new LinkedList<>();
 		KiraRoleManager roleMan = KiraMain.getInstance().getKiraRoleManager();
+		UserManager userMan = KiraMain.getInstance().getUserManager();
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn
-						.prepareStatement("select id, channel_id, guild_id, name, role_id from group_chats;");
+						.prepareStatement("select id, channel_id, guild_id, name, role_id, creator_id from group_chats;");
 				ResultSet rs = prep.executeQuery()) {
 			while (rs.next()) {
 				int id = rs.getInt(1);
@@ -138,12 +160,13 @@ public class DAO {
 				long guildID = rs.getLong(3);
 				String name = rs.getString(4);
 				int roleID = rs.getInt(5);
+				int creatorID = rs.getInt(6);
 				KiraRole role = roleMan.getRole(roleID);
 				if (role == null) {
 					logger.warn("Could not load group chat " + name + ", no role found");
 					continue;
 				}
-				GroupChat group = new GroupChat(id, name, channelID, guildID, role);
+				GroupChat group = new GroupChat(id, name, channelID, guildID, role, userMan.getUser(creatorID));
 				result.add(group);
 			}
 		} catch (SQLException e) {
@@ -153,8 +176,8 @@ public class DAO {
 		return result;
 	}
 
-	public Set<User> loadUsers() {
-		Set<User> result = new HashSet<>();
+	public Set<KiraUser> loadUsers() {
+		Set<KiraUser> result = new HashSet<>();
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn.prepareStatement("select id, name, discord_id, uuid, reddit from users;");
 				ResultSet rs = prep.executeQuery()) {
@@ -165,7 +188,7 @@ public class DAO {
 				String uuidString = rs.getString(4);
 				UUID uuid = uuidString != null ? UUID.fromString(uuidString) : null;
 				String redditAcc = rs.getString(5);
-				result.add(new User(id, name, discordID, uuid, redditAcc));
+				result.add(new KiraUser(id, name, discordID, uuid, redditAcc));
 			}
 		} catch (SQLException e) {
 			logger.error("Failed to retrieve users", e);
@@ -193,7 +216,7 @@ public class DAO {
 		}
 	}
 
-	public void updateUser(User user) {
+	public void updateUser(KiraUser user) {
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn.prepareStatement(
 						"update users set name = ?, discord_id = ?, uuid = ?, reddit = ? where id = ?;")) {
@@ -327,7 +350,7 @@ public class DAO {
 		}
 	}
 
-	public void addUserToRole(User user, KiraRole role) {
+	public void addUserToRole(KiraUser user, KiraRole role) {
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn
 						.prepareStatement("insert into role_members (role_id, user_id) " + "values (?, ?);")) {
@@ -339,7 +362,7 @@ public class DAO {
 		}
 	}
 
-	public void takeRoleFromUser(User user, KiraRole role) {
+	public void takeRoleFromUser(KiraUser user, KiraRole role) {
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn
 						.prepareStatement("delete from role_members where role_id=?, user_id=?;")) {

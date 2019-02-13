@@ -11,7 +11,7 @@ import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.database.DAO;
 import com.github.maxopoly.Kira.permission.KiraRole;
 import com.github.maxopoly.Kira.permission.KiraRoleManager;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
 import com.github.maxopoly.Kira.user.UserManager;
 
 import net.dv8tion.jda.core.entities.Category;
@@ -26,6 +26,7 @@ public class GroupChatManager {
 
 	private Map<String, GroupChat> groupChatByName;
 	private Map<Long, GroupChat> chatsByChannelId;
+	private Map<Integer, Float> ownedChatsByUserId;
 	private DAO dao;
 	private long sectionID;
 	private Logger logger;
@@ -33,6 +34,7 @@ public class GroupChatManager {
 	public GroupChatManager(DAO dao, Logger logger, long sectionID) {
 		groupChatByName = new HashMap<String, GroupChat>();
 		chatsByChannelId = new TreeMap<Long, GroupChat>();
+		ownedChatsByUserId = new TreeMap<>();
 		this.dao = dao;
 		this.logger = logger;
 		this.sectionID = sectionID;
@@ -42,16 +44,19 @@ public class GroupChatManager {
 		logger.info("Loaded " + groupChatByName.size() + " group chats from database");
 	}
 
-	public GroupChat createGroupChat(String name, long guildID, long channelID) {
-		KiraRole perm = KiraMain.getInstance().getKiraRoleManager().getOrCreateRole(name + accessPermSuffix);
-		int id = dao.createGroupChat(guildID, channelID, name, perm);
-		GroupChat chat = new GroupChat(id, name, channelID, guildID, perm);
+	public GroupChat createGroupChat(String name, long guildID, long channelID, KiraUser creator) {
+		KiraRole role = KiraMain.getInstance().getKiraRoleManager().getOrCreateRole(name + accessPermSuffix);
+		int id = dao.createGroupChat(guildID, channelID, name, role, creator.getID());
+		if (id == -1) {
+			return null;
+		}
+		GroupChat chat = new GroupChat(id, name, channelID, guildID, role, creator);
 		putGroupChat(chat);
 		logger.info("Successfully created group chat for group " + chat.toString());
 		return chat;
 	}
 
-	public GroupChat createGroupChat(String name) {
+	public GroupChat createGroupChat(String name, KiraUser creator) {
 		Guild guild = KiraMain.getInstance().getGuild();
 		Category cat = guild.getCategoryById(sectionID);
 		if (cat == null) {
@@ -63,7 +68,7 @@ public class GroupChatManager {
 			logger.warn("Tried to create channel, but it didn't work");
 			return null;
 		}
-		return createGroupChat(name, guild.getIdLong(), channel.getIdLong());
+		return createGroupChat(name, guild.getIdLong(), channel.getIdLong(), creator);
 	}
 	
 	public void deleteGroupChat(GroupChat chat) {
@@ -72,8 +77,14 @@ public class GroupChatManager {
 		if (channel.getGuild().getIdLong() == KiraMain.getInstance().getGuild().getIdLong()) {
 			channel.delete().queue();
 		}
+		Float count = ownedChatsByUserId.get(chat.getCreator().getID());
+		if (count != null) {
+			ownedChatsByUserId.put(chat.getCreator().getID(), Math.max(0, count -1));
+		}
 		groupChatByName.remove(chat.getName());
 		chatsByChannelId.remove(chat.getDiscordChannelId());
+		//db clean up is done by deleting the chat via foreign keys
+		KiraMain.getInstance().getKiraRoleManager().deleteRole(chat.getTiedRole(), false);
 		dao.deleteGroupChat(chat);
 	}
 
@@ -100,9 +111,22 @@ public class GroupChatManager {
 	public void putGroupChat(GroupChat chat) {
 		groupChatByName.put(chat.getName(), chat);
 		chatsByChannelId.put(chat.getDiscordChannelId(), chat);
+		Float count = ownedChatsByUserId.get(chat.getCreator().getID());
+		if (count == null) {
+			count = 0.0f;
+		}
+		ownedChatsByUserId.put(chat.getCreator().getID(), count + chat.getWeight());
+	}
+	
+	public float getOwnedChatCount(KiraUser user) {
+		Float count = ownedChatsByUserId.get(user.getID());
+		if (count == null) {
+			count = 0.0f;
+		}
+		return count;
 	}
 
-	public void addMember(GroupChat chat, User user) {
+	public void addMember(GroupChat chat, KiraUser user) {
 		KiraRoleManager roleMan = KiraMain.getInstance().getKiraRoleManager();
 		if (roleMan.getRoles(user).contains(chat.getTiedRole())) {
 			return;
@@ -125,10 +149,14 @@ public class GroupChatManager {
 		}
 	}
 
-	public void removeMember(GroupChat chat, User user) {
+	public void removeMember(GroupChat chat, KiraUser user) {
 		KiraMain.getInstance().getKiraRoleManager().takeRoleFromUser(user, chat.getTiedRole());
 		logger.info("Taking tied role for chat " + chat.getName() + " from " + user.toString());
 		//TODO
+	}
+	
+	public static float getChatCountLimit() {
+		return 4.0f;
 	}
 
 }

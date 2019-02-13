@@ -1,21 +1,13 @@
 package com.github.maxopoly.Kira.rabbit.input;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.group.GroupChat;
 import com.github.maxopoly.Kira.group.GroupChatManager;
-import com.github.maxopoly.Kira.user.User;
-import com.github.maxopoly.Kira.user.UserManager;
-
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import com.github.maxopoly.Kira.user.KiraUser;
 
 public class DeleteGroupChatMessage extends RabbitMessage {
 
@@ -26,7 +18,7 @@ public class DeleteGroupChatMessage extends RabbitMessage {
 	@Override
 	public void handle(JSONObject json) {
 		UUID destroyerUUID = UUID.fromString(json.getString("sender"));
-		User destroyer = KiraMain.getInstance().getUserManager().getUserByIngameUUID(destroyerUUID);
+		KiraUser destroyer = KiraMain.getInstance().getUserManager().getUserByIngameUUID(destroyerUUID);
 		if (destroyer == null) {
 			KiraMain.getInstance().getMCRabbitGateway().sendMessage(destroyerUUID, "Channel deletion failed, "
 					+ "no discord account tied");

@@ -6,12 +6,9 @@ import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.Command;
 import com.github.maxopoly.Kira.command.InputSupplier;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Invite;
-
 public class JoinDiscordCommand extends Command {
 	public JoinDiscordCommand() {
-		super("join", 1, 1, "accept");
+		super("invite", 0, 0);
 	}
 
 	@Override
@@ -23,22 +20,13 @@ public class JoinDiscordCommand extends Command {
 		if (uuid == null) {
 			return "You are not allowed to do this, link an ingame account";
 		}
-		String [] split = args [0].split("/");
-		String code = split[split.length - 1];
-		JDA jda = KiraMain.getInstance().getJDA();
-		Invite invite = Invite.resolve(jda, code).complete();
-		if (invite == null) {
-			return "Could not resolve invite";
-		}
-		String url = jda.asBot().getInviteUrl();
-		url += "&guild_id=";
-		url += invite.getGuild().getIdLong();
+		String url = KiraMain.getInstance().getJDA().asBot().getInviteUrl();
 		return url;
 	}
 
 	@Override
 	public String getUsage() {
-		return "join [invitelink]";
+		return "invite";
 	}
 
 	@Override

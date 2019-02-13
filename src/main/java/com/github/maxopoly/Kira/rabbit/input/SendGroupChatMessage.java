@@ -23,5 +23,4 @@ public class SendGroupChatMessage extends RabbitMessage {
 			chat.sendMessage(runner, msg);
 		}
 	}
-
 }

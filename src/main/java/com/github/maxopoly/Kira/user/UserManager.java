@@ -17,10 +17,10 @@ import net.dv8tion.jda.core.JDA;
 
 public class UserManager {
 
-	private Map<Long, User> userByDiscordID;
-	private Map<Integer, User> userByID;
-	private Map<UUID, User> userByUUID;
-	private Map<String, User> userByName;
+	private Map<Long, KiraUser> userByDiscordID;
+	private Map<Integer, KiraUser> userByID;
+	private Map<UUID, KiraUser> userByUUID;
+	private Map<String, KiraUser> userByName;
 	private Logger logger;
 
 	public UserManager(Logger logger) {
@@ -31,37 +31,37 @@ public class UserManager {
 		userByName = new HashMap<>();
 	}
 
-	public User getUser(int userID) {
+	public KiraUser getUser(int userID) {
 		return userByID.get(userID);
 	}
 
-	public User getOrCreateUserByDiscordID(long discordID) {
-		User user = userByDiscordID.get(discordID);
+	public KiraUser getOrCreateUserByDiscordID(long discordID) {
+		KiraUser user = userByDiscordID.get(discordID);
 		if (user == null) {
 			user = createUser(discordID);
 		}
 		return user;
 	}
 
-	public User createUser(long discordID) {
+	public KiraUser createUser(long discordID) {
 		logger.info("Creating db entry for user with discord id " + discordID);
 		int userID = KiraMain.getInstance().getDAO().createUser(discordID);
 		if (userID == -1) {
 			logger.error("Failed to create user with discord id " + discordID);
 			return null;
 		}
-		User user = new User(userID, null, discordID, null, null);
+		KiraUser user = new KiraUser(userID, null, discordID, null, null);
 		addUser(user);
 		KiraRoleManager roleMan = KiraMain.getInstance().getKiraRoleManager();
 		roleMan.giveRoleToUser(user, roleMan.getDefaultRole());
 		return user;
 	}
 
-	public User getUserByIngameUUID(UUID uuid) {
+	public KiraUser getUserByIngameUUID(UUID uuid) {
 		return userByUUID.get(uuid);
 	}
 
-	public void addUser(User user) {
+	public void addUser(KiraUser user) {
 		userByID.put(user.getID(), user);
 		if (user.hasDiscord()) {
 			userByDiscordID.put(user.getDiscordID(), user);
@@ -72,11 +72,11 @@ public class UserManager {
 		}
 	}
 
-	public Set<User> getAllUsers() {
+	public Set<KiraUser> getAllUsers() {
 		return new HashSet<>(userByID.values());
 	}
 
-	public User parseUser(String input, StringBuilder feedback) {
+	public KiraUser parseUser(String input, StringBuilder feedback) {
 		String lower = input.toLowerCase().trim();
 		if (lower.contains(":")) {
 			String[] parts = input.split(":");
@@ -101,7 +101,7 @@ public class UserManager {
 		return parseDiscordUser(input, feedback);
 	}
 
-	private User parseDiscordUser(String input, StringBuilder feedback) {
+	private KiraUser parseDiscordUser(String input, StringBuilder feedback) {
 		if (input.contains("#")) {
 			// normal discord user name in the form of "Anon#1234"
 			if (input.startsWith("@")) {
@@ -119,7 +119,7 @@ public class UserManager {
 			List<net.dv8tion.jda.core.entities.User> users = jda.getUsersByName(parts[0], true);
 			for (net.dv8tion.jda.core.entities.User discordUser : users) {
 				if (discordUser.getDiscriminator().equals(parts[1])) {
-					User user = getOrCreateUserByDiscordID(discordUser.getIdLong());
+					KiraUser user = getOrCreateUserByDiscordID(discordUser.getIdLong());
 					if (user == null) {
 						feedback.append("Successfully parsed discord user name and found id " + discordUser.getIdLong()
 								+ ", but could not find user account tied to it\n");
@@ -137,7 +137,7 @@ public class UserManager {
 			}
 			try {
 				long id = Long.parseLong(input);
-				User user = getOrCreateUserByDiscordID(id);
+				KiraUser user = getOrCreateUserByDiscordID(id);
 				if (user == null) {
 					feedback.append(
 							"Successfully parsed discord user id " + id + ", but could not find user with given id\n");
@@ -153,23 +153,23 @@ public class UserManager {
 		}
 	}
 
-	private User parseRedditUser(String input, StringBuilder feedback) {
+	private KiraUser parseRedditUser(String input, StringBuilder feedback) {
 		feedback.append("Tried to parse " + input + " as reddit account, but this is not implemented yet\n");
 		return null;
 	}
 
-	private User parseIngameUser(String input, StringBuilder feedback) {
+	private KiraUser parseIngameUser(String input, StringBuilder feedback) {
 		String lower = input.toLowerCase();
 		String regex = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 		if (Pattern.matches(regex, lower)) {
 			UUID uuid = UUID.fromString(lower);
-			User user = userByUUID.get(uuid);
+			KiraUser user = userByUUID.get(uuid);
 			if (user == null) {
 				feedback.append("Parsed " + input + " as minecraft uuid, but it was not a known UUID\n");
 			}
 			return user;
 		}
-		User user = userByName.get(lower);
+		KiraUser user = userByName.get(lower);
 		if (user == null) {
 			feedback.append("Tried to parse " + input + " as minecraft account, but no match was found\n");
 		}

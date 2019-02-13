@@ -24,6 +24,14 @@ public class GiveDefaultPermission extends Command {
 			}
 			
 		});
+		KiraRole authRole = roleMan.getRole("auth");
+		KiraMain.getInstance().getUserManager().getAllUsers().stream().filter(u -> u.hasIngameAccount()).forEach(u ->{
+			if(!roleMan.getRoles(u).contains(authRole)) {
+				roleMan.giveRoleToUser(u, authRole);
+				sb.append("Giving auth role to " + u.toString() + "\n");
+			}
+			
+		});
 		return sb.toString();
 	}
 

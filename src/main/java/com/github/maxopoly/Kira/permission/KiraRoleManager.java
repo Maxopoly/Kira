@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import com.github.maxopoly.Kira.KiraMain;
-import com.github.maxopoly.Kira.user.User;
+import com.github.maxopoly.Kira.user.KiraUser;
 
 public class KiraRoleManager {
 
@@ -37,7 +37,7 @@ public class KiraRoleManager {
 		KiraPermission adminPerm = getOrCreatePermission("admin");
 		addPermissionToRole(adminRole, adminPerm, true);
 		KiraRole authRole = getOrCreateRole("auth");
-		KiraPermission authPerm = getOrCreatePermission("isAuth");
+		KiraPermission authPerm = getOrCreatePermission("isauth");
 		addPermissionToRole(authRole, authPerm, true);
 	}
 
@@ -73,7 +73,7 @@ public class KiraRoleManager {
 		this.userRoles = newData.userRoles;
 	}
 
-	public Collection<KiraRole> getRoles(User user) {
+	public Collection<KiraRole> getRoles(KiraUser user) {
 		Set<KiraRole> roleSet = userRoles.get(user.getID());
 		if (roleSet == null) {
 			roleSet = new HashSet<>();
@@ -81,11 +81,11 @@ public class KiraRoleManager {
 		return Collections.unmodifiableCollection(roleSet);
 	}
 
-	public void giveRoleToUser(User user, KiraRole role) {
+	public void giveRoleToUser(KiraUser user, KiraRole role) {
 		addRole(user.getID(), role, true);
 	}
 	
-	public void takeRoleFromUser(User user, KiraRole role) {
+	public void takeRoleFromUser(KiraUser user, KiraRole role) {
 		Set<KiraRole> existingRoles = userRoles.get(user.getID());
 		if (existingRoles == null) {
 			return;
@@ -110,7 +110,7 @@ public class KiraRoleManager {
 		}
 	}
 
-	public boolean hasPermission(User user, String perm) {
+	public boolean hasPermission(KiraUser user, String perm) {
 		Set<KiraRole> existingRoles = userRoles.get(user.getID());
 		if (existingRoles == null) {
 			return false;
@@ -140,6 +140,17 @@ public class KiraRoleManager {
 	public void registerRole(KiraRole role) {
 		roleById.put(role.getID(), role);
 		roleByName.put(role.getName(), role);
+	}
+	
+	public void deleteRole(KiraRole role, boolean writeToDb) {
+		roleById.remove(role.getID());
+		roleByName.remove(role.getName());
+		for(Set<KiraRole> roles : userRoles.values()) {
+			roles.remove(role);
+		}
+		if (writeToDb) {
+			KiraMain.getInstance().getDAO().deleteRole(role);
+		}
 	}
 
 	public void registerPermission(KiraPermission perm) {
