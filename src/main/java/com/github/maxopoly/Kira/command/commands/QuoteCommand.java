@@ -6,7 +6,7 @@ import com.github.maxopoly.Kira.util.Quote;
 import com.github.maxopoly.Kira.util.QuoteHandler;
 
 public class QuoteCommand extends Command {
-	
+
 	private QuoteHandler quoteHandler;
 
 	public QuoteCommand() {

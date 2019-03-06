@@ -14,13 +14,11 @@ public class AuthCommand extends Command {
 
 	public AuthCommand() {
 		super("auth", 1, 1);
+		setRequireUser();
 	}
 
 	@Override
 	public String execute(InputSupplier sender, String[] args) {
-		if (sender.getUser() == null) {
-			return "You can't auth, because you are not a user?";
-		}
 		KiraUser user = sender.getUser();
 		if (user.hasIngameAccount()) {
 			return "You already have a linked ingame account";

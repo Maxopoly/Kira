@@ -4,7 +4,7 @@ import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.user.KiraUser;
 
 public abstract class DiscordCommandSupplier implements InputSupplier {
-	
+
 	protected KiraUser user;
 
 	public DiscordCommandSupplier(KiraUser user) {

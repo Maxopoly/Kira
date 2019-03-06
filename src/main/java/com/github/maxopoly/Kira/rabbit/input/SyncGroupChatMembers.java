@@ -8,8 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.KiraMain;
-import com.github.maxopoly.Kira.group.GroupChat;
-import com.github.maxopoly.Kira.group.GroupChatManager;
+import com.github.maxopoly.Kira.relay.GroupChat;
+import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.user.KiraUser;
 import com.github.maxopoly.Kira.user.UserManager;
 
@@ -32,7 +32,7 @@ public class SyncGroupChatMembers extends RabbitMessage {
 					"That group does not have a relay setup");
 			return;
 		}
-		if (KiraMain.getInstance().getGuild().getIdLong() != chat.getDiscordChannelId()) {
+		if (KiraMain.getInstance().getGuild().getIdLong() != chat.getGuildId()) {
 			KiraMain.getInstance().getMCRabbitGateway().sendMessage(sender,
 					"This relay is not managed by Kira, it can not be synced");
 			return;

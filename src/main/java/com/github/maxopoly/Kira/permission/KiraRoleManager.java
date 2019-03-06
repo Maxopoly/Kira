@@ -84,7 +84,7 @@ public class KiraRoleManager {
 	public void giveRoleToUser(KiraUser user, KiraRole role) {
 		addRole(user.getID(), role, true);
 	}
-	
+
 	public void takeRoleFromUser(KiraUser user, KiraRole role) {
 		Set<KiraRole> existingRoles = userRoles.get(user.getID());
 		if (existingRoles == null) {
@@ -141,7 +141,7 @@ public class KiraRoleManager {
 		roleById.put(role.getID(), role);
 		roleByName.put(role.getName(), role);
 	}
-	
+
 	public void deleteRole(KiraRole role, boolean writeToDb) {
 		roleById.remove(role.getID());
 		roleByName.remove(role.getName());
@@ -160,7 +160,7 @@ public class KiraRoleManager {
 	public KiraPermission getPermission(int id) {
 		return permissionsById.get(id);
 	}
-	
+
 	public KiraPermission getPermission(String name) {
 		return permissionsByName.get(name);
 	}

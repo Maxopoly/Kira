@@ -25,7 +25,7 @@ public abstract class TextInputHandler <T extends TextInput> {
 
 	protected abstract String getHandlerName();
 
-	protected abstract void handleInput(TextInput input, InputSupplier supplier, String arguments);
+	protected abstract void handleInput(T input, InputSupplier supplier, String arguments);
 
 	protected abstract void handleError(InputSupplier supplier, String input);
 
@@ -36,6 +36,10 @@ public abstract class TextInputHandler <T extends TextInput> {
 				commands.put(alt.toLowerCase(), command);
 			}
 		}
+	}
+
+	public T getHandler(String key) {
+		return commands.get(key.toLowerCase());
 	}
 
 	public void unregisterCommand(T command) {
@@ -52,7 +56,7 @@ public abstract class TextInputHandler <T extends TextInput> {
 			}
 		}
 	}
-	
+
 	public Collection<T> getAllInputs() {
 		//new set to remove duplicates because of aliases
 		return new HashSet<>(commands.values());
@@ -74,13 +78,12 @@ public abstract class TextInputHandler <T extends TextInput> {
 			command = input.substring(0, spaceIndex);
 		}
 		command = command.trim().toLowerCase();
-		TextInput comm = commands.get(command);
+		T comm = commands.get(command);
 		if (comm == null) {
 			handleError(supplier, input);
 			return;
 		}
 		handleInput(comm, supplier, arguments);
-
 	}
 
 }

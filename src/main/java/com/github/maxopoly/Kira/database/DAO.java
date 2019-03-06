@@ -18,10 +18,12 @@ import java.util.UUID;
 import org.apache.logging.log4j.Logger;
 
 import com.github.maxopoly.Kira.KiraMain;
-import com.github.maxopoly.Kira.group.GroupChat;
 import com.github.maxopoly.Kira.permission.KiraPermission;
 import com.github.maxopoly.Kira.permission.KiraRole;
 import com.github.maxopoly.Kira.permission.KiraRoleManager;
+import com.github.maxopoly.Kira.relay.GroupChat;
+import com.github.maxopoly.Kira.relay.RelayConfig;
+import com.github.maxopoly.Kira.relay.RelayConfigManager;
 import com.github.maxopoly.Kira.user.KiraUser;
 import com.github.maxopoly.Kira.user.UserManager;
 
@@ -52,10 +54,19 @@ public class DAO {
 					+ "(id serial primary key, name varchar(255) not null unique," + timestampField + ");")) {
 				prep.execute();
 			}
+			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS relay_configs "
+					+ "(id serial primary key, name varchar(255) not null unique, relayFromDiscord boolean not null, "
+					+ "relayToDiscord boolean not null, showSnitches boolean not null, deleteMessages boolean not null, chatFormat text not null,"
+					+ "snitchFormat text not null, loginAction text not null, logoutAction text not null,"
+					+ "enterAction text not null, hereFormat text not null, everyoneFormat text not null, "
+					+ "canPing boolean not null, timeFormat text not null, owner_id int references users (id) on delete cascade," + timestampField
+					+ ");")) {
+				prep.execute();
+			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS group_chats "
 					+ "(id serial primary key, channel_id bigint, guild_id bigint, name varchar(255) not null unique, "
 					+ "role_id int references roles(id) on delete cascade, creator_id int references users(id) "
-					+ "on delete cascade," + timestampField + ");")) {
+					+ "on delete cascade, config_id int references relay_configs(id)," + timestampField + ");")) {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS roles "
@@ -80,17 +91,17 @@ public class DAO {
 		}
 		return true;
 	}
-	
-	public int createGroupChat(long guildID, long channelID, String name, KiraRole tiedPerm, int creatorID) {
+
+	public int createGroupChat(long guildID, long channelID, String name, KiraRole tiedPerm, int creatorID, RelayConfig config) {
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn.prepareStatement("insert into group_chats (channel_id, guild_id, "
-						+ "role_id, name, creator_id) values (?,?,?,?,?);",
-						Statement.RETURN_GENERATED_KEYS)) {
+						+ "role_id, name, creator_id, config_id) values (?,?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS)) {
 			prep.setLong(1, channelID);
 			prep.setLong(2, guildID);
 			prep.setInt(3, tiedPerm.getID());
 			prep.setString(4, name);
 			prep.setInt(5, creatorID);
+			prep.setInt(6, config.getID());
 			prep.execute();
 			try (ResultSet rs = prep.getGeneratedKeys()) {
 				if (!rs.next()) {
@@ -104,16 +115,17 @@ public class DAO {
 			return -1;
 		}
 	}
-	
-	public Set<Long> getGroupChatChannelIdByCreator(KiraUser user) {
-		Set<Long> result = new TreeSet<>();
+
+	public Set<String> getGroupChatChannelIdByCreator(KiraUser user) {
+		Set<String> result = new TreeSet<>();
 		try (Connection conn = db.getConnection();
-				PreparedStatement prep = conn.prepareStatement("select channel_id from group_chats where creator_id = ?;")) {
+				PreparedStatement prep = conn
+						.prepareStatement("select name from group_chats where creator_id = ?;")) {
 			prep.setInt(1, user.getID());
 			try (ResultSet rs = prep.executeQuery()) {
 				while (rs.next()) {
-					long id = rs.getLong(1);
-					result.add(id);
+					String name = rs.getString(1);
+					result.add(name);
 				}
 			}
 		} catch (SQLException e) {
@@ -122,12 +134,24 @@ public class DAO {
 		}
 		return result;
 	}
-	
+
 	public void deleteGroupChat(GroupChat chat) {
-		//everything else will cascade
+		// everything else will cascade
 		deleteRole(chat.getTiedRole());
 	}
-	
+
+	public void setRelayConfigForChat(GroupChat chat, RelayConfig relay) {
+		try (Connection conn = db.getConnection();
+				PreparedStatement prep = conn.prepareStatement(
+						"update group_chats set config_id = ? where id = ?;")) {
+			prep.setInt(1, relay.getID());
+			prep.setInt(2, chat.getID());
+			prep.executeUpdate();
+		} catch (SQLException e) {
+			logger.error("Failed to update relay config entry", e);
+		}
+	}
+
 	public Set<Integer> getGroupChatMembers(GroupChat groupchat) {
 		Set<Integer> result = new TreeSet<>();
 		try (Connection conn = db.getConnection();
@@ -146,13 +170,117 @@ public class DAO {
 		return result;
 	}
 
-	public Collection<GroupChat> loadGroupChats() {
+	public RelayConfig createRelayConfig(String name, boolean relayFromDiscord, boolean relayToDiscord, boolean showSnitches,
+			boolean deleteMessages, String chatFormat, String snitchFormat, String loginAction, String logoutAction,
+			String enterAction, String hereFormat, String everyoneFormat, boolean canPing, String timeFormat, KiraUser creator) {
+		int creatorID = creator == null ? 1 : creator.getID();
+		try (Connection conn = db.getConnection();
+				PreparedStatement prep = conn.prepareStatement(
+						"insert into relay_configs (relayFromDiscord, relayToDiscord, showSnitches,"
+								+ "deleteMessages, chatFormat, snitchFormat, loginAction, logoutAction, enterAction, hereFormat, everyoneFormat,"
+								+ "canPing, owner_id, name) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+						Statement.RETURN_GENERATED_KEYS)) {
+			prep.setBoolean(1, relayFromDiscord);
+			prep.setBoolean(2, relayToDiscord);
+			prep.setBoolean(3, showSnitches);
+			prep.setBoolean(4, deleteMessages);
+			prep.setString(5, chatFormat);
+			prep.setString(6, snitchFormat);
+			prep.setString(7, loginAction);
+			prep.setString(8, logoutAction);
+			prep.setString(9, enterAction);
+			prep.setString(10, hereFormat);
+			prep.setString(11, everyoneFormat);
+			prep.setBoolean(12, canPing);
+			prep.setInt(13, creatorID);
+			prep.setString(14, name);
+			prep.execute();
+			try (ResultSet rs = prep.getGeneratedKeys()) {
+				if (!rs.next()) {
+					logger.error("No key created for relay config?");
+					return null;
+				}
+				int id = rs.getInt(1);
+				return new RelayConfig(id, name, relayFromDiscord, relayToDiscord, showSnitches, deleteMessages, snitchFormat,
+						loginAction, logoutAction, enterAction, chatFormat, hereFormat, everyoneFormat, canPing, timeFormat, 
+						creatorID);
+			}
+		} catch (SQLException e) {
+			logger.error("Failed to create relay config", e);
+			return null;
+		}
+	}
+
+	public Collection<RelayConfig> loadRelayConfigs() {
+		List<RelayConfig> result = new LinkedList<>();
+		try (Connection conn = db.getConnection();
+				PreparedStatement prep = conn
+						.prepareStatement("select relayFromDiscord, relayToDiscord, showSnitches, deleteMessages, "
+								+ "chatFormat, snitchFormat, loginAction, logoutAction, enterAction, hereFormat, everyoneFormat,"
+								+ "canPing, owner_id, id, name, timeFormat from relay_configs;");
+				ResultSet rs = prep.executeQuery()) {
+			while (rs.next()) {
+				boolean relayFromDiscord = rs.getBoolean(1);
+				boolean relayToDiscord = rs.getBoolean(2);
+				boolean showSnitches = rs.getBoolean(3);
+				boolean deleteMessages = rs.getBoolean(4);
+				String chatFormat = rs.getString(5);
+				String snitchFormat = rs.getString(6);
+				String loginAction = rs.getString(7);
+				String logoutAction = rs.getString(8);
+				String enterAction = rs.getString(9);
+				String hereFormat = rs.getString(10);
+				String everyoneFormat = rs.getString(11);
+				boolean canPing = rs.getBoolean(12);
+				int ownerID = rs.getInt(13);
+				int id = rs.getInt(14);
+				String name = rs.getString(15);
+				String timeFormat = rs.getString(16);
+				RelayConfig config = new RelayConfig(id, name, relayFromDiscord, relayToDiscord, showSnitches,
+						deleteMessages, snitchFormat, loginAction, logoutAction, enterAction, chatFormat,
+						hereFormat, everyoneFormat, canPing, timeFormat, ownerID);
+				result.add(config);
+			}
+		} catch (SQLException e) {
+			logger.error("Failed to retrieve relay configs", e);
+			return null;
+		}
+		return result;
+	}
+
+	public void updateRelayConfig(RelayConfig config) {
+		try (Connection conn = db.getConnection();
+				PreparedStatement prep = conn.prepareStatement(
+						"update relay_configs set relayFromDiscord = ?, relayToDiscord = ?, showSnitches = ?, deleteMessages = ?, chatFormat = ?,"
+						+ "snitchFormat = ?, loginAction = ?, logoutAction = ?, enterAction = ?, hereFormat = ?, everyoneFormat = ?,"
+						+ "canPing = ?, timeFormat = ? where id = ?;")) {
+			prep.setBoolean(1, config.shouldRelayFromDiscord());
+			prep.setBoolean(2, config.shouldRelayToDiscord());
+			prep.setBoolean(3, config.shouldShowSnitches());
+			prep.setBoolean(4, config.shouldDeleteDiscordMessage());
+			prep.setString(5, config.getChatFormat());
+			prep.setString(6, config.getSnitchFormat());
+			prep.setString(7, config.getSnitchLoginAction());
+			prep.setString(8, config.getSnitchLogoutAction());
+			prep.setString(9, config.getSnitchEnterString());
+			prep.setString(10, config.getHereFormat());
+			prep.setString(11, config.getEveryoneFormat());
+			prep.setBoolean(12, config.shouldPing());
+			prep.setString(13, config.getTimeFormat());
+			prep.setInt(14, config.getID());
+			prep.executeUpdate();
+		} catch (SQLException e) {
+			logger.error("Failed to update relay", e);
+		}
+	}
+
+	public Collection<GroupChat> loadGroupChats(RelayConfigManager relayConfigs) {
 		List<GroupChat> result = new LinkedList<>();
 		KiraRoleManager roleMan = KiraMain.getInstance().getKiraRoleManager();
 		UserManager userMan = KiraMain.getInstance().getUserManager();
 		try (Connection conn = db.getConnection();
-				PreparedStatement prep = conn
-						.prepareStatement("select id, channel_id, guild_id, name, role_id, creator_id from group_chats;");
+				PreparedStatement prep = conn.prepareStatement(
+						"select id, channel_id, guild_id, name, role_id, creator_id, config_id from group_chats;");
 				ResultSet rs = prep.executeQuery()) {
 			while (rs.next()) {
 				int id = rs.getInt(1);
@@ -166,7 +294,8 @@ public class DAO {
 					logger.warn("Could not load group chat " + name + ", no role found");
 					continue;
 				}
-				GroupChat group = new GroupChat(id, name, channelID, guildID, role, userMan.getUser(creatorID));
+				int configId = rs.getInt(7);
+				GroupChat group = new GroupChat(id, name, channelID, guildID, role, userMan.getUser(creatorID), relayConfigs.getById(configId));
 				result.add(group);
 			}
 		} catch (SQLException e) {
@@ -193,6 +322,10 @@ public class DAO {
 		} catch (SQLException e) {
 			logger.error("Failed to retrieve users", e);
 			return null;
+		}
+		if (result.isEmpty()) {
+			int first = createUser(-1L);
+			result.add(new KiraUser(first, null, -1L, null, null));
 		}
 		return result;
 	}
@@ -338,11 +471,10 @@ public class DAO {
 			logger.error("Failed to insert role permission", e);
 		}
 	}
-	
+
 	public void deleteRole(KiraRole role) {
 		try (Connection conn = db.getConnection();
-				PreparedStatement prep = conn.prepareStatement(
-						"delete from roles where id = ?;")) {
+				PreparedStatement prep = conn.prepareStatement("delete from roles where id = ?;")) {
 			prep.setInt(1, role.getID());
 			prep.execute();
 		} catch (SQLException e) {

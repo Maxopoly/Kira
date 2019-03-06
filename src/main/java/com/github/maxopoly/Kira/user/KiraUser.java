@@ -51,6 +51,13 @@ public class KiraUser {
 		this.name = name;
 	}
 
+	public String toNiceString() {
+		if (hasIngameAccount()) {
+			return name;
+		}
+		return "id:" + id;
+	}
+
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append("{id: ");

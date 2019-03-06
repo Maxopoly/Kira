@@ -9,20 +9,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 public class QuoteHandler {
-	
+
 	public Queue<Quote> quotes;
-	
+
 	public QuoteHandler() {
 		quotes = new LinkedList<>();
 	}
-	
+
 	public synchronized Quote getQuote() {
 		if (quotes.isEmpty()) {
 			refillQuotes();
 		}
 		return quotes.poll();
 	}
-	
+
 	private void refillQuotes() {
 		Document doc;
 		try {

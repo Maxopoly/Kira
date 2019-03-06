@@ -4,13 +4,13 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.command.InputSupplier;
-import com.github.maxopoly.Kira.command.TextInput;
 import com.github.maxopoly.Kira.command.TextInputHandler;
 import com.github.maxopoly.Kira.rabbit.input.AddAuthMessage;
 import com.github.maxopoly.Kira.rabbit.input.CreateGroupChatMessage;
 import com.github.maxopoly.Kira.rabbit.input.DeleteGroupChatMessage;
 import com.github.maxopoly.Kira.rabbit.input.RabbitMessage;
 import com.github.maxopoly.Kira.rabbit.input.ReplyToUserMessage;
+import com.github.maxopoly.Kira.rabbit.input.RequestSessionReplyMessage;
 import com.github.maxopoly.Kira.rabbit.input.SendGroupChatMessage;
 import com.github.maxopoly.Kira.rabbit.input.SnitchHitMessage;
 import com.github.maxopoly.Kira.rabbit.input.SyncGroupChatMembers;
@@ -30,6 +30,7 @@ public class RabbitInputProcessor extends TextInputHandler<RabbitMessage> {
 		registerCommand(new DeleteGroupChatMessage());
 		registerCommand(new ReplyToUserMessage());
 		registerCommand(new SnitchHitMessage());
+		registerCommand(new RequestSessionReplyMessage());
 	}
 
 	@Override
@@ -38,8 +39,7 @@ public class RabbitInputProcessor extends TextInputHandler<RabbitMessage> {
 	}
 
 	@Override
-	protected void handleInput(TextInput input, InputSupplier supplier, String arguments) {
-		RabbitMessage msg = (RabbitMessage) input;
+	protected void handleInput(RabbitMessage msg, InputSupplier supplier, String arguments) {
 		JSONObject json = new JSONObject(arguments);
 		msg.handle(json);
 	}

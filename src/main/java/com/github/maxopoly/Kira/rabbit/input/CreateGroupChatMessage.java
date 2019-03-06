@@ -8,8 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.KiraMain;
-import com.github.maxopoly.Kira.group.GroupChat;
-import com.github.maxopoly.Kira.group.GroupChatManager;
+import com.github.maxopoly.Kira.relay.GroupChat;
+import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.user.KiraUser;
 import com.github.maxopoly.Kira.user.UserManager;
 

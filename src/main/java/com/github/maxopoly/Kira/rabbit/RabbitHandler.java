@@ -6,6 +6,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
+import com.github.maxopoly.Kira.KiraMain;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -49,6 +50,7 @@ public class RabbitHandler {
 
 			@Override
 			public void run() {
+				KiraMain.getInstance().getLogger().info("Beginning to listen for rabbit input...");
 				DeliverCallback deliverCallback = (consumerTag, delivery) -> {
 					try {
 						String message = new String(delivery.getBody(), "UTF-8");
@@ -62,7 +64,7 @@ public class RabbitHandler {
 				try {
 					incomingChannel.basicConsume(incomingQueue, true, deliverCallback, consumerTag -> {
 					});
-				} catch (IOException e) {
+				} catch (Exception e) {
 					logger.error("Error in rabbit listener", e);
 				}
 			}
@@ -74,7 +76,7 @@ public class RabbitHandler {
 			incomingChannel.close();
 			outgoingChannel.close();
 			conn.close();
-		} catch (IOException | TimeoutException e) {
+		} catch (Exception e) {
 			logger.error("Failed to close rabbit connection", e);
 		}
 	}
@@ -83,7 +85,7 @@ public class RabbitHandler {
 		try {
 			outgoingChannel.basicPublish("", outgoingQueue, null, msg.getBytes("UTF-8"));
 			return true;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.error("Failed to send rabbit message", e);
 			return false;
 		}

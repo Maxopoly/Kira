@@ -1,7 +1,4 @@
-package com.github.maxopoly.Kira.group;
-
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+package com.github.maxopoly.Kira.relay;
 
 import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.permission.KiraRole;
@@ -15,7 +12,6 @@ public class GroupChat {
 
 	private static final float internalWeight = 1.0f;
 	private static final float externalWeight = 0.25f;
-	private static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 	private final int id;
 	private final long channelId;
@@ -23,14 +19,17 @@ public class GroupChat {
 	private final long guildId;
 	private final KiraRole role;
 	private final KiraUser creator;
+	private RelayConfig config;
 
-	public GroupChat(int id, String name, long channelId, long guildId, KiraRole role, KiraUser creator) {
+	public GroupChat(int id, String name, long channelId, long guildId, KiraRole role, KiraUser creator, RelayConfig config) {
 		this.id = id;
+		this.config = config;
 		this.name = name;
 		this.channelId = channelId;
 		this.guildId = guildId;
 		this.role = role;
 		this.creator = creator;
+		this.config = config;
 	}
 
 	public long getDiscordChannelId() {
@@ -57,6 +56,14 @@ public class GroupChat {
 		return creator;
 	}
 
+	public RelayConfig getConfig() {
+		return config;
+	}
+
+	public void setConfig(RelayConfig config) {
+		this.config = config;
+	}
+
 	public boolean sendMessage(String author, String msg) {
 		JDA jda = KiraMain.getInstance().getJDA();
 		Guild guild = jda.getGuildById(guildId);
@@ -67,12 +74,12 @@ public class GroupChat {
 		if (channel == null) {
 			return false;
 		}
-		String time = timeFormat.format(ZonedDateTime.now());
-		channel.sendMessage("`[" + time + "]` `[" + name + "]` [**" + author + "**]  " + msg).queue();
+		String discordMessage = config.formatChatMessage(msg, author, name);
+		channel.sendMessage(discordMessage).queue();
 		return true;
 	}
 
-	public boolean sendSnitchHit(String playerName, String snitchname, int x, int y, int z) {
+	public boolean sendSnitchHit(String playerName, String snitchname, int x, int y, int z, SnitchHitType type) {
 		JDA jda = KiraMain.getInstance().getJDA();
 		Guild guild = jda.getGuildById(guildId);
 		if (guild == null) {
@@ -82,12 +89,11 @@ public class GroupChat {
 		if (channel == null) {
 			return false;
 		}
-		String time = timeFormat.format(ZonedDateTime.now());
-		channel.sendMessage("`[" + time + "]` `[" + name + "] ` **" + playerName + "** is at " + snitchname + "(" + x
-				+ ", " + y + ", " + z + ")").queue();
+		String msg = config.formatSnitchOutput(x, y, z, snitchname, playerName, type, name);
+		channel.sendMessage(msg).queue();
 		return true;
 	}
-	
+
 	public float getWeight() {
 		if (guildId == KiraMain.getInstance().getGuild().getIdLong()) {
 			return internalWeight;

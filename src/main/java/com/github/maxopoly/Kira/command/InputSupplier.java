@@ -11,7 +11,7 @@ public interface InputSupplier {
 	public void reportBack(String msg);
 
 	public boolean hasPermission(String perm);
-	
+
 	public long getChannelID();
 
 }

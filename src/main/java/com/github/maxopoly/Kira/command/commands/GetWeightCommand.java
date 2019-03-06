@@ -6,7 +6,7 @@ import java.util.Set;
 import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.Command;
 import com.github.maxopoly.Kira.command.InputSupplier;
-import com.github.maxopoly.Kira.group.GroupChat;
+import com.github.maxopoly.Kira.relay.GroupChat;
 import com.github.maxopoly.Kira.user.KiraUser;
 
 public class GetWeightCommand extends Command {
@@ -15,20 +15,18 @@ public class GetWeightCommand extends Command {
 
 	public GetWeightCommand() {
 		super("getchannels", 0, 0, "getweight");
+		setRequireUser();
 	}
 
 	@Override
 	public String execute(InputSupplier supplier, String[] args) {
 		StringBuilder reply = new StringBuilder();
 		KiraUser user = supplier.getUser();
-		if (user == null) {
-			return "You are not a valid user";
-		}
-		Set<Long> ownedChats = KiraMain.getInstance().getDAO().getGroupChatChannelIdByCreator(user);
+		Set<String> ownedChats = KiraMain.getInstance().getDAO().getGroupChatChannelIdByCreator(user);
 		float totalWeight = 0.0f;
 		int totalCount = 0;
-		for (long l : ownedChats) {
-			GroupChat chat = KiraMain.getInstance().getGroupChatManager().getChatByChannelID(l);
+		for (String name : ownedChats) {
+			GroupChat chat = KiraMain.getInstance().getGroupChatManager().getGroupChat(name);
 			if (chat == null) {
 				continue;
 			}

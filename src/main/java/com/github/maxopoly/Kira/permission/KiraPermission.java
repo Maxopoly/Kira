@@ -23,11 +23,11 @@ public class KiraPermission {
 	public int getID() {
 		return id;
 	}
-	
+
 	public int hashCode() {
 		return name.hashCode();
 	}
-	
+
 	public boolean equals(Object o) {
 		if (!(o instanceof KiraPermission)) {
 			return false;

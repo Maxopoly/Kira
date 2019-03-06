@@ -22,7 +22,7 @@ public class GiveDefaultPermission extends Command {
 				roleMan.giveRoleToUser(u, defaultRole);
 				sb.append("Giving default role to " + u.toString() + "\n");
 			}
-			
+
 		});
 		KiraRole authRole = roleMan.getRole("auth");
 		KiraMain.getInstance().getUserManager().getAllUsers().stream().filter(u -> u.hasIngameAccount()).forEach(u ->{
@@ -30,7 +30,7 @@ public class GiveDefaultPermission extends Command {
 				roleMan.giveRoleToUser(u, authRole);
 				sb.append("Giving auth role to " + u.toString() + "\n");
 			}
-			
+
 		});
 		return sb.toString();
 	}

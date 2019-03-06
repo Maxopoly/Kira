@@ -12,11 +12,13 @@ import com.github.maxopoly.Kira.command.CommandHandler;
 import com.github.maxopoly.Kira.command.CommandLineInputSupplier;
 import com.github.maxopoly.Kira.database.DAO;
 import com.github.maxopoly.Kira.database.DBConnection;
-import com.github.maxopoly.Kira.group.GroupChatManager;
 import com.github.maxopoly.Kira.listener.DiscordMessageListener;
 import com.github.maxopoly.Kira.permission.KiraRoleManager;
 import com.github.maxopoly.Kira.rabbit.MinecraftRabbitGateway;
 import com.github.maxopoly.Kira.rabbit.RabbitHandler;
+import com.github.maxopoly.Kira.rabbit.session.RequestSessionManager;
+import com.github.maxopoly.Kira.relay.GroupChatManager;
+import com.github.maxopoly.Kira.relay.RelayConfigManager;
 import com.github.maxopoly.Kira.user.AuthManager;
 import com.github.maxopoly.Kira.user.DiscordRoleManager;
 import com.github.maxopoly.Kira.user.KiraUser;
@@ -46,6 +48,8 @@ public class KiraMain {
 	private AuthManager authManager;
 	private KiraRoleManager kiraRoleManager;
 	private GroupChatManager groupChatManager;
+	private RelayConfigManager relayConfigManager;
+	private RequestSessionManager requestSessionManager;
 
 	public static KiraMain getInstance() {
 		return instance;
@@ -80,6 +84,7 @@ public class KiraMain {
 		if (!instance.setupListeners()) {
 			return;
 		}
+		instance.rabbit.beginAsyncListen();
 		instance.parseInput();
 	}
 
@@ -147,7 +152,7 @@ public class KiraMain {
 				new DiscordMessageListener(commandHandler, logger, userManager, jda.getSelfUser().getIdLong()));
 		return true;
 	}
-	
+
 	private boolean loadPermission() {
 		kiraRoleManager = dao.loadAllRoles();
 		if (kiraRoleManager == null) {
@@ -155,12 +160,13 @@ public class KiraMain {
 		}
 		return true;
 	}
-	
+
 	private boolean loadGroupChats() {
 		if (configManager.getRelaySectionID() == -1) {
 			return false;
 		}
-		groupChatManager = new GroupChatManager(dao, logger, configManager.getRelaySectionID());
+		relayConfigManager = new RelayConfigManager(dao);
+		groupChatManager = new GroupChatManager(dao, logger, configManager.getRelaySectionID(), relayConfigManager);
 		return true;
 	}
 
@@ -175,8 +181,8 @@ public class KiraMain {
 		if (!rabbit.setup()) {
 			return false;
 		}
-		rabbit.beginAsyncListen();
 		mcRabbit = new MinecraftRabbitGateway(rabbit);
+		requestSessionManager = new RequestSessionManager(rabbit, logger);
 		return true;
 	}
 
@@ -243,7 +249,7 @@ public class KiraMain {
 	public DiscordRoleManager getRoleManager() {
 		return roleManager;
 	}
-	
+
 	public KiraRoleManager getKiraRoleManager() {
 		return kiraRoleManager;
 	}
@@ -259,10 +265,19 @@ public class KiraMain {
 	public MinecraftRabbitGateway getMCRabbitGateway() {
 		return mcRabbit;
 	}
-	
+
 	public GroupChatManager getGroupChatManager() {
 		return groupChatManager;
 	}
+
+	public RequestSessionManager getRequestSessionManager() {
+		return requestSessionManager;
+	}
+
+	public RelayConfigManager getRelayConfigManager() {
+		return relayConfigManager;
+	}
+
 
 	public JDA getJDA() {
 		return jda;

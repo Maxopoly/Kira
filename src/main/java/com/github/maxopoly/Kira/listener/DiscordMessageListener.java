@@ -1,5 +1,7 @@
 package com.github.maxopoly.Kira.listener;
 
+import java.util.Set;
+
 import org.apache.logging.log4j.Logger;
 
 import com.github.maxopoly.Kira.KiraMain;
@@ -7,8 +9,8 @@ import com.github.maxopoly.Kira.command.CommandHandler;
 import com.github.maxopoly.Kira.command.DiscordCommandChannelSupplier;
 import com.github.maxopoly.Kira.command.DiscordCommandPMSupplier;
 import com.github.maxopoly.Kira.command.InputSupplier;
-import com.github.maxopoly.Kira.group.GroupChat;
-import com.github.maxopoly.Kira.group.GroupChatManager;
+import com.github.maxopoly.Kira.relay.GroupChat;
+import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.user.KiraUser;
 import com.github.maxopoly.Kira.user.UserManager;
 
@@ -53,14 +55,24 @@ public class DiscordMessageListener extends ListenerAdapter {
 				return;
 			}
 			GroupChatManager chatMan = KiraMain.getInstance().getGroupChatManager();
-			GroupChat chat = chatMan.getChatByChannelID(event.getChannel().getIdLong());
-			if (chat != null) {
+			Set<GroupChat> chats = chatMan.getChatByChannelID(event.getChannel().getIdLong());
+			if (!chats.isEmpty() && user.hasIngameAccount()) {
 				String message = event.getMessage().getContentDisplay();
 				message = sanitize(message);
+				boolean delete = false;
 				if (!message.equals("")) {
-					KiraMain.getInstance().getMCRabbitGateway().sendGroupChatMessage(user, chat, message);
+					for (GroupChat chat : chats) {
+						if (chat.getConfig().shouldRelayFromDiscord()) {
+							KiraMain.getInstance().getMCRabbitGateway().sendGroupChatMessage(user, chat, message);
+						}
+						if (chat.getConfig().shouldDeleteDiscordMessage()) {
+							delete = true;
+						}
+					}
 				}
-				event.getMessage().delete().queue();
+				if (delete) {
+					event.getMessage().delete().queue();
+				}
 			}
 		}
 	}
