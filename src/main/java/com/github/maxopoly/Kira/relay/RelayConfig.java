@@ -15,19 +15,25 @@ public class RelayConfig {
 	private boolean deleteDiscordMessages;
 	private String chatFormat;
 	private String snitchHitFormat;
-	private String loginString;
-	private String logoutString;
-	private String enterString;
+	private String snitchLoginString;
+	private String snitchLogoutString;
+	private String snitchEnterString;
 	private String hereFormat;
 	private String everyoneFormat;
 	private String timeFormat;
 	private DateTimeFormatter timeFormatter;
 	private boolean shouldPing;
+	private String skynetLoginString;
+	private String skynetLogoutString;
+	private String skynetFormat;
+	private boolean skynetEnabled;
 	private int ownerID;
 
-	public RelayConfig( int id, String name, boolean relayFromDiscord, boolean relayToDiscord, boolean showSnitches,
-			boolean deleteDiscordMessages, String snitchHitFormat, String loginString, String logoutString,String enterString, 
-			String chatFormat, String hereFormat, String everyoneFormat, boolean shouldPing, String timeFormat, int ownerID) {
+	public RelayConfig(int id, String name, boolean relayFromDiscord, boolean relayToDiscord, boolean showSnitches,
+			boolean deleteDiscordMessages, String snitchHitFormat, String loginString, String logoutString,
+			String enterString, String chatFormat, String hereFormat, String everyoneFormat, boolean shouldPing,
+			String timeFormat, String skynetLoginString, String skynetLogoutString, String skynetFormat,
+			boolean skynetEnabled, int ownerID) {
 		this.relayFromDiscord = relayFromDiscord;
 		this.id = id;
 		this.name = name;
@@ -35,10 +41,10 @@ public class RelayConfig {
 		this.showSnitches = showSnitches;
 		this.deleteDiscordMessages = deleteDiscordMessages;
 		this.snitchHitFormat = snitchHitFormat;
-		this.loginString = loginString;
+		this.snitchLoginString = loginString;
 		this.ownerID = ownerID;
-		this.logoutString = logoutString;
-		this.enterString = enterString;
+		this.snitchLogoutString = logoutString;
+		this.snitchEnterString = enterString;
 		this.hereFormat = hereFormat;
 		this.everyoneFormat = everyoneFormat;
 		this.shouldPing = shouldPing;
@@ -46,6 +52,10 @@ public class RelayConfig {
 		this.ownerID = ownerID;
 		this.timeFormat = timeFormat;
 		this.timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
+		this.skynetLoginString = skynetLoginString;
+		this.skynetLogoutString= skynetLogoutString;
+		this.skynetFormat = skynetFormat;
+		this.skynetEnabled = skynetEnabled;
 	}
 
 	public int getID() {
@@ -66,29 +76,29 @@ public class RelayConfig {
 	}
 
 	public String getSnitchLoginAction() {
-		return loginString;
+		return snitchLoginString;
 	}
 
 	public void updateLoginAction(String loginString) {
-		this.loginString = loginString;
+		this.snitchLoginString = loginString;
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
 
 	public String getSnitchLogoutAction() {
-		return logoutString;
+		return snitchLogoutString;
 	}
 
 	public void updateLogoutAction(String logoutString) {
-		this.logoutString = logoutString;
+		this.snitchLogoutString = logoutString;
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
 
 	public String getSnitchEnterString() {
-		return enterString;
+		return snitchEnterString;
 	}
 
 	public void updateEnterAction(String enterString) {
-		this.enterString = enterString;
+		this.snitchEnterString = enterString;
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
 
@@ -163,6 +173,42 @@ public class RelayConfig {
 		this.deleteDiscordMessages = deleteDiscordMessages;
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
+	
+	public String getSkynetLoginString() {
+		return skynetLoginString;
+	}
+	
+	public String getSkynetLogoutString() {
+		return skynetLogoutString;
+	}
+	
+	public String getSkynetFormat() {
+		return skynetFormat;
+	}
+	
+	public boolean isSkynetEnabled() {
+		return skynetEnabled;
+	}
+	
+	public void updateSkynetLoginString(String skynetLoginString) {
+		this.skynetLoginString = skynetLoginString;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+	
+	public void updateSkynetLogoutString(String skynetLogoutString) {
+		this.skynetLogoutString = skynetLogoutString;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+	
+	public void updateSkynetFormat(String skynetFormat) {
+		this.skynetFormat = skynetFormat;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+	
+	public void updateSkynetEnabled(boolean skynetEnabled) {
+		this.skynetEnabled = skynetEnabled;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
 
 	public String getTimeFormat() {
 		return timeFormat;
@@ -177,13 +223,32 @@ public class RelayConfig {
 	public int getOwnerID() {
 		return ownerID;
 	}
+	
+	public String formatSkynetMessage(String player, SkynetType type) {
+		String output = skynetFormat;
+		output = output.replace("%PLAYER%", player);
+		output = output.replace("%TIME%", getFormattedTime());
+		String action;
+		switch (type) {
+		case LOGIN:
+			action = skynetLoginString;
+			break;
+		case LOGOUT:
+			action = skynetLogoutString;
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid type :" + type);
+		}
+		output = output.replace("%ACTION%", action);
+		return output;
+	}
 
 	public String formatChatMessage(String msg, String sender, String groupName) {
 		String output = chatFormat;
 		output = output.replace("%PLAYER%", sender);
 		output = output.replace("%MESSAGE%", msg);
 		output = output.replace("%GROUP%", groupName);
-		output = output.replace("%TIME%", timeFormatter.format(ZonedDateTime.now()));
+		output = output.replace("%TIME%", getFormattedTime());
 		return output;
 	}
 
@@ -197,13 +262,13 @@ public class RelayConfig {
 		String action;
 		switch (type) {
 		case ENTER:
-			action = enterString;
+			action = snitchEnterString;
 			break;
 		case LOGIN:
-			action = loginString;
+			action = snitchLoginString;
 			break;
 		case LOGOUT:
-			action = logoutString;
+			action = snitchLogoutString;
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid type :" + type);

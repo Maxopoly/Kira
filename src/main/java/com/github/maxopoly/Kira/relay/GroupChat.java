@@ -93,6 +93,24 @@ public class GroupChat {
 		channel.sendMessage(msg).queue();
 		return true;
 	}
+	
+	public boolean sendSkynet(String player, SkynetType type) {
+		if (!config.isSkynetEnabled()) {
+			return true;
+		}
+		JDA jda = KiraMain.getInstance().getJDA();
+		Guild guild = jda.getGuildById(guildId);
+		if (guild == null) {
+			return false;
+		}
+		TextChannel channel = guild.getTextChannelById(channelId);
+		if (channel == null) {
+			return false;
+		}
+		String msg = config.formatSkynetMessage(player, type);
+		channel.sendMessage(msg).queue();
+		return true;
+	}
 
 	public float getWeight() {
 		if (guildId == KiraMain.getInstance().getGuild().getIdLong()) {

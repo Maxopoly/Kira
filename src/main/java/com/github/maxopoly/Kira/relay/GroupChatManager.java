@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.logging.log4j.Logger;
 
@@ -36,7 +39,7 @@ public class GroupChatManager {
 	private RelayConfigManager relayConfigManager;
 
 	public GroupChatManager(DAO dao, Logger logger, long sectionID, RelayConfigManager relayConfigManager) {
-		groupChatByName = new HashMap<String, GroupChat>();
+		groupChatByName = new ConcurrentHashMap<String, GroupChat>();
 		chatsByChannelId = new TreeMap<>();
 		ownedChatsByUserId = new TreeMap<>();
 		this.dao = dao;
@@ -182,6 +185,12 @@ public class GroupChatManager {
 				PermissionOverride perm = channel.createPermissionOverride(member).complete();
 				perm.getManager().grant(379968L).queue();
 			}
+		}
+	}
+	
+	public void applyToAll(Consumer<GroupChat> function) {
+		for(GroupChat chat : groupChatByName.values()) {
+			function.accept(chat);
 		}
 	}
 

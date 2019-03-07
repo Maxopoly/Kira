@@ -28,7 +28,7 @@ public class SyncUsernameCommand extends Command {
 			if (member == null) {
 				return; // not in the discord
 			}
-			if (member.getNickname().equals(user.getName())) {
+			if (member.getEffectiveName().equals(user.getName())) {
 				return; //already correct
 			}
 			if (!self.canInteract(member)) {

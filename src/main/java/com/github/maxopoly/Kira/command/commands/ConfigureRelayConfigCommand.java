@@ -9,6 +9,7 @@ import com.github.maxopoly.Kira.command.Command;
 import com.github.maxopoly.Kira.command.InputSupplier;
 import com.github.maxopoly.Kira.relay.RelayConfig;
 import com.github.maxopoly.Kira.relay.RelayConfigManager;
+import com.github.maxopoly.Kira.relay.SkynetType;
 import com.github.maxopoly.Kira.relay.SnitchHitType;
 import com.github.maxopoly.Kira.user.KiraUser;
 
@@ -53,10 +54,10 @@ public class ConfigureRelayConfigCommand extends Command {
 			reply.append(" - Format used for snitch alerts (snitchformat): " + relay.getSnitchFormat() + "\n");
 			reply.append("    Example: " + relay.formatSnitchOutput(420, 100, 420, "snitchName", "playerName", SnitchHitType.ENTER, "exampleGroup") + "\n");
 			reply.append(
-					" - Format used for entering a snitch range (enterstring): " + relay.getSnitchEnterString() + "\n");
-			reply.append(" - Format used for logins within a snitch range (loginstring): "
+					" - Format used for entering a snitch range (snitchentermessage): " + relay.getSnitchEnterString() + "\n");
+			reply.append(" - Format used for logins within a snitch range (snitchloginmessage): "
 					+ relay.getSnitchLoginAction() + "\n");
-			reply.append(" - Format used for logouts within a snitch range (logoutstring): "
+			reply.append(" - Format used for logouts within a snitch range (snitchloginmessage): "
 					+ relay.getSnitchLogoutAction() + "\n");
 			reply.append(
 					" - Regex which will be replaced with an @ here ping for both chat messages and snitch alerts (hereformat): "
@@ -67,6 +68,11 @@ public class ConfigureRelayConfigCommand extends Command {
 			reply.append("- Time format used for the time stamps of messages (timeformat): " + relay.getTimeFormat() + "\n");
 			reply.append("    Example: " + relay.getFormattedTime() + "\n");
 			reply.append(" - Is allowed to use @ here and @ everyone (ping): " + relay.shouldPing() + "\n");
+			reply.append(" - Relaying of logins/logout, referred to as Skynet enabled (skynetenabled): " + relay.isSkynetEnabled() + "\n");
+			reply.append(" - Skynet format (skynetformat): " + relay.getSkynetFormat() + "\n");
+			reply.append("    Example: " + relay.formatSkynetMessage("ttk2", SkynetType.LOGIN) + "\n");
+			reply.append(" - Skynet login format (skynetloginformat): " + relay.getSkynetLoginString() + "\n");
+			reply.append(" - Skynet logout format (skynetlogoutformat): " + relay.getSkynetLogoutString() + "\n");
 			reply.append(" - Use \"help relayconfig\" for more information on how to configure these properties\n");
 			return reply.toString();
 		}
@@ -130,6 +136,7 @@ public class ConfigureRelayConfigCommand extends Command {
 				reply.append('\n');
 			}
 			break;
+		case "snitchloginmessage":	
 		case "loginstring":
 		case "loginmessage":
 			if (passLengthCheck(arguments, 256, reply)) {
@@ -140,6 +147,7 @@ public class ConfigureRelayConfigCommand extends Command {
 						"snitchGroup"));
 			}
 			break;
+		case "snitchlogoutmessage":
 		case "logoutstring":
 		case "logoutmessage":
 			if (passLengthCheck(arguments, 256, reply)) {
@@ -149,6 +157,7 @@ public class ConfigureRelayConfigCommand extends Command {
 						"snitchGroup"));
 			}
 			break;
+		case "snitchentermessage":
 		case "enterstring":
 		case "entermessage":
 			if (passLengthCheck(arguments, 256, reply)) {
@@ -206,6 +215,42 @@ public class ConfigureRelayConfigCommand extends Command {
 						+ "for more information on how to format time properly\n");
 			}
 			break;
+		case "skynetenabled":
+			Boolean skynetEnabled = attemptBooleanParsing(arguments, reply);
+			if (skynetEnabled != null) {
+				relay.updateSkynetEnabled(skynetEnabled);
+				reply.append("Setting skynet status to: " + relay.isSkynetEnabled());
+			}
+			break;
+		case "skynetformat":
+			if (passLengthCheck(arguments, 512, reply)) {
+				reply.append("Setting skynet format to: " + arguments + "\n");
+				relay.updateSkynetFormat(arguments);
+				reply.append("Example skynet message would look like this:\n");
+				reply.append(relay.formatSkynetMessage("ttk2", SkynetType.LOGIN));
+				reply.append('\n');
+			}
+			break;
+		case "skynetloginformat":
+		case "skynetloginstring":
+			if (passLengthCheck(arguments, 256, reply)) {
+				reply.append("Setting skynet login format to: " + arguments + "\n");
+				relay.updateSkynetLoginString(arguments);
+				reply.append("Example skynet login message would look like this:\n");
+				reply.append(relay.formatSkynetMessage("ttk2", SkynetType.LOGIN));
+				reply.append('\n');
+			}
+			break;
+		case "skynetlogoutformat":
+		case "skynetlogoutstring":
+			if (passLengthCheck(arguments, 256, reply)) {
+				reply.append("Setting skynet logout format to: " + arguments + "\n");
+				relay.updateSkynetLogoutString(arguments);
+				reply.append("Example skynet logout message would look like this:\n");
+				reply.append(relay.formatSkynetMessage("ttk2", SkynetType.LOGOUT));
+				reply.append('\n');
+			}
+			break;	
 		default:
 			reply.append(property
 					+ " is not a valid property to configure, see the command description for more information");
@@ -250,12 +295,16 @@ public class ConfigureRelayConfigCommand extends Command {
 				+ "relayconfig [name] deletemessages [true|false]\n"
 				+ "relayconfig [name] chatformat [your chat message]\n"
 				+ "relayconfig [name] snitchformat [your snitch message]\n"
-				+ "relayconfig [name] loginmessage [your login message]\n"
-				+ "relayconfig [name] logoutmessage [your logout message]\n"
-				+ "relayconfig [name] entermessage [your enter message]\n"
+				+ "relayconfig [name] snitchloginmessage [your login message]\n"
+				+ "relayconfig [name] snitchlogoutmessage [your logout message]\n"
+				+ "relayconfig [name] snitchentermessage [your enter message]\n"
 				+ "relayconfig [name] hereformat [your here regex]\n"
 				+ "relayconfig [name] everyoneformat [your everyone regex]\n"
 				+ "relayconfig [name] shouldping [true|false]\n" 
+				+ "relayconfig [name] skynetloginformat [your login message]\n"
+				+ "relayconfig [name] skynetlogoutformat [your login message]\n"
+				+ "relayconfig [name] skynetformat [your skynet format]\n"
+				+ "relayconfig [name] skynetenabled [true|false]\n"
 				+ "relayconfig [name] timeformat [your time format like HH:mm:ss]";
 	}
 

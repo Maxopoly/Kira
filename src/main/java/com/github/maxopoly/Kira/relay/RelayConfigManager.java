@@ -19,22 +19,23 @@ public class RelayConfigManager {
 		this.configsById = new TreeMap<>();
 		this.configsByName = new HashMap<>();
 		int minIndex = Integer.MAX_VALUE;
-		for(RelayConfig config : dao.loadRelayConfigs()) {
+		for (RelayConfig config : dao.loadRelayConfigs()) {
 			addRelayConfig(config);
 			minIndex = Math.min(config.getID(), minIndex);
 		}
 		if (minIndex == Integer.MAX_VALUE) {
 			createDefaultConfig();
-		}
-		else {
+		} else {
 			defaultConfig = getById(minIndex);
 		}
 	}
 
 	public RelayConfig createRelayConfig(String name, KiraUser creator) {
 		RelayConfig config = dao.createRelayConfig(name, true, true, true, true,
-				 "`[%TIME%]` `[%GROUP%]` **[%PLAYER%]** %MESSAGE%","`[%TIME%]` `[%GROUP%]` **%PLAYER%** %ACTION% at %SNITCH% (%X%,%Y%,%Z%)",
-				"logged in", "logged out", "is", "@here", "@everyone", false, "HH:mm:ss", creator);
+				"`[%TIME%]` `[%GROUP%]` **[%PLAYER%]** %MESSAGE%",
+				"`[%TIME%]` `[%GROUP%]` **%PLAYER%** %ACTION% at %SNITCH% (%X%,%Y%,%Z%)", "logged in", "logged out",
+				"is", "@here", "@everyone", false, "HH:mm:ss", "`[%TIME%]` **%PLAYER%** %ACTION%", "logged in",
+				"logged out", false, creator);
 		if (config == null) {
 			return null;
 		}

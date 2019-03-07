@@ -59,8 +59,9 @@ public class DAO {
 					+ "relayToDiscord boolean not null, showSnitches boolean not null, deleteMessages boolean not null, chatFormat text not null,"
 					+ "snitchFormat text not null, loginAction text not null, logoutAction text not null,"
 					+ "enterAction text not null, hereFormat text not null, everyoneFormat text not null, "
-					+ "canPing boolean not null, timeFormat text not null, owner_id int references users (id) on delete cascade," + timestampField
-					+ ");")) {
+					+ "canPing boolean not null, timeFormat text not null, skynetFormat text not null, relaySkynet boolean not null,"
+					+ "skynetLogin text not null, skynetLogout text not null, owner_id int references users (id) on delete cascade,"
+					+ timestampField + ");")) {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS group_chats "
@@ -92,10 +93,13 @@ public class DAO {
 		return true;
 	}
 
-	public int createGroupChat(long guildID, long channelID, String name, KiraRole tiedPerm, int creatorID, RelayConfig config) {
+	public int createGroupChat(long guildID, long channelID, String name, KiraRole tiedPerm, int creatorID,
+			RelayConfig config) {
 		try (Connection conn = db.getConnection();
-				PreparedStatement prep = conn.prepareStatement("insert into group_chats (channel_id, guild_id, "
-						+ "role_id, name, creator_id, config_id) values (?,?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS)) {
+				PreparedStatement prep = conn.prepareStatement(
+						"insert into group_chats (channel_id, guild_id, "
+								+ "role_id, name, creator_id, config_id) values (?,?,?,?,?,?);",
+						Statement.RETURN_GENERATED_KEYS)) {
 			prep.setLong(1, channelID);
 			prep.setLong(2, guildID);
 			prep.setInt(3, tiedPerm.getID());
@@ -119,8 +123,7 @@ public class DAO {
 	public Set<String> getGroupChatChannelIdByCreator(KiraUser user) {
 		Set<String> result = new TreeSet<>();
 		try (Connection conn = db.getConnection();
-				PreparedStatement prep = conn
-						.prepareStatement("select name from group_chats where creator_id = ?;")) {
+				PreparedStatement prep = conn.prepareStatement("select name from group_chats where creator_id = ?;")) {
 			prep.setInt(1, user.getID());
 			try (ResultSet rs = prep.executeQuery()) {
 				while (rs.next()) {
@@ -142,8 +145,7 @@ public class DAO {
 
 	public void setRelayConfigForChat(GroupChat chat, RelayConfig relay) {
 		try (Connection conn = db.getConnection();
-				PreparedStatement prep = conn.prepareStatement(
-						"update group_chats set config_id = ? where id = ?;")) {
+				PreparedStatement prep = conn.prepareStatement("update group_chats set config_id = ? where id = ?;")) {
 			prep.setInt(1, relay.getID());
 			prep.setInt(2, chat.getID());
 			prep.executeUpdate();
@@ -170,16 +172,18 @@ public class DAO {
 		return result;
 	}
 
-	public RelayConfig createRelayConfig(String name, boolean relayFromDiscord, boolean relayToDiscord, boolean showSnitches,
-			boolean deleteMessages, String chatFormat, String snitchFormat, String loginAction, String logoutAction,
-			String enterAction, String hereFormat, String everyoneFormat, boolean canPing, String timeFormat, KiraUser creator) {
+	public RelayConfig createRelayConfig(String name, boolean relayFromDiscord, boolean relayToDiscord,
+			boolean showSnitches, boolean deleteMessages, String chatFormat, String snitchFormat, String loginAction,
+			String logoutAction, String enterAction, String hereFormat, String everyoneFormat, boolean canPing,
+			String timeFormat, String skynetFormat, String skynetLogin, String skynetLogout, boolean relaySkynet,
+			KiraUser creator) {
 		int creatorID = creator == null ? 1 : creator.getID();
 		try (Connection conn = db.getConnection();
-				PreparedStatement prep = conn.prepareStatement(
-						"insert into relay_configs (relayFromDiscord, relayToDiscord, showSnitches,"
+				PreparedStatement prep = conn
+						.prepareStatement("insert into relay_configs (relayFromDiscord, relayToDiscord, showSnitches,"
 								+ "deleteMessages, chatFormat, snitchFormat, loginAction, logoutAction, enterAction, hereFormat, everyoneFormat,"
-								+ "canPing, owner_id, name) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
-						Statement.RETURN_GENERATED_KEYS)) {
+								+ "canPing, owner_id, name, skynetFormat, relaySkynet, skynetLogin, skynetLogout) values "
+								+ "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS)) {
 			prep.setBoolean(1, relayFromDiscord);
 			prep.setBoolean(2, relayToDiscord);
 			prep.setBoolean(3, showSnitches);
@@ -194,6 +198,10 @@ public class DAO {
 			prep.setBoolean(12, canPing);
 			prep.setInt(13, creatorID);
 			prep.setString(14, name);
+			prep.setString(15, skynetFormat);
+			prep.setBoolean(16, relaySkynet);
+			prep.setString(17, skynetLogin);
+			prep.setString(18, skynetLogout);
 			prep.execute();
 			try (ResultSet rs = prep.getGeneratedKeys()) {
 				if (!rs.next()) {
@@ -201,9 +209,9 @@ public class DAO {
 					return null;
 				}
 				int id = rs.getInt(1);
-				return new RelayConfig(id, name, relayFromDiscord, relayToDiscord, showSnitches, deleteMessages, snitchFormat,
-						loginAction, logoutAction, enterAction, chatFormat, hereFormat, everyoneFormat, canPing, timeFormat, 
-						creatorID);
+				return new RelayConfig(id, name, relayFromDiscord, relayToDiscord, showSnitches, deleteMessages,
+						snitchFormat, loginAction, logoutAction, enterAction, chatFormat, hereFormat, everyoneFormat,
+						canPing, timeFormat, skynetLogin, skynetLogout, skynetFormat, relaySkynet, creatorID);
 			}
 		} catch (SQLException e) {
 			logger.error("Failed to create relay config", e);
@@ -217,7 +225,7 @@ public class DAO {
 				PreparedStatement prep = conn
 						.prepareStatement("select relayFromDiscord, relayToDiscord, showSnitches, deleteMessages, "
 								+ "chatFormat, snitchFormat, loginAction, logoutAction, enterAction, hereFormat, everyoneFormat,"
-								+ "canPing, owner_id, id, name, timeFormat from relay_configs;");
+								+ "canPing, owner_id, id, name, timeFormat, skynetFormat, relaySkynet, skynetLogin, skynetLogout from relay_configs;");
 				ResultSet rs = prep.executeQuery()) {
 			while (rs.next()) {
 				boolean relayFromDiscord = rs.getBoolean(1);
@@ -236,9 +244,14 @@ public class DAO {
 				int id = rs.getInt(14);
 				String name = rs.getString(15);
 				String timeFormat = rs.getString(16);
+				String skynetFormat = rs.getString(17);
+				boolean relaySkynet = rs.getBoolean(18);
+				String skynetLogin = rs.getString(19);
+				String skynetLogout = rs.getString(20);
 				RelayConfig config = new RelayConfig(id, name, relayFromDiscord, relayToDiscord, showSnitches,
-						deleteMessages, snitchFormat, loginAction, logoutAction, enterAction, chatFormat,
-						hereFormat, everyoneFormat, canPing, timeFormat, ownerID);
+						deleteMessages, snitchFormat, loginAction, logoutAction, enterAction, chatFormat, hereFormat,
+						everyoneFormat, canPing, timeFormat, skynetLogin, skynetLogout, skynetFormat, relaySkynet,
+						ownerID);
 				result.add(config);
 			}
 		} catch (SQLException e) {
@@ -252,8 +265,8 @@ public class DAO {
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn.prepareStatement(
 						"update relay_configs set relayFromDiscord = ?, relayToDiscord = ?, showSnitches = ?, deleteMessages = ?, chatFormat = ?,"
-						+ "snitchFormat = ?, loginAction = ?, logoutAction = ?, enterAction = ?, hereFormat = ?, everyoneFormat = ?,"
-						+ "canPing = ?, timeFormat = ? where id = ?;")) {
+								+ "snitchFormat = ?, loginAction = ?, logoutAction = ?, enterAction = ?, hereFormat = ?, everyoneFormat = ?,"
+								+ "canPing = ?, timeFormat = ?, skynetFormat = ?, relaySkynet = ?, skynetLogin = ?, skynetLogout = ?  where id = ?;")) {
 			prep.setBoolean(1, config.shouldRelayFromDiscord());
 			prep.setBoolean(2, config.shouldRelayToDiscord());
 			prep.setBoolean(3, config.shouldShowSnitches());
@@ -267,7 +280,11 @@ public class DAO {
 			prep.setString(11, config.getEveryoneFormat());
 			prep.setBoolean(12, config.shouldPing());
 			prep.setString(13, config.getTimeFormat());
-			prep.setInt(14, config.getID());
+			prep.setString(14, config.getSkynetFormat());
+			prep.setBoolean(15, config.isSkynetEnabled());
+			prep.setString(16, config.getSkynetLoginString());
+			prep.setString(17, config.getSkynetLogoutString());
+			prep.setInt(18, config.getID());
 			prep.executeUpdate();
 		} catch (SQLException e) {
 			logger.error("Failed to update relay", e);
@@ -295,7 +312,8 @@ public class DAO {
 					continue;
 				}
 				int configId = rs.getInt(7);
-				GroupChat group = new GroupChat(id, name, channelID, guildID, role, userMan.getUser(creatorID), relayConfigs.getById(configId));
+				GroupChat group = new GroupChat(id, name, channelID, guildID, role, userMan.getUser(creatorID),
+						relayConfigs.getById(configId));
 				result.add(group);
 			}
 		} catch (SQLException e) {
@@ -497,7 +515,7 @@ public class DAO {
 	public void takeRoleFromUser(KiraUser user, KiraRole role) {
 		try (Connection conn = db.getConnection();
 				PreparedStatement prep = conn
-						.prepareStatement("delete from role_members where role_id=?, user_id=?;")) {
+						.prepareStatement("delete from role_members where role_id=? and user_id=?;")) {
 			prep.setInt(1, role.getID());
 			prep.setInt(2, user.getID());
 			prep.execute();

@@ -12,6 +12,7 @@ import com.github.maxopoly.Kira.rabbit.input.RabbitMessage;
 import com.github.maxopoly.Kira.rabbit.input.ReplyToUserMessage;
 import com.github.maxopoly.Kira.rabbit.input.RequestSessionReplyMessage;
 import com.github.maxopoly.Kira.rabbit.input.SendGroupChatMessage;
+import com.github.maxopoly.Kira.rabbit.input.SkynetMessage;
 import com.github.maxopoly.Kira.rabbit.input.SnitchHitMessage;
 import com.github.maxopoly.Kira.rabbit.input.SyncGroupChatMembers;
 
@@ -31,6 +32,7 @@ public class RabbitInputProcessor extends TextInputHandler<RabbitMessage> {
 		registerCommand(new ReplyToUserMessage());
 		registerCommand(new SnitchHitMessage());
 		registerCommand(new RequestSessionReplyMessage());
+		registerCommand(new SkynetMessage());
 	}
 
 	@Override
