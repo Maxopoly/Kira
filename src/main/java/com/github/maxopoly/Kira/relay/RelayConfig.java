@@ -4,6 +4,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.relay.actions.SkynetType;
+import com.github.maxopoly.Kira.relay.actions.SnitchHitType;
 
 public class RelayConfig {
 
@@ -53,7 +55,7 @@ public class RelayConfig {
 		this.timeFormat = timeFormat;
 		this.timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
 		this.skynetLoginString = skynetLoginString;
-		this.skynetLogoutString= skynetLogoutString;
+		this.skynetLogoutString = skynetLogoutString;
 		this.skynetFormat = skynetFormat;
 		this.skynetEnabled = skynetEnabled;
 	}
@@ -173,38 +175,38 @@ public class RelayConfig {
 		this.deleteDiscordMessages = deleteDiscordMessages;
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
-	
+
 	public String getSkynetLoginString() {
 		return skynetLoginString;
 	}
-	
+
 	public String getSkynetLogoutString() {
 		return skynetLogoutString;
 	}
-	
+
 	public String getSkynetFormat() {
 		return skynetFormat;
 	}
-	
+
 	public boolean isSkynetEnabled() {
 		return skynetEnabled;
 	}
-	
+
 	public void updateSkynetLoginString(String skynetLoginString) {
 		this.skynetLoginString = skynetLoginString;
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
-	
+
 	public void updateSkynetLogoutString(String skynetLogoutString) {
 		this.skynetLogoutString = skynetLogoutString;
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
-	
+
 	public void updateSkynetFormat(String skynetFormat) {
 		this.skynetFormat = skynetFormat;
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
-	
+
 	public void updateSkynetEnabled(boolean skynetEnabled) {
 		this.skynetEnabled = skynetEnabled;
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
@@ -223,11 +225,9 @@ public class RelayConfig {
 	public int getOwnerID() {
 		return ownerID;
 	}
-	
+
 	public String formatSkynetMessage(String player, SkynetType type) {
 		String output = skynetFormat;
-		output = output.replace("%PLAYER%", player);
-		output = output.replace("%TIME%", getFormattedTime());
 		String action;
 		switch (type) {
 		case LOGIN:
@@ -240,6 +240,9 @@ public class RelayConfig {
 			throw new IllegalArgumentException("Invalid type :" + type);
 		}
 		output = output.replace("%ACTION%", action);
+		output = output.replace("%PLAYER%", player);
+		output = output.replace("%TIME%", getFormattedTime());
+		output = reformatPings(output);
 		return output;
 	}
 
@@ -249,6 +252,7 @@ public class RelayConfig {
 		output = output.replace("%MESSAGE%", msg);
 		output = output.replace("%GROUP%", groupName);
 		output = output.replace("%TIME%", getFormattedTime());
+		output = reformatPings(output);
 		return output;
 	}
 
@@ -281,12 +285,26 @@ public class RelayConfig {
 		output = output.replaceAll("%PLAYER%", player);
 		output = output.replace("%GROUP%", groupName);
 		output = output.replace("%TIME%", getFormattedTime());
+		output = reformatPings(output);
+		return output;
+	}
+
+	private String reformatPings(String output) {
 		if (shouldPing) {
 			output = output.replaceAll(hereFormat, "@here");
 			output = output.replaceAll(everyoneFormat, "@everyone");
-		} else {
-			output = output.replace("@here", "X");
-			output = output.replace("@everyone", "X");
+		}
+		String ping = "";
+		if (output.contains("@here")) {
+			ping = "@here";
+		}
+		if (output.contains("@everyone")) {
+			ping = "@everyone";
+		}
+		output = output.replace("%PING%", ping);
+		if (!shouldPing) {
+			output = output.replace("@here", "@;here");
+			output = output.replace("@everyone", "@;everyone");
 		}
 		return output;
 	}

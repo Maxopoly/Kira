@@ -9,8 +9,8 @@ import com.github.maxopoly.Kira.command.Command;
 import com.github.maxopoly.Kira.command.InputSupplier;
 import com.github.maxopoly.Kira.relay.RelayConfig;
 import com.github.maxopoly.Kira.relay.RelayConfigManager;
-import com.github.maxopoly.Kira.relay.SkynetType;
-import com.github.maxopoly.Kira.relay.SnitchHitType;
+import com.github.maxopoly.Kira.relay.actions.SkynetType;
+import com.github.maxopoly.Kira.relay.actions.SnitchHitType;
 import com.github.maxopoly.Kira.user.KiraUser;
 
 public class ConfigureRelayConfigCommand extends Command {

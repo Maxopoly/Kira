@@ -57,15 +57,19 @@ public class DiscordRoleManager {
 	public void giveDiscordRole(KiraUser user) {
 		Role role = guild.getRoleById(roleID);
 		if (role == null) {
-			logger.warn("Could not add role to " + user.toString() + ", role with id " + roleID + " did not exist");
+			logger.warn("Could not add auth role to " + user.toString() + ", role with id " + roleID + " did not exist");
 			return;
 		}
 		if (user.getName() == null) {
-			logger.warn("Could not add role to " + user.toString() + ", no name was tied");
+			logger.warn("Could not add auth role to " + user.toString() + ", no name was tied");
 			return;
 		}
 		logger.info("Giving auth role to " + user.getName());
 		Member member = guild.getMemberById(user.getDiscordID());
+		if (member == null) {
+			logger.warn("Could not add auth role to " + user.toString() + ", he was not in the official discord");
+			return;
+		}
 		Member self = guild.getSelfMember();
 		if (self.canInteract(member)) {
 			guild.getController().setNickname(member, user.getName()).queue();

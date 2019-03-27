@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.relay.GroupChat;
 import com.github.maxopoly.Kira.relay.GroupChatManager;
-import com.github.maxopoly.Kira.relay.SnitchHitType;
+import com.github.maxopoly.Kira.relay.actions.SnitchHitType;
 
 public class SnitchHitMessage extends RabbitMessage {
 

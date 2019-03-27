@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.relay;
+package com.github.maxopoly.Kira.relay.actions;
 
 public enum SnitchHitType {
 
