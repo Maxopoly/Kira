@@ -6,11 +6,11 @@ import com.github.maxopoly.Kira.api.input.APIInput;
 import com.github.maxopoly.Kira.api.input.APISupplier;
 import com.github.maxopoly.Kira.user.KiraUser;
 
-public class Auth extends APIInput {
+public class AuthAPIInput extends APIInput {
 	
 	private static final int API_VERSION = 1;
 
-	public Auth() {
+	public AuthAPIInput() {
 		super("auth");
 	}
 

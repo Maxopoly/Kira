@@ -3,6 +3,7 @@ package com.github.maxopoly.Kira.rabbit.input;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.relay.actions.SkynetAction;
 import com.github.maxopoly.Kira.relay.actions.SkynetType;
 
 public class SkynetMessage extends RabbitMessage {
@@ -15,6 +16,9 @@ public class SkynetMessage extends RabbitMessage {
 	public void handle(JSONObject json) {
 		String player = json.getString("player");
 		SkynetType type = SkynetType.valueOf(json.getString("action").toUpperCase());
-		KiraMain.getInstance().getGroupChatManager().applyToAll(chat -> {chat.sendSkynet(player, type);});
+		long timestamp = json.optLong("timestamp", System.currentTimeMillis());
+		SkynetAction action = new SkynetAction(timestamp, player, type);
+		KiraMain.getInstance().getAPISessionManager().handleSkynetMessage(action);
+		KiraMain.getInstance().getGroupChatManager().applyToAll(chat -> {chat.sendSkynet(action);});
 	}
 }

@@ -5,6 +5,8 @@ import org.json.JSONObject;
 import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.relay.GroupChat;
 import com.github.maxopoly.Kira.relay.GroupChatManager;
+import com.github.maxopoly.Kira.relay.actions.MinecraftLocation;
+import com.github.maxopoly.Kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.Kira.relay.actions.SnitchHitType;
 
 public class SnitchHitMessage extends RabbitMessage {
@@ -22,14 +24,20 @@ public class SnitchHitMessage extends RabbitMessage {
 			return;
 		}
 		String snitchName = json.getString("snitchName");
-		//UUID victimUUID = UUID.fromString(json.getString("victimUUID"));
+		// UUID victimUUID = UUID.fromString(json.getString("victimUUID"));
 		String victimName = json.getString("victimName");
 		int x = json.getInt("x");
 		int y = json.getInt("y");
 		int z = json.getInt("z");
+		String world = json.optString("world", "world");
 		SnitchHitType hitType = SnitchHitType.valueOf(json.optString("type", "ENTER"));
-		if (!chat.sendSnitchHit(victimName, snitchName, x, y, z, hitType)) {
-			KiraMain.getInstance().getLogger().info("Failed to send snitch hit to group " + groupName + ". Channel did not exist");
+		long timestamp = json.optLong("timestamp", System.currentTimeMillis());
+		PlayerHitSnitchAction snitchAction = new PlayerHitSnitchAction(timestamp, victimName, snitchName, groupName,
+				new MinecraftLocation(world, x, y, z), hitType);
+		KiraMain.getInstance().getAPISessionManager().handleSnitchHit(snitchAction);
+		if (!chat.sendSnitchHit(snitchAction)) {
+			KiraMain.getInstance().getLogger()
+					.info("Failed to send snitch hit to group " + groupName + ". Channel did not exist");
 		}
 	}
 }

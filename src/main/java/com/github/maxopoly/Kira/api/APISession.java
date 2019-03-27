@@ -9,13 +9,37 @@ import com.github.maxopoly.Kira.user.KiraUser;
 
 public class APISession {
 
-	private String token;
 	private KiraUser user;
 	private List<String> snitchGroups;
 	private List<String> chatGroups;
 	private boolean skyNet;
 	// -1 means never
 	private long expirationTime;
+	
+	public APISession(KiraUser user, List<String> snitchGroups, List<String> chatGroups, boolean skyNet,
+			long expirationTime) {
+		this.user = user;
+		this.snitchGroups = snitchGroups;
+		this.chatGroups = chatGroups;
+		this.skyNet = skyNet;
+		this.expirationTime = expirationTime;
+	}
+	
+	public KiraUser getUser() {
+		return user;
+	}
+	
+	public List<String> getSnitchGroups() {
+		return snitchGroups;
+	}
+	
+	public List<String> getChatGroups() {
+		return chatGroups;
+	}
+	
+	public boolean receivesSkynet() {
+		return skyNet;
+	}
 
 	public void sendSnitchAlert(PlayerHitSnitchAction action) {
 

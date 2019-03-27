@@ -8,7 +8,6 @@ public abstract class RabbitMessage extends TextInput {
 
 	public RabbitMessage(String identifier, String... alt) {
 		super(identifier, alt);
-		// TODO Auto-generated constructor stub
 	}
 
 	public abstract void handle(JSONObject json);

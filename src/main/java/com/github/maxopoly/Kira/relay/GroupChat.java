@@ -2,6 +2,9 @@ package com.github.maxopoly.Kira.relay;
 
 import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.permission.KiraRole;
+import com.github.maxopoly.Kira.relay.actions.GroupChatMessageAction;
+import com.github.maxopoly.Kira.relay.actions.PlayerHitSnitchAction;
+import com.github.maxopoly.Kira.relay.actions.SkynetAction;
 import com.github.maxopoly.Kira.relay.actions.SkynetType;
 import com.github.maxopoly.Kira.relay.actions.SnitchHitType;
 import com.github.maxopoly.Kira.user.KiraUser;
@@ -68,7 +71,7 @@ public class GroupChat {
 		this.config = config;
 	}
 
-	public boolean sendMessage(String author, String msg) {
+	public boolean sendMessage(GroupChatMessageAction action) {
 		JDA jda = KiraMain.getInstance().getJDA();
 		Guild guild = jda.getGuildById(guildId);
 		if (guild == null) {
@@ -78,12 +81,12 @@ public class GroupChat {
 		if (channel == null) {
 			return false;
 		}
-		String discordMessage = config.formatChatMessage(msg, author, name);
+		String discordMessage = config.formatChatMessage(action);
 		channel.sendMessage(discordMessage).queue();
 		return true;
 	}
 
-	public boolean sendSnitchHit(String playerName, String snitchname, int x, int y, int z, SnitchHitType type) {
+	public boolean sendSnitchHit(PlayerHitSnitchAction action) {
 		JDA jda = KiraMain.getInstance().getJDA();
 		Guild guild = jda.getGuildById(guildId);
 		if (guild == null) {
@@ -93,12 +96,12 @@ public class GroupChat {
 		if (channel == null) {
 			return false;
 		}
-		String msg = config.formatSnitchOutput(x, y, z, snitchname, playerName, type, name);
+		String msg = config.formatSnitchOutput(action);
 		channel.sendMessage(msg).queue();
 		return true;
 	}
 	
-	public boolean sendSkynet(String player, SkynetType type) {
+	public boolean sendSkynet(SkynetAction action) {
 		if (!config.isSkynetEnabled()) {
 			return true;
 		}
@@ -111,7 +114,7 @@ public class GroupChat {
 		if (channel == null) {
 			return false;
 		}
-		String msg = config.formatSkynetMessage(player, type);
+		String msg = config.formatSkynetMessage(action);
 		channel.sendMessage(msg).queue();
 		return true;
 	}

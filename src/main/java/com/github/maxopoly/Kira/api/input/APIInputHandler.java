@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.github.maxopoly.Kira.api.input.impl.AuthAPIInput;
 import com.github.maxopoly.Kira.command.InputSupplier;
 import com.github.maxopoly.Kira.command.TextInputHandler;
 
@@ -15,8 +16,7 @@ public class APIInputHandler extends TextInputHandler<APIInput>{
 
 	@Override
 	protected void registerCommands() {
-		// TODO Auto-generated method stub
-		
+		registerCommand(new AuthAPIInput());
 	}
 
 	@Override

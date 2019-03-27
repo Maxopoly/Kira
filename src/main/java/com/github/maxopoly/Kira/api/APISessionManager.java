@@ -30,6 +30,29 @@ public class APISessionManager {
 		this.skynetTakers = new LinkedList<>();
 	}
 	
+	public void registerSession(APISession session) {
+		sessions.add(session);
+		for(String chat : session.getChatGroups()) {
+			List<APISession> existing = chatTakers.get(chat);
+			if (existing == null) {
+				existing = new LinkedList<>();
+				chatTakers.put(chat, existing);
+			}
+			existing.add(session);
+		}
+		for(String snitch : session.getSnitchGroups()) {
+			List<APISession> existing = snitchTakers.get(snitch);
+			if (existing == null) {
+				existing = new LinkedList<>();
+				snitchTakers.put(snitch, existing);
+			}
+			existing.add(session);
+		}
+		if (session.receivesSkynet()) {
+			skynetTakers.add(session);
+		}
+	}
+	
 	//TODO TODO TODO consider thread safety
 
 	public void handleSnitchHit(PlayerHitSnitchAction action) {

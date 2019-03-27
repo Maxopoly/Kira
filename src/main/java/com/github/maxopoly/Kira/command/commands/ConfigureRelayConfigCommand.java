@@ -9,6 +9,10 @@ import com.github.maxopoly.Kira.command.Command;
 import com.github.maxopoly.Kira.command.InputSupplier;
 import com.github.maxopoly.Kira.relay.RelayConfig;
 import com.github.maxopoly.Kira.relay.RelayConfigManager;
+import com.github.maxopoly.Kira.relay.actions.GroupChatMessageAction;
+import com.github.maxopoly.Kira.relay.actions.MinecraftLocation;
+import com.github.maxopoly.Kira.relay.actions.PlayerHitSnitchAction;
+import com.github.maxopoly.Kira.relay.actions.SkynetAction;
 import com.github.maxopoly.Kira.relay.actions.SkynetType;
 import com.github.maxopoly.Kira.relay.actions.SnitchHitType;
 import com.github.maxopoly.Kira.user.KiraUser;
@@ -50,11 +54,17 @@ public class ConfigureRelayConfigCommand extends Command {
 			reply.append(
 					" - Auto deletes discord messages (deletemessages): " + relay.shouldDeleteDiscordMessage() + "\n");
 			reply.append(" - Format used for group chat messages (chatformat): " + relay.getChatFormat() + "\n");
-			reply.append("    Example: " + relay.formatChatMessage("hello this is an example message", "playerName", "exampleGroup") + "\n");
-			reply.append(" - Format used for snitch alerts (snitchformat): " + relay.getSnitchFormat() + "\n");
-			reply.append("    Example: " + relay.formatSnitchOutput(420, 100, 420, "snitchName", "playerName", SnitchHitType.ENTER, "exampleGroup") + "\n");
 			reply.append(
-					" - Format used for entering a snitch range (snitchentermessage): " + relay.getSnitchEnterString() + "\n");
+					"    Example: " + relay.formatChatMessage(new GroupChatMessageAction(System.currentTimeMillis(),
+							"exampleGroup", "ttk2", "hello, this is an example message")) + "\n");
+			reply.append(" - Format used for snitch alerts (snitchformat): " + relay.getSnitchFormat() + "\n");
+			reply.append("    Example: "
+					+ relay.formatSnitchOutput(
+							new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch",
+									"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.ENTER))
+					+ "\n");
+			reply.append(" - Format used for entering a snitch range (snitchentermessage): "
+					+ relay.getSnitchEnterString() + "\n");
 			reply.append(" - Format used for logins within a snitch range (snitchloginmessage): "
 					+ relay.getSnitchLoginAction() + "\n");
 			reply.append(" - Format used for logouts within a snitch range (snitchloginmessage): "
@@ -65,12 +75,16 @@ public class ConfigureRelayConfigCommand extends Command {
 			reply.append(
 					" - Regex which will be replaced with an @ everyone ping for both chat messages and snitch alerts (everyoneformat): "
 							+ relay.getEveryoneFormat() + "\n");
-			reply.append("- Time format used for the time stamps of messages (timeformat): " + relay.getTimeFormat() + "\n");
-			reply.append("    Example: " + relay.getFormattedTime() + "\n");
+			reply.append(
+					"- Time format used for the time stamps of messages (timeformat): " + relay.getTimeFormat() + "\n");
+			reply.append("    Example: " + relay.getFormattedTime(System.currentTimeMillis()) + "\n");
 			reply.append(" - Is allowed to use @ here and @ everyone (ping): " + relay.shouldPing() + "\n");
-			reply.append(" - Relaying of logins/logout, referred to as Skynet enabled (skynetenabled): " + relay.isSkynetEnabled() + "\n");
+			reply.append(" - Relaying of logins/logout, referred to as Skynet enabled (skynetenabled): "
+					+ relay.isSkynetEnabled() + "\n");
 			reply.append(" - Skynet format (skynetformat): " + relay.getSkynetFormat() + "\n");
-			reply.append("    Example: " + relay.formatSkynetMessage("ttk2", SkynetType.LOGIN) + "\n");
+			reply.append("    Example: "
+					+ relay.formatSkynetMessage(new SkynetAction(System.currentTimeMillis(), "ttk2", SkynetType.LOGIN))
+					+ "\n");
 			reply.append(" - Skynet login format (skynetloginformat): " + relay.getSkynetLoginString() + "\n");
 			reply.append(" - Skynet logout format (skynetlogoutformat): " + relay.getSkynetLogoutString() + "\n");
 			reply.append(" - Use \"help relayconfig\" for more information on how to configure these properties\n");
@@ -122,7 +136,8 @@ public class ConfigureRelayConfigCommand extends Command {
 				reply.append("Setting chat format to: " + arguments + "\n");
 				relay.updateChatFormat(arguments);
 				reply.append("Example chat message would look like this:\n");
-				reply.append(relay.formatChatMessage("hello there, this is a message", "ttk2", "groupName"));
+				reply.append(relay.formatChatMessage(new GroupChatMessageAction(System.currentTimeMillis(),
+						"exampleGroup", "ttk2", "hello, this is an example message")));
 				reply.append('\n');
 			}
 			break;
@@ -131,20 +146,21 @@ public class ConfigureRelayConfigCommand extends Command {
 				reply.append("Setting snitch alert format to: " + arguments + "\n");
 				relay.setSnitchFormat(arguments);
 				reply.append("Example snitch message would look like this:\n");
-				reply.append(relay.formatSnitchOutput(420, 100, 420, "exampleSnitch", "ttk2", SnitchHitType.ENTER,
-						"snitchGroup"));
+				reply.append(relay.formatSnitchOutput(
+						new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch",
+								"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.ENTER)));
 				reply.append('\n');
 			}
 			break;
-		case "snitchloginmessage":	
+		case "snitchloginmessage":
 		case "loginstring":
 		case "loginmessage":
 			if (passLengthCheck(arguments, 256, reply)) {
 				reply.append("Setting login message to: " + arguments + "\n");
 				relay.updateLoginAction(arguments);
 				reply.append("Example snitch message would look like this:\n");
-				reply.append(relay.formatSnitchOutput(420, 100, 420, "exampleSnitch", "ttk2", SnitchHitType.LOGIN,
-						"snitchGroup"));
+				reply.append(new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch",
+						"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.LOGIN));
 			}
 			break;
 		case "snitchlogoutmessage":
@@ -153,8 +169,8 @@ public class ConfigureRelayConfigCommand extends Command {
 			if (passLengthCheck(arguments, 256, reply)) {
 				reply.append("Setting logout message to: " + arguments + "\n");
 				relay.updateLogoutAction(arguments);
-				reply.append(relay.formatSnitchOutput(420, 100, 420, "exampleSnitch", "ttk2", SnitchHitType.LOGOUT,
-						"snitchGroup"));
+				reply.append(new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch",
+						"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.LOGOUT));
 			}
 			break;
 		case "snitchentermessage":
@@ -163,8 +179,8 @@ public class ConfigureRelayConfigCommand extends Command {
 			if (passLengthCheck(arguments, 256, reply)) {
 				reply.append("Setting enter message to: " + arguments + "\n");
 				relay.updateEnterAction(arguments);
-				reply.append(relay.formatSnitchOutput(420, 100, 420, "exampleSnitch", "ttk2", SnitchHitType.ENTER,
-						"snitchGroup"));
+				reply.append(new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch",
+						"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.ENTER));
 			}
 			break;
 		case "hereformat":
@@ -208,7 +224,7 @@ public class ConfigureRelayConfigCommand extends Command {
 				DateTimeFormatter.ofPattern(arguments);
 				relay.updateTimeFormat(arguments);
 				reply.append("Setting time format to: " + arguments + "\n");
-				reply.append("Example time stamp: " + relay.getFormattedTime() + "\n");
+				reply.append("Example time stamp: " + relay.getFormattedTime(System.currentTimeMillis()) + "\n");
 			} catch (IllegalArgumentException e) {
 				reply.append(arguments
 						+ " is not a valid time format, see https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html "
@@ -227,7 +243,8 @@ public class ConfigureRelayConfigCommand extends Command {
 				reply.append("Setting skynet format to: " + arguments + "\n");
 				relay.updateSkynetFormat(arguments);
 				reply.append("Example skynet message would look like this:\n");
-				reply.append(relay.formatSkynetMessage("ttk2", SkynetType.LOGIN));
+				reply.append(relay
+						.formatSkynetMessage(new SkynetAction(System.currentTimeMillis(), "ttk2", SkynetType.LOGIN)));
 				reply.append('\n');
 			}
 			break;
@@ -237,7 +254,8 @@ public class ConfigureRelayConfigCommand extends Command {
 				reply.append("Setting skynet login format to: " + arguments + "\n");
 				relay.updateSkynetLoginString(arguments);
 				reply.append("Example skynet login message would look like this:\n");
-				reply.append(relay.formatSkynetMessage("ttk2", SkynetType.LOGIN));
+				reply.append(relay
+						.formatSkynetMessage(new SkynetAction(System.currentTimeMillis(), "ttk2", SkynetType.LOGIN)));
 				reply.append('\n');
 			}
 			break;
@@ -247,10 +265,11 @@ public class ConfigureRelayConfigCommand extends Command {
 				reply.append("Setting skynet logout format to: " + arguments + "\n");
 				relay.updateSkynetLogoutString(arguments);
 				reply.append("Example skynet logout message would look like this:\n");
-				reply.append(relay.formatSkynetMessage("ttk2", SkynetType.LOGOUT));
+				reply.append(relay
+						.formatSkynetMessage(new SkynetAction(System.currentTimeMillis(), "ttk2", SkynetType.LOGOUT)));
 				reply.append('\n');
 			}
-			break;	
+			break;
 		default:
 			reply.append(property
 					+ " is not a valid property to configure, see the command description for more information");
@@ -300,7 +319,7 @@ public class ConfigureRelayConfigCommand extends Command {
 				+ "relayconfig [name] snitchentermessage [your enter message]\n"
 				+ "relayconfig [name] hereformat [your here regex]\n"
 				+ "relayconfig [name] everyoneformat [your everyone regex]\n"
-				+ "relayconfig [name] shouldping [true|false]\n" 
+				+ "relayconfig [name] shouldping [true|false]\n"
 				+ "relayconfig [name] skynetloginformat [your login message]\n"
 				+ "relayconfig [name] skynetlogoutformat [your login message]\n"
 				+ "relayconfig [name] skynetformat [your skynet format]\n"

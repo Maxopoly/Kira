@@ -8,6 +8,7 @@ import javax.security.auth.login.LoginException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.github.maxopoly.Kira.api.APISessionManager;
 import com.github.maxopoly.Kira.command.CommandHandler;
 import com.github.maxopoly.Kira.command.CommandLineInputSupplier;
 import com.github.maxopoly.Kira.database.DAO;
@@ -50,6 +51,7 @@ public class KiraMain {
 	private GroupChatManager groupChatManager;
 	private RelayConfigManager relayConfigManager;
 	private RequestSessionManager requestSessionManager;
+	private APISessionManager apiSessionManager;
 
 	public static KiraMain getInstance() {
 		return instance;
@@ -84,6 +86,7 @@ public class KiraMain {
 		if (!instance.setupListeners()) {
 			return;
 		}
+		instance.apiSessionManager = new APISessionManager();
 		instance.rabbit.beginAsyncListen();
 		instance.parseInput();
 	}
@@ -264,6 +267,10 @@ public class KiraMain {
 
 	public MinecraftRabbitGateway getMCRabbitGateway() {
 		return mcRabbit;
+	}
+	
+	public APISessionManager getAPISessionManager() {
+		return apiSessionManager;
 	}
 
 	public GroupChatManager getGroupChatManager() {

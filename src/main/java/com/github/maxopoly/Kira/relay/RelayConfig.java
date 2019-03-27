@@ -1,9 +1,15 @@
 package com.github.maxopoly.Kira.relay;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.relay.actions.GroupChatMessageAction;
+import com.github.maxopoly.Kira.relay.actions.MinecraftAction;
+import com.github.maxopoly.Kira.relay.actions.MinecraftLocation;
+import com.github.maxopoly.Kira.relay.actions.PlayerHitSnitchAction;
+import com.github.maxopoly.Kira.relay.actions.SkynetAction;
 import com.github.maxopoly.Kira.relay.actions.SkynetType;
 import com.github.maxopoly.Kira.relay.actions.SnitchHitType;
 
@@ -226,65 +232,65 @@ public class RelayConfig {
 		return ownerID;
 	}
 
-	public String formatSkynetMessage(String player, SkynetType type) {
+	public String formatSkynetMessage(SkynetAction action) {
 		String output = skynetFormat;
-		String action;
-		switch (type) {
+		String actionString;
+		switch (action.getType()) {
 		case LOGIN:
-			action = skynetLoginString;
+			actionString = skynetLoginString;
 			break;
 		case LOGOUT:
-			action = skynetLogoutString;
+			actionString = skynetLogoutString;
 			break;
 		default:
-			throw new IllegalArgumentException("Invalid type :" + type);
+			throw new IllegalArgumentException();
 		}
-		output = output.replace("%ACTION%", action);
-		output = output.replace("%PLAYER%", player);
-		output = output.replace("%TIME%", getFormattedTime());
+		output = output.replace("%ACTION%", actionString);
+		output = output.replace("%PLAYER%", action.getPlayer());
+		output = output.replace("%TIME%", getFormattedTime(action.getTimeStamp()));
 		output = reformatPings(output);
 		return output;
 	}
 
-	public String formatChatMessage(String msg, String sender, String groupName) {
+	public String formatChatMessage(GroupChatMessageAction action) {
 		String output = chatFormat;
-		output = output.replace("%PLAYER%", sender);
-		output = output.replace("%MESSAGE%", msg);
-		output = output.replace("%GROUP%", groupName);
-		output = output.replace("%TIME%", getFormattedTime());
+		output = output.replace("%PLAYER%", action.getSender());
+		output = output.replace("%MESSAGE%", action.getMessage());
+		output = output.replace("%GROUP%", action.getGroupName());
+		output = output.replace("%TIME%", getFormattedTime(action.getTimeStamp()));
 		output = reformatPings(output);
 		return output;
 	}
 
-	public String getFormattedTime() {
-		return timeFormatter.format(ZonedDateTime.now());
+	public String getFormattedTime(long unixMilli) {
+		return timeFormatter.format(Instant.ofEpochMilli(unixMilli));
 	}
 
-	public String formatSnitchOutput(int x, int y, int z, String snitchName, String player, SnitchHitType type,
-			String groupName) {
+	public String formatSnitchOutput(PlayerHitSnitchAction action) {
 		String output = snitchHitFormat;
-		String action;
-		switch (type) {
+		String actionString;
+		switch (action.getHitType()) {
 		case ENTER:
-			action = snitchEnterString;
+			actionString = snitchEnterString;
 			break;
 		case LOGIN:
-			action = snitchLoginString;
+			actionString = snitchLoginString;
 			break;
 		case LOGOUT:
-			action = snitchLogoutString;
+			actionString = snitchLogoutString;
 			break;
 		default:
-			throw new IllegalArgumentException("Invalid type :" + type);
+			throw new IllegalArgumentException();
 		}
-		output = output.replace("%ACTION%", action);
-		output = output.replace("%X%", String.valueOf(x));
-		output = output.replace("%Y%", String.valueOf(y));
-		output = output.replace("%Z%", String.valueOf(z));
-		output = output.replace("%SNITCH%", snitchName);
-		output = output.replaceAll("%PLAYER%", player);
-		output = output.replace("%GROUP%", groupName);
-		output = output.replace("%TIME%", getFormattedTime());
+		MinecraftLocation loc = action.getLocation();
+		output = output.replace("%ACTION%", actionString);
+		output = output.replace("%X%", String.valueOf(loc.getX()));
+		output = output.replace("%Y%", String.valueOf(loc.getY()));
+		output = output.replace("%Z%", String.valueOf(loc.getZ()));
+		output = output.replace("%SNITCH%", action.getSnitchName());
+		output = output.replaceAll("%PLAYER%", action.getPlayerName());
+		output = output.replace("%GROUP%", action.getGroupName());
+		output = output.replace("%TIME%", getFormattedTime(action.getTimeStamp()));
 		output = reformatPings(output);
 		return output;
 	}
