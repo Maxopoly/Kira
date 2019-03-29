@@ -86,7 +86,7 @@ public class KiraMain {
 		if (!instance.setupListeners()) {
 			return;
 		}
-		instance.apiSessionManager = new APISessionManager();
+		instance.apiSessionManager = new APISessionManager(instance.logger);
 		instance.rabbit.beginAsyncListen();
 		instance.parseInput();
 	}

@@ -1,15 +1,15 @@
 package com.github.maxopoly.Kira.api.input;
 
-import com.github.maxopoly.Kira.api.KiraWebSocket;
+import com.github.maxopoly.Kira.api.KiraAPIConnection;
 import com.github.maxopoly.Kira.command.InputSupplier;
 import com.github.maxopoly.Kira.user.KiraUser;
 
 public class APISupplier implements InputSupplier {
 	
 	private KiraUser user;
-	private KiraWebSocket connection;
+	private KiraAPIConnection connection;
 	
-	public APISupplier(KiraUser user, KiraWebSocket connection) {
+	public APISupplier(KiraUser user, KiraAPIConnection connection) {
 		this.user = user;
 		this.connection = connection;
 	}
@@ -42,7 +42,7 @@ public class APISupplier implements InputSupplier {
 		return -1;
 	}
 	
-	public KiraWebSocket getConnection() {
+	public KiraAPIConnection getConnection() {
 		return connection;
 	}
 

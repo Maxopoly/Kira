@@ -1,5 +1,7 @@
 package com.github.maxopoly.Kira.relay.actions;
 
+import org.json.JSONObject;
+
 public class SkynetAction extends MinecraftAction {
 	
 	private SkynetType type;
@@ -17,6 +19,12 @@ public class SkynetAction extends MinecraftAction {
 	
 	public SkynetType getType() {
 		return type;
+	}
+
+	@Override
+	protected void internalConstructJSON(JSONObject json) {
+		json.put("player", player);
+		json.put("action", type.toString());		
 	}
 
 }

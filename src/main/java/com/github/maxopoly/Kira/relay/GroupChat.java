@@ -5,13 +5,9 @@ import com.github.maxopoly.Kira.permission.KiraRole;
 import com.github.maxopoly.Kira.relay.actions.GroupChatMessageAction;
 import com.github.maxopoly.Kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.Kira.relay.actions.SkynetAction;
-import com.github.maxopoly.Kira.relay.actions.SkynetType;
-import com.github.maxopoly.Kira.relay.actions.SnitchHitType;
 import com.github.maxopoly.Kira.user.KiraUser;
 
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 

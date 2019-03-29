@@ -2,9 +2,12 @@ package com.github.maxopoly.Kira.api.input.impl;
 
 import org.json.JSONObject;
 
+import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.api.APISession;
 import com.github.maxopoly.Kira.api.input.APIInput;
 import com.github.maxopoly.Kira.api.input.APISupplier;
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.Kira.api.token.APIToken;
+import com.github.maxopoly.Kira.api.token.APITokenManager;
 
 public class AuthAPIInput extends APIInput {
 	
@@ -16,8 +19,8 @@ public class AuthAPIInput extends APIInput {
 
 	@Override
 	public void handle(JSONObject json, APISupplier supplier) {
-		String token = json.optString("apiToken");
-		if (token == null) {
+		String tokenString = json.optString("apiToken");
+		if (tokenString == null) {
 			logger.info("Closing connection with " + supplier.getIdentifier() + ", because no api token was given");
 			supplier.getConnection().close();
 			return;
@@ -34,8 +37,20 @@ public class AuthAPIInput extends APIInput {
 			supplier.getConnection().close();
 			return;
 		}
-		
-		
+		APITokenManager tokenMan = KiraMain.getInstance().getAPISessionManager().getTokenManager();
+		APIToken token = tokenMan.getToken(tokenString);
+		if (token == null) {
+			logger.info("Closing connection with " + supplier.getIdentifier() + ", because they supplied an invalid token");
+			supplier.getConnection().close();
+			return;
+		}
+		if (token.isOutdated()) {
+			logger.info("Closing connection with " + supplier.getIdentifier() + ", because their token had timed out");
+			supplier.getConnection().close();
+			return;
+		}
+		APISession session = token.generateSession(supplier.getConnection());
+		KiraMain.getInstance().getAPISessionManager().registerSession(session);
 	}
 
 }

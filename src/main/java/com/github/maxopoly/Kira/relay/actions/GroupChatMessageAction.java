@@ -1,5 +1,7 @@
 package com.github.maxopoly.Kira.relay.actions;
 
+import org.json.JSONObject;
+
 public class GroupChatMessageAction extends MinecraftAction {
 	
 	private String group;
@@ -23,6 +25,13 @@ public class GroupChatMessageAction extends MinecraftAction {
 	
 	public String getMessage() {
 		return message;
+	}
+
+	@Override
+	protected void internalConstructJSON(JSONObject json) {
+		json.put("group", group);
+		json.put("player", sender);
+		json.put("message", message);		
 	}
 
 }

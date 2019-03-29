@@ -4,6 +4,8 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.github.maxopoly.Kira.api.APISession;
+import com.github.maxopoly.Kira.api.KiraAPIConnection;
 import com.github.maxopoly.Kira.user.KiraUser;
 
 public class APIToken {
@@ -40,6 +42,10 @@ public class APIToken {
 
 	public boolean isOutdated() {
 		return (System.currentTimeMillis() - creationTime) > validTime;
+	}
+	
+	public APISession generateSession(KiraAPIConnection connection) {
+		return new APISession(user, snitchGroups, chatGroups, skyNet, expirationTime, connection);
 	}
 
 	public static APIToken generate(KiraUser user, List<String> snitchGroups, List<String> chatGroups, boolean skyNet,

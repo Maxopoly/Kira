@@ -1,5 +1,7 @@
 package com.github.maxopoly.Kira.relay.actions;
 
+import org.json.JSONObject;
+
 public class MinecraftLocation {
 	
 	private final String world;
@@ -28,6 +30,15 @@ public class MinecraftLocation {
 	
 	public int getZ() {
 		return z;
+	}
+	
+	public JSONObject toJson() {
+		JSONObject json = new JSONObject();
+		json.put("world", world);
+		json.put("x", x);
+		json.put("y", y);
+		json.put("z", z);
+		return json;
 	}
 
 }

@@ -8,6 +8,7 @@ import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.relay.actions.MinecraftLocation;
 import com.github.maxopoly.Kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.Kira.relay.actions.SnitchHitType;
+import com.github.maxopoly.Kira.relay.actions.SnitchType;
 
 public class SnitchHitMessage extends RabbitMessage {
 
@@ -31,9 +32,10 @@ public class SnitchHitMessage extends RabbitMessage {
 		int z = json.getInt("z");
 		String world = json.optString("world", "world");
 		SnitchHitType hitType = SnitchHitType.valueOf(json.optString("type", "ENTER"));
+		SnitchType snitchType = SnitchType.valueOf(json.optString("snitchtype", "ENTRY"));
 		long timestamp = json.optLong("timestamp", System.currentTimeMillis());
 		PlayerHitSnitchAction snitchAction = new PlayerHitSnitchAction(timestamp, victimName, snitchName, groupName,
-				new MinecraftLocation(world, x, y, z), hitType);
+				new MinecraftLocation(world, x, y, z), hitType, snitchType);
 		KiraMain.getInstance().getAPISessionManager().handleSnitchHit(snitchAction);
 		if (!chat.sendSnitchHit(snitchAction)) {
 			KiraMain.getInstance().getLogger()

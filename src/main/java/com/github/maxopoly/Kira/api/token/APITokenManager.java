@@ -1,15 +1,14 @@
 package com.github.maxopoly.Kira.api.token;
 
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class APITokenManager {
 	
 	private Map<String, APIToken> tokens;
 	
 	public APITokenManager() {
-		//change to hashmap if we ever have tons of users
-		this.tokens = new TreeMap<String, APIToken>();
+		this.tokens = new ConcurrentHashMap<String, APIToken>();
 	}
 	
 	public void registerToken(APIToken token) {
@@ -26,5 +25,11 @@ public class APITokenManager {
 		}
 		return apiToken;
 	}
+	
+	
+	public void removeToken(APIToken token) {
+		this.tokens.remove(token.getToken());
+	}
+	
 
 }

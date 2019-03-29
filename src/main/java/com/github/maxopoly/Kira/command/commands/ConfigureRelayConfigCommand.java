@@ -15,6 +15,7 @@ import com.github.maxopoly.Kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.Kira.relay.actions.SkynetAction;
 import com.github.maxopoly.Kira.relay.actions.SkynetType;
 import com.github.maxopoly.Kira.relay.actions.SnitchHitType;
+import com.github.maxopoly.Kira.relay.actions.SnitchType;
 import com.github.maxopoly.Kira.user.KiraUser;
 
 public class ConfigureRelayConfigCommand extends Command {
@@ -58,10 +59,9 @@ public class ConfigureRelayConfigCommand extends Command {
 					"    Example: " + relay.formatChatMessage(new GroupChatMessageAction(System.currentTimeMillis(),
 							"exampleGroup", "ttk2", "hello, this is an example message")) + "\n");
 			reply.append(" - Format used for snitch alerts (snitchformat): " + relay.getSnitchFormat() + "\n");
-			reply.append("    Example: "
-					+ relay.formatSnitchOutput(
-							new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch",
-									"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.ENTER))
+			reply.append("    Example: " + relay.formatSnitchOutput(
+					new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch", "exampleGroup",
+							new MinecraftLocation("world", 420, 100, 420), SnitchHitType.ENTER, SnitchType.ENTRY))
 					+ "\n");
 			reply.append(" - Format used for entering a snitch range (snitchentermessage): "
 					+ relay.getSnitchEnterString() + "\n");
@@ -146,9 +146,9 @@ public class ConfigureRelayConfigCommand extends Command {
 				reply.append("Setting snitch alert format to: " + arguments + "\n");
 				relay.setSnitchFormat(arguments);
 				reply.append("Example snitch message would look like this:\n");
-				reply.append(relay.formatSnitchOutput(
-						new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch",
-								"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.ENTER)));
+				reply.append(relay.formatSnitchOutput(new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2",
+						"SecretBaseSnitch", "exampleGroup", new MinecraftLocation("world", 420, 100, 420),
+						SnitchHitType.ENTER, SnitchType.ENTRY)));
 				reply.append('\n');
 			}
 			break;
@@ -160,7 +160,8 @@ public class ConfigureRelayConfigCommand extends Command {
 				relay.updateLoginAction(arguments);
 				reply.append("Example snitch message would look like this:\n");
 				reply.append(new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch",
-						"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.LOGIN));
+						"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.LOGIN,
+						SnitchType.ENTRY));
 			}
 			break;
 		case "snitchlogoutmessage":
@@ -170,7 +171,8 @@ public class ConfigureRelayConfigCommand extends Command {
 				reply.append("Setting logout message to: " + arguments + "\n");
 				relay.updateLogoutAction(arguments);
 				reply.append(new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch",
-						"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.LOGOUT));
+						"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.LOGOUT,
+						SnitchType.ENTRY));
 			}
 			break;
 		case "snitchentermessage":
@@ -180,7 +182,8 @@ public class ConfigureRelayConfigCommand extends Command {
 				reply.append("Setting enter message to: " + arguments + "\n");
 				relay.updateEnterAction(arguments);
 				reply.append(new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch",
-						"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.ENTER));
+						"exampleGroup", new MinecraftLocation("world", 420, 100, 420), SnitchHitType.ENTER,
+						SnitchType.ENTRY));
 			}
 			break;
 		case "hereformat":
