@@ -2,6 +2,7 @@ package com.github.maxopoly.Kira.relay;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 
 import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.relay.actions.GroupChatMessageAction;
@@ -23,7 +24,9 @@ public class RelayConfig {
 	private String snitchLogoutString;
 	private String snitchEnterString;
 	private String hereFormat;
+	private Pattern herePattern;
 	private String everyoneFormat;
+	private Pattern everyonePattern;
 	private String timeFormat;
 	private DateTimeFormatter timeFormatter;
 	private boolean shouldPing;
@@ -60,6 +63,8 @@ public class RelayConfig {
 		this.skynetLogoutString = skynetLogoutString;
 		this.skynetFormat = skynetFormat;
 		this.skynetEnabled = skynetEnabled;
+		this.herePattern = Pattern.compile(hereFormat);
+		this.everyonePattern = Pattern.compile(everyoneFormat);
 	}
 
 	public int getID() {
@@ -121,6 +126,7 @@ public class RelayConfig {
 
 	public void updateHereFormat(String hereFormat) {
 		this.hereFormat = hereFormat;
+		this.herePattern = Pattern.compile(hereFormat);
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
 
@@ -130,6 +136,7 @@ public class RelayConfig {
 
 	public void updateEveryoneFormat(String everyoneFormat) {
 		this.everyoneFormat = everyoneFormat;
+		this.everyonePattern = Pattern.compile(everyoneFormat);
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
 
@@ -292,22 +299,20 @@ public class RelayConfig {
 	}
 
 	private String reformatPings(String output) {
-		if (shouldPing) {
-			output = output.replaceAll(hereFormat, "@here");
-			output = output.replaceAll(everyoneFormat, "@everyone");
-		}
-		String ping = "";
-		if (output.contains("@here")) {
-			ping = "@here";
-		}
-		if (output.contains("@everyone")) {
-			ping = "@everyone";
-		}
-		output = output.replace("%PING%", ping);
 		if (!shouldPing) {
+			// only remove existing pings
 			output = output.replace("@here", "@;here");
 			output = output.replace("@everyone", "@;everyone");
+			return output;
 		}
+		DiscordPing ping = DiscordPing.NONE;
+		if (output.matches(hereFormat) || herePattern.matcher(output).find()) {
+			ping = DiscordPing.HERE;
+		}
+		if (output.matches(everyoneFormat) || everyonePattern.matcher(output).find()) {
+			ping = DiscordPing.EVERYONE;
+		}
+		output = output.replace("%PING%", ping.toString());
 		return output;
 	}
 

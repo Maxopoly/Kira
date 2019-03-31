@@ -21,7 +21,7 @@ import com.github.maxopoly.Kira.user.KiraUser;
 public class ConfigureRelayConfigCommand extends Command {
 
 	public ConfigureRelayConfigCommand() {
-		super("relayconfig", 1, 100);
+		super("relayconfig", 1, 512);
 	}
 
 	@Override
@@ -70,10 +70,10 @@ public class ConfigureRelayConfigCommand extends Command {
 			reply.append(" - Format used for logouts within a snitch range (snitchloginmessage): "
 					+ relay.getSnitchLogoutAction() + "\n");
 			reply.append(
-					" - Regex which will be replaced with an @ here ping for both chat messages and snitch alerts (hereformat): "
+					" - Regex which will trigger an @ here ping for both chat messages and snitch alerts (hereformat): "
 							+ relay.getHereFormat() + "\n");
 			reply.append(
-					" - Regex which will be replaced with an @ everyone ping for both chat messages and snitch alerts (everyoneformat): "
+					" - Regex which will trigger an @ everyone ping for both chat messages and snitch alerts (everyoneformat): "
 							+ relay.getEveryoneFormat() + "\n");
 			reply.append(
 					"- Time format used for the time stamps of messages (timeformat): " + relay.getTimeFormat() + "\n");
@@ -139,6 +139,7 @@ public class ConfigureRelayConfigCommand extends Command {
 				reply.append(relay.formatChatMessage(new GroupChatMessageAction(System.currentTimeMillis(),
 						"exampleGroup", "ttk2", "hello, this is an example message")));
 				reply.append('\n');
+				checkPingAbility(relay, reply);
 			}
 			break;
 		case "snitchformat":
@@ -150,6 +151,7 @@ public class ConfigureRelayConfigCommand extends Command {
 						"SecretBaseSnitch", "exampleGroup", new MinecraftLocation("world", 420, 100, 420),
 						SnitchHitType.ENTER, SnitchType.ENTRY)));
 				reply.append('\n');
+				checkPingAbility(relay, reply);
 			}
 			break;
 		case "snitchloginmessage":
@@ -220,6 +222,7 @@ public class ConfigureRelayConfigCommand extends Command {
 			if (shouldPing != null) {
 				reply.append("Setting pinging to: " + arguments + "\n");
 				relay.updateShouldPing(shouldPing);
+				checkPingAbility(relay, reply);
 			}
 			break;
 		case "timeformat":
@@ -278,6 +281,22 @@ public class ConfigureRelayConfigCommand extends Command {
 					+ " is not a valid property to configure, see the command description for more information");
 		}
 		return reply.toString();
+	}
+
+	private void checkPingAbility(RelayConfig config, StringBuilder reply) {
+		if (!config.shouldPing()) {
+			return;
+		}
+		if (!config.getSnitchFormat().contains("%PING%")) {
+			reply.append(
+					"Pinging is enabled, but your snitch format does not contain `%PING%` so no pings will actually be displayed "
+					+ "for snitch alerts. Is this intended?\n");
+		}
+		if (!config.getChatFormat().contains("%PING%")) {
+			reply.append(
+					"Pinging is enabled, but your chat format does not contain `%PING%` so no pings will actually be displayed "
+					+ "for chat messages. Is this intended?\n");
+		}
 	}
 
 	private Boolean attemptBooleanParsing(String input, StringBuilder sb) {
