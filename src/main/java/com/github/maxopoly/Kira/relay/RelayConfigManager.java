@@ -32,8 +32,8 @@ public class RelayConfigManager {
 
 	public RelayConfig createRelayConfig(String name, KiraUser creator) {
 		RelayConfig config = dao.createRelayConfig(name, true, true, true, true,
-				"`[%TIME%]` `[%GROUP%]` **[%PLAYER%]** %MESSAGE%",
-				"`[%TIME%]` `[%GROUP%]` **%PLAYER%** %ACTION% at %SNITCH% (%X%,%Y%,%Z%)", "logged in", "logged out",
+				"`[%TIME%]` `[%GROUP%]` **[%PLAYER%]** %MESSAGE% %PING%",
+				"`[%TIME%]` `[%GROUP%]` **%PLAYER%** %ACTION% at %SNITCH% (%X%,%Y%,%Z%) %PING%", "logged in", "logged out",
 				"is", "@here", "@everyone", false, "HH:mm:ss", "`[%TIME%]` **%PLAYER%** %ACTION%", "logged in",
 				"logged out", false, creator);
 		if (config == null) {
