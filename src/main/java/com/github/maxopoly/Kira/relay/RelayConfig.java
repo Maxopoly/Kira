@@ -1,6 +1,8 @@
 package com.github.maxopoly.Kira.relay;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
@@ -266,7 +268,7 @@ public class RelayConfig {
 	}
 
 	public String getFormattedTime(long unixMilli) {
-		return timeFormatter.format(Instant.ofEpochMilli(unixMilli));
+		return timeFormatter.format(LocalDateTime.ofEpochSecond(unixMilli / 1000, 0, ZoneOffset.UTC));
 	}
 
 	public String formatSnitchOutput(PlayerHitSnitchAction action) {
@@ -303,6 +305,7 @@ public class RelayConfig {
 			// only remove existing pings
 			output = output.replace("@here", "@;here");
 			output = output.replace("@everyone", "@;everyone");
+			output = output.replace("%PING%", "");
 			return output;
 		}
 		DiscordPing ping = DiscordPing.NONE;

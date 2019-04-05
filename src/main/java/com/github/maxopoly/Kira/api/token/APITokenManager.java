@@ -8,7 +8,7 @@ public class APITokenManager {
 	private Map<String, APIToken> tokens;
 	
 	public APITokenManager() {
-		this.tokens = new ConcurrentHashMap<String, APIToken>();
+		this.tokens = new ConcurrentHashMap<>();
 	}
 	
 	public void registerToken(APIToken token) {

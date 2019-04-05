@@ -158,10 +158,7 @@ public class KiraMain {
 
 	private boolean loadPermission() {
 		kiraRoleManager = dao.loadAllRoles();
-		if (kiraRoleManager == null) {
-			return false;
-		}
-		return true;
+		return kiraRoleManager != null;
 	}
 
 	private boolean loadGroupChats() {

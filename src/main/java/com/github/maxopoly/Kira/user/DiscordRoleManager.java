@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
@@ -18,11 +21,17 @@ public class DiscordRoleManager {
 	private Logger logger;
 	private UserManager userManager;
 
+	private final ScheduledExecutorService scheduler;
+
 	public DiscordRoleManager(Guild guild, long roleID, Logger logger, UserManager userManager) {
 		this.guild = guild;
 		this.userManager = userManager;
 		this.roleID = roleID;
 		this.logger = logger;
+		this.scheduler = Executors.newScheduledThreadPool(1);
+		scheduler.scheduleWithFixedDelay(() -> {
+			syncFully();
+		}, 60, 60, TimeUnit.SECONDS);
 	}
 
 	public boolean takeDiscordRole(KiraUser user) {
@@ -57,7 +66,8 @@ public class DiscordRoleManager {
 	public void giveDiscordRole(KiraUser user) {
 		Role role = guild.getRoleById(roleID);
 		if (role == null) {
-			logger.warn("Could not add auth role to " + user.toString() + ", role with id " + roleID + " did not exist");
+			logger.warn(
+					"Could not add auth role to " + user.toString() + ", role with id " + roleID + " did not exist");
 			return;
 		}
 		if (user.getName() == null) {
@@ -108,5 +118,14 @@ public class DiscordRoleManager {
 					}
 					giveDiscordRole(user);
 				});
+
+		// also make sure to update all user names
+		Member self = guild.getSelfMember();
+		members.forEach(m -> {
+			KiraUser tiedUser = userByDiscordID.get(m.getUser().getIdLong());
+			if (tiedUser != null && self.canInteract(m)) {
+				guild.getController().setNickname(m, tiedUser.getName()).queue();
+			}
+		});
 	}
 }
