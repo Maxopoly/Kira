@@ -27,18 +27,45 @@ public class KiraRoleManager {
 		permissionsById = new TreeMap<>();
 	}
 
-	public void setupDefaultPermissions() {
-		KiraRole defaultRole = getOrCreateRole("default");
-		KiraPermission defaultPerm = getOrCreatePermission("default");
-		KiraPermission canAuthPerm = getOrCreatePermission("canauth");
-		addPermissionToRole(defaultRole, defaultPerm, true);
-		addPermissionToRole(defaultRole, canAuthPerm, true);
-		KiraRole adminRole = getOrCreateRole("admin");
-		KiraPermission adminPerm = getOrCreatePermission("admin");
-		addPermissionToRole(adminRole, adminPerm, true);
-		KiraRole authRole = getOrCreateRole("auth");
-		KiraPermission authPerm = getOrCreatePermission("isauth");
-		addPermissionToRole(authRole, authPerm, true);
+	public void addPermissionToRole(KiraRole role, KiraPermission perm, boolean writeToDb) {
+		if (role.hasPermission(perm)) {
+			return;
+		}
+		role.addPermission(perm);
+		if (writeToDb) {
+			KiraMain.getInstance().getDAO().addPermissionToRole(perm, role);
+		}
+	}
+
+	public void addRole(int userID, KiraRole role, boolean saveToDb) {
+		Set<KiraRole> existingRoles = userRoles.get(userID);
+		if (existingRoles == null) {
+			existingRoles = new HashSet<>();
+			userRoles.put(userID, existingRoles);
+		}
+		if (existingRoles.contains(role)) {
+			return;
+		}
+		existingRoles.add(role);
+		if (saveToDb) {
+			KiraMain.getInstance().getDAO().addUserToRole(KiraMain.getInstance().getUserManager().getUser(userID),
+					role);
+		}
+	}
+
+	public void deleteRole(KiraRole role, boolean writeToDb) {
+		roleById.remove(role.getID());
+		roleByName.remove(role.getName());
+		for(Set<KiraRole> roles : userRoles.values()) {
+			roles.remove(role);
+		}
+		if (writeToDb) {
+			KiraMain.getInstance().getDAO().deleteRole(role);
+		}
+	}
+
+	public KiraRole getDefaultRole() {
+		return getRole("default");
 	}
 
 	public KiraPermission getOrCreatePermission(String name) {
@@ -67,10 +94,20 @@ public class KiraRoleManager {
 		return role;
 	}
 
-	public void reload(KiraRoleManager newData) {
-		this.roleById = newData.roleById;
-		this.roleByName = newData.roleByName;
-		this.userRoles = newData.userRoles;
+	public KiraPermission getPermission(int id) {
+		return permissionsById.get(id);
+	}
+
+	public KiraPermission getPermission(String name) {
+		return permissionsByName.get(name);
+	}
+
+	public KiraRole getRole(int id) {
+		return roleById.get(id);
+	}
+
+	public KiraRole getRole(String name) {
+		return roleByName.get(name);
 	}
 
 	public Collection<KiraRole> getRoles(KiraUser user) {
@@ -83,31 +120,6 @@ public class KiraRoleManager {
 
 	public void giveRoleToUser(KiraUser user, KiraRole role) {
 		addRole(user.getID(), role, true);
-	}
-
-	public void takeRoleFromUser(KiraUser user, KiraRole role) {
-		Set<KiraRole> existingRoles = userRoles.get(user.getID());
-		if (existingRoles == null) {
-			return;
-		}
-		existingRoles.remove(role);
-		KiraMain.getInstance().getDAO().takeRoleFromUser(user, role);
-	}
-
-	public void addRole(int userID, KiraRole role, boolean saveToDb) {
-		Set<KiraRole> existingRoles = userRoles.get(userID);
-		if (existingRoles == null) {
-			existingRoles = new HashSet<>();
-			userRoles.put(userID, existingRoles);
-		}
-		if (existingRoles.contains(role)) {
-			return;
-		}
-		existingRoles.add(role);
-		if (saveToDb) {
-			KiraMain.getInstance().getDAO().addUserToRole(KiraMain.getInstance().getUserManager().getUser(userID),
-					role);
-		}
 	}
 
 	public boolean hasPermission(KiraUser user, String perm) {
@@ -123,18 +135,8 @@ public class KiraRoleManager {
 		return false;
 	}
 
-	public KiraRole getDefaultRole() {
-		return getRole("default");
-	}
-
-	public void addPermissionToRole(KiraRole role, KiraPermission perm, boolean writeToDb) {
-		if (role.hasPermission(perm)) {
-			return;
-		}
-		role.addPermission(perm);
-		if (writeToDb) {
-			KiraMain.getInstance().getDAO().addPermissionToRole(perm, role);
-		}
+	public void registerPermission(KiraPermission perm) {
+		permissionsByName.put(perm.getName(), perm);
 	}
 
 	public void registerRole(KiraRole role) {
@@ -142,34 +144,32 @@ public class KiraRoleManager {
 		roleByName.put(role.getName(), role);
 	}
 
-	public void deleteRole(KiraRole role, boolean writeToDb) {
-		roleById.remove(role.getID());
-		roleByName.remove(role.getName());
-		for(Set<KiraRole> roles : userRoles.values()) {
-			roles.remove(role);
+	public void reload(KiraRoleManager newData) {
+		this.roleById = newData.roleById;
+		this.roleByName = newData.roleByName;
+		this.userRoles = newData.userRoles;
+	}
+
+	public void setupDefaultPermissions() {
+		KiraRole defaultRole = getOrCreateRole("default");
+		KiraPermission defaultPerm = getOrCreatePermission("default");
+		KiraPermission canAuthPerm = getOrCreatePermission("canauth");
+		addPermissionToRole(defaultRole, defaultPerm, true);
+		addPermissionToRole(defaultRole, canAuthPerm, true);
+		KiraRole adminRole = getOrCreateRole("admin");
+		KiraPermission adminPerm = getOrCreatePermission("admin");
+		addPermissionToRole(adminRole, adminPerm, true);
+		KiraRole authRole = getOrCreateRole("auth");
+		KiraPermission authPerm = getOrCreatePermission("isauth");
+		addPermissionToRole(authRole, authPerm, true);
+	}
+
+	public void takeRoleFromUser(KiraUser user, KiraRole role) {
+		Set<KiraRole> existingRoles = userRoles.get(user.getID());
+		if (existingRoles == null) {
+			return;
 		}
-		if (writeToDb) {
-			KiraMain.getInstance().getDAO().deleteRole(role);
-		}
-	}
-
-	public void registerPermission(KiraPermission perm) {
-		permissionsByName.put(perm.getName(), perm);
-	}
-
-	public KiraPermission getPermission(int id) {
-		return permissionsById.get(id);
-	}
-
-	public KiraPermission getPermission(String name) {
-		return permissionsByName.get(name);
-	}
-
-	public KiraRole getRole(int id) {
-		return roleById.get(id);
-	}
-
-	public KiraRole getRole(String name) {
-		return roleByName.get(name);
+		existingRoles.remove(role);
+		KiraMain.getInstance().getDAO().takeRoleFromUser(user, role);
 	}
 }

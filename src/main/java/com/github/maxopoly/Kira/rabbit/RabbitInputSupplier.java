@@ -1,10 +1,15 @@
 package com.github.maxopoly.Kira.rabbit;
 
 import com.github.maxopoly.Kira.KiraMain;
-import com.github.maxopoly.Kira.command.InputSupplier;
+import com.github.maxopoly.Kira.command.model.top.InputSupplier;
 import com.github.maxopoly.Kira.user.KiraUser;
 
 public class RabbitInputSupplier implements InputSupplier {
+
+	@Override
+	public long getChannelID() {
+		return -1L;
+	}
 
 	@Override
 	public String getIdentifier() {
@@ -17,18 +22,13 @@ public class RabbitInputSupplier implements InputSupplier {
 	}
 
 	@Override
-	public void reportBack(String msg) {
-		KiraMain.getInstance().getLogger().info(msg);
-	}
-
-	@Override
 	public boolean hasPermission(String perm) {
 		return true;
 	}
 
 	@Override
-	public long getChannelID() {
-		return -1L;
+	public void reportBack(String msg) {
+		KiraMain.getInstance().getLogger().info(msg);
 	}
 
 }

@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.database.DBConnection;
+import com.github.maxopoly.Kira.util.ParsingUtils;
 import com.rabbitmq.client.ConnectionFactory;
 
 public class ConfigManager {
@@ -21,15 +22,21 @@ public class ConfigManager {
 		this.logger = logger;
 	}
 
-	public boolean reload() {
-		final StringBuilder sb = new StringBuilder();
+	public long getAuthroleID() {
 		try {
-			Files.readAllLines(new File(configFileName).toPath()).forEach(line -> sb.append(line));
-			config = new JSONObject(sb.toString());
-			return true;
-		} catch (IOException | JSONException e) {
-			logger.error("Failed to load config file", e);
-			return false;
+			return config.getJSONObject("bot").getLong("authroleid");
+		} catch (JSONException e) {
+			logger.error("Failed to parse auth role id", e);
+			return -1L;
+		}
+	}
+
+	public String getBotToken() {
+		try {
+			return config.getJSONObject("bot").getString("token");
+		} catch (JSONException e) {
+			logger.error("Failed to parse bot token", e);
+			return null;
 		}
 	}
 
@@ -44,6 +51,26 @@ public class ConfigManager {
 			return new DBConnection(logger, user, password, host, port, database, 5, 10000, 600000, 1800000);
 		} catch (JSONException e) {
 			logger.error("Failed to parse db credentials", e);
+			return null;
+		}
+	}
+
+	public String getIncomingQueueName() {
+		try {
+			JSONObject json = config.getJSONObject("rabbitmq");
+			return json.getString("incomingQueue");
+		} catch (JSONException e) {
+			logger.error("Failed to parse rabbit queue", e);
+			return null;
+		}
+	}
+
+	public String getOutgoingQueueName() {
+		try {
+			JSONObject json = config.getJSONObject("rabbitmq");
+			return json.getString("outgoingQueue");
+		} catch (JSONException e) {
+			logger.error("Failed to parse rabbit queue", e);
 			return null;
 		}
 	}
@@ -75,40 +102,11 @@ public class ConfigManager {
 		}
 	}
 
-	public String getIncomingQueueName() {
+	public long getRelaySectionID() {
 		try {
-			JSONObject json = config.getJSONObject("rabbitmq");
-			return json.getString("incomingQueue");
+			return config.getLong("relayCategory");
 		} catch (JSONException e) {
-			logger.error("Failed to parse rabbit queue", e);
-			return null;
-		}
-	}
-
-	public String getOutgoingQueueName() {
-		try {
-			JSONObject json = config.getJSONObject("rabbitmq");
-			return json.getString("outgoingQueue");
-		} catch (JSONException e) {
-			logger.error("Failed to parse rabbit queue", e);
-			return null;
-		}
-	}
-
-	public String getBotToken() {
-		try {
-			return config.getJSONObject("bot").getString("token");
-		} catch (JSONException e) {
-			logger.error("Failed to parse bot token", e);
-			return null;
-		}
-	}
-
-	public long getAuthroleID() {
-		try {
-			return config.getJSONObject("bot").getLong("authroleid");
-		} catch (JSONException e) {
-			logger.error("Failed to parse auth role id", e);
+			logger.error("No relay category set", e);
 			return -1L;
 		}
 	}
@@ -121,13 +119,21 @@ public class ConfigManager {
 			return -1L;
 		}
 	}
+	
+	
+	public long getAPIRate() {
+		return ParsingUtils.parseTime(config.optString("apirate", "500ms"));
+	}
 
-	public long getRelaySectionID() {
+	public boolean reload() {
+		final StringBuilder sb = new StringBuilder();
 		try {
-			return config.getLong("relayCategory");
-		} catch (JSONException e) {
-			logger.error("No relay category set", e);
-			return -1L;
+			Files.readAllLines(new File(configFileName).toPath()).forEach(line -> sb.append(line));
+			config = new JSONObject(sb.toString());
+			return true;
+		} catch (IOException | JSONException e) {
+			logger.error("Failed to load config file", e);
+			return false;
 		}
 	}
 

@@ -14,6 +14,10 @@ public class AuthManager {
 		playerNames = new HashMap<>();
 	}
 
+	public String getName(UUID uuid) {
+		return playerNames.get(uuid);
+	}
+
 	public UUID getUserForCode(String code) {
 		return pendingAuths.get(code.toLowerCase());
 	}
@@ -28,10 +32,6 @@ public class AuthManager {
 		if (uuid != null) {
 			playerNames.remove(uuid);
 		}
-	}
-
-	public String getName(UUID uuid) {
-		return playerNames.get(uuid);
 	}
 
 }

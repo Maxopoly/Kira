@@ -1,6 +1,5 @@
 package com.github.maxopoly.Kira.relay;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -69,172 +68,14 @@ public class RelayConfig {
 		this.everyonePattern = Pattern.compile(everyoneFormat);
 	}
 
-	public int getID() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getSnitchFormat() {
-		return snitchHitFormat;
-	}
-
-	public void setSnitchFormat(String snitchFormat) {
-		this.snitchHitFormat = snitchFormat;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public String getSnitchLoginAction() {
-		return snitchLoginString;
-	}
-
-	public void updateLoginAction(String loginString) {
-		this.snitchLoginString = loginString;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public String getSnitchLogoutAction() {
-		return snitchLogoutString;
-	}
-
-	public void updateLogoutAction(String logoutString) {
-		this.snitchLogoutString = logoutString;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public String getSnitchEnterString() {
-		return snitchEnterString;
-	}
-
-	public void updateEnterAction(String enterString) {
-		this.snitchEnterString = enterString;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public String getChatFormat() {
-		return chatFormat;
-	}
-
-	public void updateChatFormat(String chatFormat) {
-		this.chatFormat = chatFormat;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public String getHereFormat() {
-		return hereFormat;
-	}
-
-	public void updateHereFormat(String hereFormat) {
-		this.hereFormat = hereFormat;
-		this.herePattern = Pattern.compile(hereFormat);
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public String getEveryoneFormat() {
-		return everyoneFormat;
-	}
-
-	public void updateEveryoneFormat(String everyoneFormat) {
-		this.everyoneFormat = everyoneFormat;
-		this.everyonePattern = Pattern.compile(everyoneFormat);
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public boolean shouldPing() {
-		return shouldPing;
-	}
-
-	public void updateShouldPing(boolean shouldPing) {
-		this.shouldPing = shouldPing;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public boolean shouldRelayFromDiscord() {
-		return relayFromDiscord;
-	}
-
-	public void updateRelayFromDiscord(boolean relayFromDiscord) {
-		this.relayFromDiscord = relayFromDiscord;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public boolean shouldRelayToDiscord() {
-		return relayToDiscord;
-	}
-
-	public void updateRelayToDiscord(boolean relayToDiscord) {
-		this.relayToDiscord = relayToDiscord;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public boolean shouldShowSnitches() {
-		return showSnitches;
-	}
-
-	public void updateShowSnitches(boolean showSnitches) {
-		this.showSnitches = showSnitches;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public boolean shouldDeleteDiscordMessage() {
-		return deleteDiscordMessages;
-	}
-
-	public void updateDeleteDiscordMessages(boolean deleteDiscordMessages) {
-		this.deleteDiscordMessages = deleteDiscordMessages;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public String getSkynetLoginString() {
-		return skynetLoginString;
-	}
-
-	public String getSkynetLogoutString() {
-		return skynetLogoutString;
-	}
-
-	public String getSkynetFormat() {
-		return skynetFormat;
-	}
-
-	public boolean isSkynetEnabled() {
-		return skynetEnabled;
-	}
-
-	public void updateSkynetLoginString(String skynetLoginString) {
-		this.skynetLoginString = skynetLoginString;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public void updateSkynetLogoutString(String skynetLogoutString) {
-		this.skynetLogoutString = skynetLogoutString;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public void updateSkynetFormat(String skynetFormat) {
-		this.skynetFormat = skynetFormat;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public void updateSkynetEnabled(boolean skynetEnabled) {
-		this.skynetEnabled = skynetEnabled;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public String getTimeFormat() {
-		return timeFormat;
-	}
-
-	public void updateTimeFormat(String timeFormat) {
-		this.timeFormat = timeFormat;
-		this.timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public int getOwnerID() {
-		return ownerID;
+	public String formatChatMessage(GroupChatMessageAction action) {
+		String output = chatFormat;
+		output = output.replace("%PLAYER%", action.getSender());
+		output = output.replace("%MESSAGE%", action.getMessage());
+		output = output.replace("%GROUP%", action.getGroupName());
+		output = output.replace("%TIME%", getFormattedTime(action.getTimeStamp()));
+		output = reformatPings(output);
+		return output;
 	}
 
 	public String formatSkynetMessage(SkynetAction action) {
@@ -255,20 +96,6 @@ public class RelayConfig {
 		output = output.replace("%TIME%", getFormattedTime(action.getTimeStamp()));
 		output = reformatPings(output);
 		return output;
-	}
-
-	public String formatChatMessage(GroupChatMessageAction action) {
-		String output = chatFormat;
-		output = output.replace("%PLAYER%", action.getSender());
-		output = output.replace("%MESSAGE%", action.getMessage());
-		output = output.replace("%GROUP%", action.getGroupName());
-		output = output.replace("%TIME%", getFormattedTime(action.getTimeStamp()));
-		output = reformatPings(output);
-		return output;
-	}
-
-	public String getFormattedTime(long unixMilli) {
-		return timeFormatter.format(LocalDateTime.ofEpochSecond(unixMilli / 1000, 0, ZoneOffset.UTC));
 	}
 
 	public String formatSnitchOutput(PlayerHitSnitchAction action) {
@@ -300,6 +127,70 @@ public class RelayConfig {
 		return output;
 	}
 
+	public String getChatFormat() {
+		return chatFormat;
+	}
+
+	public String getEveryoneFormat() {
+		return everyoneFormat;
+	}
+
+	public String getFormattedTime(long unixMilli) {
+		return timeFormatter.format(LocalDateTime.ofEpochSecond(unixMilli / 1000, 0, ZoneOffset.UTC));
+	}
+
+	public String getHereFormat() {
+		return hereFormat;
+	}
+
+	public int getID() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public int getOwnerID() {
+		return ownerID;
+	}
+
+	public String getSkynetFormat() {
+		return skynetFormat;
+	}
+
+	public String getSkynetLoginString() {
+		return skynetLoginString;
+	}
+
+	public String getSkynetLogoutString() {
+		return skynetLogoutString;
+	}
+
+	public String getSnitchEnterString() {
+		return snitchEnterString;
+	}
+
+	public String getSnitchFormat() {
+		return snitchHitFormat;
+	}
+
+	public String getSnitchLoginAction() {
+		return snitchLoginString;
+	}
+
+	public String getSnitchLogoutAction() {
+		return snitchLogoutString;
+	}
+
+	public String getTimeFormat() {
+		return timeFormat;
+	}
+
+	public boolean isSkynetEnabled() {
+		return skynetEnabled;
+	}
+
 	private String reformatPings(String output) {
 		if (!shouldPing) {
 			// only remove existing pings
@@ -317,6 +208,114 @@ public class RelayConfig {
 		}
 		output = output.replace("%PING%", ping.toString());
 		return output;
+	}
+
+	public void setSnitchFormat(String snitchFormat) {
+		this.snitchHitFormat = snitchFormat;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public boolean shouldDeleteDiscordMessage() {
+		return deleteDiscordMessages;
+	}
+
+	public boolean shouldPing() {
+		return shouldPing;
+	}
+
+	public boolean shouldRelayFromDiscord() {
+		return relayFromDiscord;
+	}
+
+	public boolean shouldRelayToDiscord() {
+		return relayToDiscord;
+	}
+
+	public boolean shouldShowSnitches() {
+		return showSnitches;
+	}
+
+	public void updateChatFormat(String chatFormat) {
+		this.chatFormat = chatFormat;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateDeleteDiscordMessages(boolean deleteDiscordMessages) {
+		this.deleteDiscordMessages = deleteDiscordMessages;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateEnterAction(String enterString) {
+		this.snitchEnterString = enterString;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateEveryoneFormat(String everyoneFormat) {
+		this.everyoneFormat = everyoneFormat;
+		this.everyonePattern = Pattern.compile(everyoneFormat);
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateHereFormat(String hereFormat) {
+		this.hereFormat = hereFormat;
+		this.herePattern = Pattern.compile(hereFormat);
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateLoginAction(String loginString) {
+		this.snitchLoginString = loginString;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateLogoutAction(String logoutString) {
+		this.snitchLogoutString = logoutString;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateRelayFromDiscord(boolean relayFromDiscord) {
+		this.relayFromDiscord = relayFromDiscord;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateRelayToDiscord(boolean relayToDiscord) {
+		this.relayToDiscord = relayToDiscord;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateShouldPing(boolean shouldPing) {
+		this.shouldPing = shouldPing;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateShowSnitches(boolean showSnitches) {
+		this.showSnitches = showSnitches;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateSkynetEnabled(boolean skynetEnabled) {
+		this.skynetEnabled = skynetEnabled;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateSkynetFormat(String skynetFormat) {
+		this.skynetFormat = skynetFormat;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateSkynetLoginString(String skynetLoginString) {
+		this.skynetLoginString = skynetLoginString;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateSkynetLogoutString(String skynetLogoutString) {
+		this.skynetLogoutString = skynetLogoutString;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateTimeFormat(String timeFormat) {
+		this.timeFormat = timeFormat;
+		this.timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
 
 }

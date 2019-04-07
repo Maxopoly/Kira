@@ -31,16 +31,15 @@ public class UserManager {
 		userByName = new HashMap<>();
 	}
 
-	public KiraUser getUser(int userID) {
-		return userByID.get(userID);
-	}
-
-	public KiraUser getOrCreateUserByDiscordID(long discordID) {
-		KiraUser user = userByDiscordID.get(discordID);
-		if (user == null) {
-			user = createUser(discordID);
+	public void addUser(KiraUser user) {
+		userByID.put(user.getID(), user);
+		if (user.hasDiscord()) {
+			userByDiscordID.put(user.getDiscordID(), user);
 		}
-		return user;
+		if (user.hasIngameAccount()) {
+			userByUUID.put(user.getIngameUUID(), user);
+			userByName.put(user.getName().toLowerCase(), user);
+		}
 	}
 
 	public KiraUser createUser(long discordID) {
@@ -57,48 +56,24 @@ public class UserManager {
 		return user;
 	}
 
-	public KiraUser getUserByIngameUUID(UUID uuid) {
-		return userByUUID.get(uuid);
-	}
-
-	public void addUser(KiraUser user) {
-		userByID.put(user.getID(), user);
-		if (user.hasDiscord()) {
-			userByDiscordID.put(user.getDiscordID(), user);
-		}
-		if (user.hasIngameAccount()) {
-			userByUUID.put(user.getIngameUUID(), user);
-			userByName.put(user.getName().toLowerCase(), user);
-		}
-	}
-
 	public Set<KiraUser> getAllUsers() {
 		return new HashSet<>(userByID.values());
 	}
 
-	public KiraUser parseUser(String input, StringBuilder feedback) {
-		String lower = input.toLowerCase().trim();
-		if (lower.contains(":")) {
-			String[] parts = input.split(":");
-			if (parts.length != 2) {
-				feedback.append("Could not parse input user, ':' found, but split length was " + input.length()
-						+ " for input " + input + "\n");
-				return null;
-			}
-			switch (parts[0].toLowerCase()) {
-			case "discord":
-				return parseDiscordUser(parts[1], feedback);
-			case "reddit":
-				return parseRedditUser(parts[1], feedback);
-			case "hytale":
-			case "minecraft":
-			case "mc":
-			case "ingame":
-			case "game":
-				return parseIngameUser(parts[1], feedback);
-			}
+	public KiraUser getOrCreateUserByDiscordID(long discordID) {
+		KiraUser user = userByDiscordID.get(discordID);
+		if (user == null) {
+			user = createUser(discordID);
 		}
-		return parseDiscordUser(input, feedback);
+		return user;
+	}
+
+	public KiraUser getUser(int userID) {
+		return userByID.get(userID);
+	}
+
+	public KiraUser getUserByIngameUUID(UUID uuid) {
+		return userByUUID.get(uuid);
 	}
 
 	private KiraUser parseDiscordUser(String input, StringBuilder feedback) {
@@ -153,11 +128,6 @@ public class UserManager {
 		}
 	}
 
-	private KiraUser parseRedditUser(String input, StringBuilder feedback) {
-		feedback.append("Tried to parse " + input + " as reddit account, but this is not implemented yet\n");
-		return null;
-	}
-
 	private KiraUser parseIngameUser(String input, StringBuilder feedback) {
 		String lower = input.toLowerCase();
 		String regex = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
@@ -174,6 +144,36 @@ public class UserManager {
 			feedback.append("Tried to parse " + input + " as minecraft account, but no match was found\n");
 		}
 		return user;
+	}
+
+	private KiraUser parseRedditUser(String input, StringBuilder feedback) {
+		feedback.append("Tried to parse " + input + " as reddit account, but this is not implemented yet\n");
+		return null;
+	}
+
+	public KiraUser parseUser(String input, StringBuilder feedback) {
+		String lower = input.toLowerCase().trim();
+		if (lower.contains(":")) {
+			String[] parts = input.split(":");
+			if (parts.length != 2) {
+				feedback.append("Could not parse input user, ':' found, but split length was " + input.length()
+						+ " for input " + input + "\n");
+				return null;
+			}
+			switch (parts[0].toLowerCase()) {
+			case "discord":
+				return parseDiscordUser(parts[1], feedback);
+			case "reddit":
+				return parseRedditUser(parts[1], feedback);
+			case "hytale":
+			case "minecraft":
+			case "mc":
+			case "ingame":
+			case "game":
+				return parseIngameUser(parts[1], feedback);
+			}
+		}
+		return parseDiscordUser(input, feedback);
 	}
 
 }

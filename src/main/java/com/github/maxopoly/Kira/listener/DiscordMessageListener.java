@@ -5,10 +5,10 @@ import java.util.Set;
 import org.apache.logging.log4j.Logger;
 
 import com.github.maxopoly.Kira.KiraMain;
-import com.github.maxopoly.Kira.command.CommandHandler;
-import com.github.maxopoly.Kira.command.DiscordCommandChannelSupplier;
-import com.github.maxopoly.Kira.command.DiscordCommandPMSupplier;
-import com.github.maxopoly.Kira.command.InputSupplier;
+import com.github.maxopoly.Kira.command.model.discord.CommandHandler;
+import com.github.maxopoly.Kira.command.model.discord.DiscordCommandChannelSupplier;
+import com.github.maxopoly.Kira.command.model.discord.DiscordCommandPMSupplier;
+import com.github.maxopoly.Kira.command.model.top.InputSupplier;
 import com.github.maxopoly.Kira.relay.GroupChat;
 import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.user.KiraUser;
@@ -20,11 +20,11 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class DiscordMessageListener extends ListenerAdapter {
 
+	private final static String channelKeyword = "!kira ";
 	private CommandHandler cmdHandler;
 	private Logger logger;
 	private UserManager userManager;
 	private long ownID;
-	private final static String channelKeyword = "!kira ";
 
 	public DiscordMessageListener(CommandHandler cmdHandler, Logger logger, UserManager userManager, long ownID) {
 		this.cmdHandler = cmdHandler;

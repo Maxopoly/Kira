@@ -15,8 +15,11 @@ public abstract class MinecraftAction {
 		this.timeStamp = timeStamp;
 	}
 	
-	public long getTimeStamp() {
-		return timeStamp;
+	private final JSONObject constructJSON() {
+		JSONObject json = new JSONObject();
+		json.put("time", timeStamp);
+		internalConstructJSON(json);
+		return json;
 	}
 	
 	public JSONObject getJSON() {
@@ -27,11 +30,8 @@ public abstract class MinecraftAction {
 		return json;
 	}
 	
-	private final JSONObject constructJSON() {
-		JSONObject json = new JSONObject();
-		json.put("time", timeStamp);
-		internalConstructJSON(json);
-		return json;
+	public long getTimeStamp() {
+		return timeStamp;
 	}
 	
 	protected abstract void internalConstructJSON(JSONObject json);

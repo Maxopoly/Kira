@@ -11,10 +11,6 @@ public class APITokenManager {
 		this.tokens = new ConcurrentHashMap<>();
 	}
 	
-	public void registerToken(APIToken token) {
-		this.tokens.put(token.getToken(), token);
-	}
-	
 	public APIToken getToken(String token) {
 		APIToken apiToken = tokens.get(token);
 		if (apiToken == null) {
@@ -24,6 +20,10 @@ public class APITokenManager {
 			return null;
 		}
 		return apiToken;
+	}
+	
+	public void registerToken(APIToken token) {
+		this.tokens.put(token.getToken(), token);
 	}
 	
 	

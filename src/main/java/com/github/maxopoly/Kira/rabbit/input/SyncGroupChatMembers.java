@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
 import com.github.maxopoly.Kira.relay.GroupChat;
 import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.user.KiraUser;
@@ -20,7 +21,7 @@ public class SyncGroupChatMembers extends RabbitMessage {
 	}
 
 	@Override
-	public void handle(JSONObject json) {
+	public void handle(JSONObject json, RabbitInputSupplier supplier) {
 		JSONArray memberArray = json.getJSONArray("members");
 		String group = json.getString("group");
 		UUID sender = UUID.fromString(json.getString("sender"));

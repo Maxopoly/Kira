@@ -23,38 +23,40 @@ public class KiraRole {
 		this.id = id;
 	}
 
-	public boolean hasPermission(String permission) {
-		return permissions.containsKey(permission.toLowerCase());
+	public void addPermission(KiraPermission perm) {
+		permissions.put(perm.getName(), perm);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof KiraRole)) {
+			return false;
+		}
+		return ((KiraRole) o).id == id;
 	}
 
 	public Collection<KiraPermission> getAllPermissions() {
 		return Collections.unmodifiableCollection(permissions.values());
 	}
 
-	public boolean hasPermission(KiraPermission permission) {
-		return hasPermission(permission.getName());
-	}
-
-	public void addPermission(KiraPermission perm) {
-		permissions.put(perm.getName(), perm);
+	public int getID() {
+		return id;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public int getID() {
-		return id;
-	}
-
+	@Override
 	public int hashCode() {
 		return name.hashCode();
 	}
 
-	public boolean equals(Object o) {
-		if (!(o instanceof KiraRole)) {
-			return false;
-		}
-		return ((KiraRole) o).id == id;
+	public boolean hasPermission(KiraPermission permission) {
+		return hasPermission(permission.getName());
+	}
+
+	public boolean hasPermission(String permission) {
+		return permissions.containsKey(permission.toLowerCase());
 	}
 }

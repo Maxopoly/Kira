@@ -36,15 +36,15 @@ public class DBConnection {
 	}
 
 	/**
-	 * Gets a single connection from the pool for use. Checks for null database
-	 * first.
+	 * Quick test; either ends or throws an exception if data source isn't
+	 * configured.
 	 * 
-	 * @return A new Connection
 	 * @throws SQLException
 	 */
-	public Connection getConnection() throws SQLException {
-		available();
-		return this.datasource.getConnection();
+	public void available() throws SQLException {
+		if (this.datasource == null) {
+			throw new SQLException("No Datasource Available");
+		}
 	}
 
 	/**
@@ -59,15 +59,15 @@ public class DBConnection {
 	}
 
 	/**
-	 * Quick test; either ends or throws an exception if data source isn't
-	 * configured.
+	 * Gets a single connection from the pool for use. Checks for null database
+	 * first.
 	 * 
+	 * @return A new Connection
 	 * @throws SQLException
 	 */
-	public void available() throws SQLException {
-		if (this.datasource == null) {
-			throw new SQLException("No Datasource Available");
-		}
+	public Connection getConnection() throws SQLException {
+		available();
+		return this.datasource.getConnection();
 	}
 
 	/**

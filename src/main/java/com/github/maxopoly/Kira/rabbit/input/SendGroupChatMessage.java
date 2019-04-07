@@ -3,6 +3,7 @@ package com.github.maxopoly.Kira.rabbit.input;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
 import com.github.maxopoly.Kira.relay.GroupChat;
 import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.relay.actions.GroupChatMessageAction;
@@ -14,7 +15,7 @@ public class SendGroupChatMessage extends RabbitMessage {
 	}
 
 	@Override
-	public void handle(JSONObject json) {
+	public void handle(JSONObject json, RabbitInputSupplier supplier) {
 		String msg = json.getString("msg");
 		String sender = json.getString("sender");
 		String group = json.getString("group");

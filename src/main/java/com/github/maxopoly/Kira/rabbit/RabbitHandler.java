@@ -31,54 +31,27 @@ public class RabbitHandler {
 		this.inputHandler = new RabbitInputProcessor(logger);
 	}
 
-	public boolean setup() {
-		try {
-			conn = connectionFactory.newConnection();
-			incomingChannel = conn.createChannel();
-			incomingChannel.queueDeclare(incomingQueue, false, false, false, null);
-			outgoingChannel = conn.createChannel();
-			outgoingChannel.queueDeclare(outgoingQueue, false, false, false, null);
-			return true;
-		} catch (IOException | TimeoutException e) {
-			logger.error("Failed to setup rabbit connection", e);
-			return false;
-		}
-	}
-
 	public void beginAsyncListen() {
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				KiraMain.getInstance().getLogger().info("Beginning to listen for rabbit input...");
-				DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-					try {
-						String message = new String(delivery.getBody(), "UTF-8");
-						System.out.println(" [x] Received '" + message + "'");
-						inputHandler.handle(message, new RabbitInputSupplier());
-					} catch (Exception e) {
-						//if we dont do this the exception falls back into rabbit, which causes tons of problems
-						logger.error("Exception in rabbit listener", e);
-					}
-				};
+		new Thread(() -> {
+			KiraMain.getInstance().getLogger().info("Beginning to listen for rabbit input...");
+			DeliverCallback deliverCallback = (consumerTag, delivery) -> {
 				try {
-					incomingChannel.basicConsume(incomingQueue, true, deliverCallback, consumerTag -> {
-					});
+					String message = new String(delivery.getBody(), "UTF-8");
+					System.out.println(" [x] Received '" + message + "'");
+					inputHandler.handle(message, new RabbitInputSupplier());
 				} catch (Exception e) {
-					logger.error("Error in rabbit listener", e);
+					// if we dont do this the exception falls back into rabbit, which causes tons of
+					// problems
+					logger.error("Exception in rabbit listener", e);
 				}
+			};
+			try {
+				incomingChannel.basicConsume(incomingQueue, true, deliverCallback, consumerTag -> {
+				});
+			} catch (Exception e) {
+				logger.error("Error in rabbit listener", e);
 			}
 		}).start();
-	}
-
-	public void shutdown() {
-		try {
-			incomingChannel.close();
-			outgoingChannel.close();
-			conn.close();
-		} catch (Exception e) {
-			logger.error("Failed to close rabbit connection", e);
-		}
 	}
 
 	private boolean sendMessage(String msg) {
@@ -93,6 +66,30 @@ public class RabbitHandler {
 
 	public boolean sendMessage(String id, JSONObject json) {
 		return sendMessage(id + " " + json.toString());
+	}
+
+	public boolean setup() {
+		try {
+			conn = connectionFactory.newConnection();
+			incomingChannel = conn.createChannel();
+			incomingChannel.queueDeclare(incomingQueue, false, false, false, null);
+			outgoingChannel = conn.createChannel();
+			outgoingChannel.queueDeclare(outgoingQueue, false, false, false, null);
+			return true;
+		} catch (IOException | TimeoutException e) {
+			logger.error("Failed to setup rabbit connection", e);
+			return false;
+		}
+	}
+
+	public void shutdown() {
+		try {
+			incomingChannel.close();
+			outgoingChannel.close();
+			conn.close();
+		} catch (Exception e) {
+			logger.error("Failed to close rabbit connection", e);
+		}
 	}
 
 }

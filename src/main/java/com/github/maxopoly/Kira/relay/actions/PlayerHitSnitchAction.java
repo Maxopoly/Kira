@@ -26,20 +26,20 @@ public class PlayerHitSnitchAction extends MinecraftAction {
 		return groupName;
 	}
 
-	public String getPlayerName() {
-		return playerName;
-	}
-
-	public String getSnitchName() {
-		return snitchName;
+	public SnitchHitType getHitType() {
+		return hitType;
 	}
 
 	public MinecraftLocation getLocation() {
 		return location;
 	}
 
-	public SnitchHitType getHitType() {
-		return hitType;
+	public String getPlayerName() {
+		return playerName;
+	}
+
+	public String getSnitchName() {
+		return snitchName;
 	}
 
 	@Override

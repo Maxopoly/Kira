@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
 import com.github.maxopoly.Kira.relay.GroupChat;
 import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.user.KiraUser;
@@ -24,7 +25,7 @@ public class CreateGroupChatMessage extends RabbitMessage {
 	}
 
 	@Override
-	public void handle(JSONObject json) {
+	public void handle(JSONObject json, RabbitInputSupplier supplier) {
 		UUID creatorUUID = UUID.fromString(json.getString("creator"));
 		KiraUser creator = KiraMain.getInstance().getUserManager().getUserByIngameUUID(creatorUUID);
 		if (creator == null) {

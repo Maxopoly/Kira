@@ -22,14 +22,6 @@ public class KiraUser {
 		return discordID;
 	}
 
-	public boolean hasDiscord() {
-		return discordID > 0;
-	}
-
-	public String getName() {
-		return name;
-	}
-
 	public int getID() {
 		return id;
 	}
@@ -38,17 +30,20 @@ public class KiraUser {
 		return uuid;
 	}
 
-	public boolean hasIngameAccount() {
-		return uuid != null;
+	public String getName() {
+		return name;
 	}
 
 	public String getRedditAccount() {
 		return redditAccount;
 	}
 
-	public void updateIngame(UUID uuid, String name) {
-		this.uuid = uuid;
-		this.name = name;
+	public boolean hasDiscord() {
+		return discordID > 0;
+	}
+
+	public boolean hasIngameAccount() {
+		return uuid != null;
 	}
 
 	public String toNiceString() {
@@ -58,6 +53,7 @@ public class KiraUser {
 		return "id:" + id;
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append("{id: ");
@@ -70,5 +66,10 @@ public class KiraUser {
 		result.append(uuid == null ? "null" : uuid.toString());
 		result.append("}");
 		return result.toString();
+	}
+
+	public void updateIngame(UUID uuid, String name) {
+		this.uuid = uuid;
+		this.name = name;
 	}
 }

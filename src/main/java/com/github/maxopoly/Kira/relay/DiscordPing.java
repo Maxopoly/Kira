@@ -5,6 +5,7 @@ public enum DiscordPing {
 	NONE, HERE, EVERYONE;
 	
 	
+	@Override
 	public String toString() {
 		switch(this) {
 		case EVERYONE:

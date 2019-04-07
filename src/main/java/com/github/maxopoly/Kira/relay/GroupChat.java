@@ -35,8 +35,20 @@ public class GroupChat {
 		this.config = config;
 	}
 
+	public RelayConfig getConfig() {
+		return config;
+	}
+
+	public KiraUser getCreator() {
+		return creator;
+	}
+
 	public long getDiscordChannelId() {
 		return channelId;
+	}
+
+	public long getGuildId() {
+		return guildId;
 	}
 
 	public int getID() {
@@ -47,24 +59,15 @@ public class GroupChat {
 		return name;
 	}
 
-	public long getGuildId() {
-		return guildId;
-	}
-
 	public KiraRole getTiedRole() {
 		return role;
 	}
 
-	public KiraUser getCreator() {
-		return creator;
-	}
-
-	public RelayConfig getConfig() {
-		return config;
-	}
-
-	public void setConfig(RelayConfig config) {
-		this.config = config;
+	public float getWeight() {
+		if (guildId == KiraMain.getInstance().getGuild().getIdLong()) {
+			return internalWeight;
+		}
+		return externalWeight;
 	}
 
 	public boolean sendMessage(GroupChatMessageAction action) {
@@ -82,21 +85,6 @@ public class GroupChat {
 		return true;
 	}
 
-	public boolean sendSnitchHit(PlayerHitSnitchAction action) {
-		JDA jda = KiraMain.getInstance().getJDA();
-		Guild guild = jda.getGuildById(guildId);
-		if (guild == null) {
-			return false;
-		}
-		TextChannel channel = guild.getTextChannelById(channelId);
-		if (channel == null) {
-			return false;
-		}
-		String msg = config.formatSnitchOutput(action);
-		channel.sendMessage(msg).queue();
-		return true;
-	}
-	
 	public boolean sendSkynet(SkynetAction action) {
 		if (!config.isSkynetEnabled()) {
 			return true;
@@ -114,14 +102,27 @@ public class GroupChat {
 		channel.sendMessage(msg).queue();
 		return true;
 	}
-
-	public float getWeight() {
-		if (guildId == KiraMain.getInstance().getGuild().getIdLong()) {
-			return internalWeight;
+	
+	public boolean sendSnitchHit(PlayerHitSnitchAction action) {
+		JDA jda = KiraMain.getInstance().getJDA();
+		Guild guild = jda.getGuildById(guildId);
+		if (guild == null) {
+			return false;
 		}
-		return externalWeight;
+		TextChannel channel = guild.getTextChannelById(channelId);
+		if (channel == null) {
+			return false;
+		}
+		String msg = config.formatSnitchOutput(action);
+		channel.sendMessage(msg).queue();
+		return true;
 	}
 
+	public void setConfig(RelayConfig config) {
+		this.config = config;
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append("{id: ");

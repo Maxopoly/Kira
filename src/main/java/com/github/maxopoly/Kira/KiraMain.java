@@ -9,8 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.github.maxopoly.Kira.api.APISessionManager;
-import com.github.maxopoly.Kira.command.CommandHandler;
-import com.github.maxopoly.Kira.command.CommandLineInputSupplier;
+import com.github.maxopoly.Kira.command.model.discord.CommandHandler;
+import com.github.maxopoly.Kira.command.model.discord.CommandLineInputSupplier;
 import com.github.maxopoly.Kira.database.DAO;
 import com.github.maxopoly.Kira.database.DBConnection;
 import com.github.maxopoly.Kira.listener.DiscordMessageListener;
@@ -35,28 +35,9 @@ public class KiraMain {
 
 	private static KiraMain instance;
 
-	private Logger logger = LogManager.getLogger("Main");
-	private JDA jda;
-	private boolean shutdown = false;
-	private CommandHandler commandHandler;
-	private Guild guild;
-	private UserManager userManager;
-	private ConfigManager configManager;
-	private DiscordRoleManager roleManager;
-	private DAO dao;
-	private RabbitHandler rabbit;
-	private MinecraftRabbitGateway mcRabbit;
-	private AuthManager authManager;
-	private KiraRoleManager kiraRoleManager;
-	private GroupChatManager groupChatManager;
-	private RelayConfigManager relayConfigManager;
-	private RequestSessionManager requestSessionManager;
-	private APISessionManager apiSessionManager;
-
 	public static KiraMain getInstance() {
 		return instance;
 	}
-
 	public static void main(String[] args) {
 		instance = new KiraMain();
 		if (!instance.loadConfig()) {
@@ -86,14 +67,152 @@ public class KiraMain {
 		if (!instance.setupListeners()) {
 			return;
 		}
-		instance.apiSessionManager = new APISessionManager(instance.logger);
+		instance.apiSessionManager = new APISessionManager(instance.logger, 500);
 		instance.rabbit.beginAsyncListen();
 		instance.parseInput();
+	}
+	private Logger logger = LogManager.getLogger("Main");
+	private JDA jda;
+	private boolean shutdown = false;
+	private CommandHandler commandHandler;
+	private Guild guild;
+	private UserManager userManager;
+	private ConfigManager configManager;
+	private DiscordRoleManager roleManager;
+	private DAO dao;
+	private RabbitHandler rabbit;
+	private MinecraftRabbitGateway mcRabbit;
+	private AuthManager authManager;
+	private KiraRoleManager kiraRoleManager;
+	private GroupChatManager groupChatManager;
+	private RelayConfigManager relayConfigManager;
+
+	private RequestSessionManager requestSessionManager;
+
+	private APISessionManager apiSessionManager;
+
+	public APISessionManager getAPISessionManager() {
+		return apiSessionManager;
+	}
+
+	public AuthManager getAuthManager() {
+		return authManager;
+	}
+
+	public CommandHandler getCommandHandler() {
+		return commandHandler;
+	}
+
+	public DAO getDAO() {
+		return dao;
+	}
+
+	public GroupChatManager getGroupChatManager() {
+		return groupChatManager;
+	}
+
+	public Guild getGuild() {
+		return guild;
+	}
+
+	public JDA getJDA() {
+		return jda;
+	}
+
+	public KiraRoleManager getKiraRoleManager() {
+		return kiraRoleManager;
+	}
+
+	public Logger getLogger() {
+		return logger;
+	}
+
+	public MinecraftRabbitGateway getMCRabbitGateway() {
+		return mcRabbit;
+	}
+
+	public RabbitHandler getRabbitHandler() {
+		return rabbit;
+	}
+
+	public RelayConfigManager getRelayConfigManager() {
+		return relayConfigManager;
+	}
+
+	public RequestSessionManager getRequestSessionManager() {
+		return requestSessionManager;
+	}
+
+	public DiscordRoleManager getRoleManager() {
+		return roleManager;
+	}
+
+	public UserManager getUserManager() {
+		return userManager;
 	}
 
 	private boolean loadConfig() {
 		configManager = new ConfigManager(logger);
 		return configManager.reload();
+	}
+
+	private boolean loadDatabase() {
+		DBConnection dbConn = configManager.getDatabase();
+		if (dbConn == null) {
+			return false;
+		}
+		dao = new DAO(dbConn, logger);
+		for (KiraUser user : dao.loadUsers()) {
+			userManager.addUser(user);
+		}
+		return true;
+	}
+
+	private boolean loadGroupChats() {
+		if (configManager.getRelaySectionID() == -1) {
+			return false;
+		}
+		relayConfigManager = new RelayConfigManager(dao);
+		groupChatManager = new GroupChatManager(dao, logger, configManager.getRelaySectionID(), relayConfigManager);
+		return true;
+	}
+
+	private boolean loadPermission() {
+		kiraRoleManager = dao.loadAllRoles();
+		return kiraRoleManager != null;
+	}
+
+	private void parseInput() {
+		Console c = System.console();
+		Scanner scanner = null;
+		if (c == null) {
+			logger.warn("System console not detected, using scanner as fallback behavior");
+			scanner = new Scanner(System.in);
+		}
+		while (!shutdown) {
+			String msg;
+			if (c == null) {
+				msg = scanner.nextLine();
+			} else {
+				msg = c.readLine("");
+			}
+			if (msg == null) {
+				continue;
+			}
+			commandHandler.handle(msg, new CommandLineInputSupplier());
+		}
+	}
+	
+	private boolean setupAuthManager() {
+		roleManager = new DiscordRoleManager(guild, configManager.getAuthroleID(), logger, userManager);
+		roleManager.syncFully();
+		return true;
+	}
+
+	private boolean setupListeners() {
+		jda.addEventListener(
+				new DiscordMessageListener(commandHandler, logger, userManager, jda.getSelfUser().getIdLong()));
+		return true;
 	}
 
 	private boolean startJDA() {
@@ -132,44 +251,6 @@ public class KiraMain {
 		return true;
 	}
 
-	private boolean loadDatabase() {
-		DBConnection dbConn = configManager.getDatabase();
-		if (dbConn == null) {
-			return false;
-		}
-		dao = new DAO(dbConn, logger);
-		for (KiraUser user : dao.loadUsers()) {
-			userManager.addUser(user);
-		}
-		return true;
-	}
-
-	private boolean setupAuthManager() {
-		roleManager = new DiscordRoleManager(guild, configManager.getAuthroleID(), logger, userManager);
-		roleManager.syncFully();
-		return true;
-	}
-
-	private boolean setupListeners() {
-		jda.addEventListener(
-				new DiscordMessageListener(commandHandler, logger, userManager, jda.getSelfUser().getIdLong()));
-		return true;
-	}
-
-	private boolean loadPermission() {
-		kiraRoleManager = dao.loadAllRoles();
-		return kiraRoleManager != null;
-	}
-
-	private boolean loadGroupChats() {
-		if (configManager.getRelaySectionID() == -1) {
-			return false;
-		}
-		relayConfigManager = new RelayConfigManager(dao);
-		groupChatManager = new GroupChatManager(dao, logger, configManager.getRelaySectionID(), relayConfigManager);
-		return true;
-	}
-
 	private boolean startRabbit() {
 		String incomingQueue = configManager.getIncomingQueueName();
 		String outgoingQueue = configManager.getOutgoingQueueName();
@@ -186,29 +267,10 @@ public class KiraMain {
 		return true;
 	}
 
-	private void parseInput() {
-		Console c = System.console();
-		Scanner scanner = null;
-		if (c == null) {
-			logger.warn("System console not detected, using scanner as fallback behavior");
-			scanner = new Scanner(System.in);
-		}
-		while (!shutdown) {
-			String msg;
-			if (c == null) {
-				msg = scanner.nextLine();
-			} else {
-				msg = c.readLine("");
-			}
-			if (msg == null) {
-				continue;
-			}
-			commandHandler.handle(msg, new CommandLineInputSupplier());
-		}
-	}
 
 	public void stop() {
 		rabbit.shutdown();
+		apiSessionManager.closeSocket();
 		shutdown = true;
 		new Thread(new Runnable() {
 
@@ -224,66 +286,5 @@ public class KiraMain {
 				System.exit(0);
 			}
 		}).start();
-	}
-
-	public Logger getLogger() {
-		return logger;
-	}
-
-	public CommandHandler getCommandHandler() {
-		return commandHandler;
-	}
-
-	public Guild getGuild() {
-		return guild;
-	}
-
-	public UserManager getUserManager() {
-		return userManager;
-	}
-
-	public DAO getDAO() {
-		return dao;
-	}
-
-	public DiscordRoleManager getRoleManager() {
-		return roleManager;
-	}
-
-	public KiraRoleManager getKiraRoleManager() {
-		return kiraRoleManager;
-	}
-
-	public RabbitHandler getRabbitHandler() {
-		return rabbit;
-	}
-
-	public AuthManager getAuthManager() {
-		return authManager;
-	}
-
-	public MinecraftRabbitGateway getMCRabbitGateway() {
-		return mcRabbit;
-	}
-	
-	public APISessionManager getAPISessionManager() {
-		return apiSessionManager;
-	}
-
-	public GroupChatManager getGroupChatManager() {
-		return groupChatManager;
-	}
-
-	public RequestSessionManager getRequestSessionManager() {
-		return requestSessionManager;
-	}
-
-	public RelayConfigManager getRelayConfigManager() {
-		return relayConfigManager;
-	}
-
-
-	public JDA getJDA() {
-		return jda;
 	}
 }

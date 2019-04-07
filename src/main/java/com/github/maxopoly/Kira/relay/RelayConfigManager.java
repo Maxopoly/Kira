@@ -30,6 +30,16 @@ public class RelayConfigManager {
 		}
 	}
 
+	public void addRelayConfig(RelayConfig config) {
+		configsById.put(config.getID(), config);
+		configsByName.put(config.getName().toLowerCase(), config);
+	}
+
+	private void createDefaultConfig() {
+		RelayConfig config = createRelayConfig("default", null);
+		defaultConfig = config;
+	}
+
 	public RelayConfig createRelayConfig(String name, KiraUser creator) {
 		RelayConfig config = dao.createRelayConfig(name, true, true, true, true,
 				"`[%TIME%]` `[%GROUP%]` **[%PLAYER%]** %MESSAGE% %PING%",
@@ -43,11 +53,6 @@ public class RelayConfigManager {
 		return config;
 	}
 
-	public void addRelayConfig(RelayConfig config) {
-		configsById.put(config.getID(), config);
-		configsByName.put(config.getName().toLowerCase(), config);
-	}
-
 	public RelayConfig getById(int id) {
 		return configsById.get(id);
 	}
@@ -58,11 +63,6 @@ public class RelayConfigManager {
 
 	public RelayConfig getDefaultConfig() {
 		return defaultConfig;
-	}
-
-	private void createDefaultConfig() {
-		RelayConfig config = createRelayConfig("default", null);
-		defaultConfig = config;
 	}
 
 }

@@ -19,12 +19,12 @@ public class GroupChatMessageAction extends MinecraftAction {
 		return group;
 	}
 	
-	public String getSender() {
-		return sender;
-	}
-	
 	public String getMessage() {
 		return message;
+	}
+	
+	public String getSender() {
+		return sender;
 	}
 
 	@Override

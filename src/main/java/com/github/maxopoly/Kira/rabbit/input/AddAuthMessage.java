@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
 
 public class AddAuthMessage extends RabbitMessage {
 
@@ -13,7 +14,7 @@ public class AddAuthMessage extends RabbitMessage {
 	}
 
 	@Override
-	public void handle(JSONObject json) {
+	public void handle(JSONObject json, RabbitInputSupplier supplier) {
 		UUID uuid = UUID.fromString(json.getString("uuid"));
 		String code = json.getString("code");
 		String name = json.getString("name");

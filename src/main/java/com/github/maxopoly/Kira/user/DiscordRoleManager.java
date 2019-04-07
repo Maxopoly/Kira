@@ -34,35 +34,6 @@ public class DiscordRoleManager {
 		}, 60, 60, TimeUnit.SECONDS);
 	}
 
-	public boolean takeDiscordRole(KiraUser user) {
-		if (!user.hasDiscord()) {
-			logger.warn("Could not remove " + user.toString() + " from auth role, no discord account associated");
-			return false;
-		}
-		Member member = guild.getMemberById(user.getDiscordID());
-		if (member == null) {
-			logger.warn("Could not remove " + user.toString() + " from auth role, discord account not found");
-			return false;
-		}
-		return takeDiscordRole(member);
-	}
-
-	public boolean takeDiscordRole(Member member) {
-		Role role = guild.getRoleById(roleID);
-		if (member == null) {
-			logger.warn("Could not remove null member");
-			return false;
-		}
-		if (role == null) {
-			logger.warn("Could not remove role from " + member.getEffectiveName() + ", role with id " + roleID
-					+ " did not exist");
-			return false;
-		}
-		logger.info("Taking auth role from " + member.getEffectiveName());
-		guild.getController().removeSingleRoleFromMember(member, role).queue();
-		return true;
-	}
-
 	public void giveDiscordRole(KiraUser user) {
 		Role role = guild.getRoleById(roleID);
 		if (role == null) {
@@ -127,5 +98,34 @@ public class DiscordRoleManager {
 				guild.getController().setNickname(m, tiedUser.getName()).queue();
 			}
 		});
+	}
+
+	public boolean takeDiscordRole(KiraUser user) {
+		if (!user.hasDiscord()) {
+			logger.warn("Could not remove " + user.toString() + " from auth role, no discord account associated");
+			return false;
+		}
+		Member member = guild.getMemberById(user.getDiscordID());
+		if (member == null) {
+			logger.warn("Could not remove " + user.toString() + " from auth role, discord account not found");
+			return false;
+		}
+		return takeDiscordRole(member);
+	}
+
+	public boolean takeDiscordRole(Member member) {
+		Role role = guild.getRoleById(roleID);
+		if (member == null) {
+			logger.warn("Could not remove null member");
+			return false;
+		}
+		if (role == null) {
+			logger.warn("Could not remove role from " + member.getEffectiveName() + ", role with id " + roleID
+					+ " did not exist");
+			return false;
+		}
+		logger.info("Taking auth role from " + member.getEffectiveName());
+		guild.getController().removeSingleRoleFromMember(member, role).queue();
+		return true;
 	}
 }

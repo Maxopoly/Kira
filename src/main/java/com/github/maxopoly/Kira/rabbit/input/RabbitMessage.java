@@ -1,15 +1,11 @@
 package com.github.maxopoly.Kira.rabbit.input;
 
-import org.json.JSONObject;
+import com.github.maxopoly.Kira.command.model.json.JsonInput;
+import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
 
-import com.github.maxopoly.Kira.command.TextInput;
-
-public abstract class RabbitMessage extends TextInput {
+public abstract class RabbitMessage extends JsonInput<RabbitInputSupplier> {
 
 	public RabbitMessage(String identifier, String... alt) {
 		super(identifier, alt);
 	}
-
-	public abstract void handle(JSONObject json);
-
 }

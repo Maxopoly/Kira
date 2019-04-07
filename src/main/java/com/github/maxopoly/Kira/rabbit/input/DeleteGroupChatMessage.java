@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
 import com.github.maxopoly.Kira.relay.GroupChat;
 import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.user.KiraUser;
@@ -16,7 +17,7 @@ public class DeleteGroupChatMessage extends RabbitMessage {
 	}
 
 	@Override
-	public void handle(JSONObject json) {
+	public void handle(JSONObject json, RabbitInputSupplier supplier) {
 		UUID destroyerUUID = UUID.fromString(json.getString("sender"));
 		KiraUser destroyer = KiraMain.getInstance().getUserManager().getUserByIngameUUID(destroyerUUID);
 		if (destroyer == null) {

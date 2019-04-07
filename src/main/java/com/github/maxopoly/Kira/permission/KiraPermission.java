@@ -16,22 +16,24 @@ public class KiraPermission {
 		this.name = name;
 	}
 
-	public String getName() {
-		return name;
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof KiraPermission)) {
+			return false;
+		}
+		return ((KiraPermission) o).id == id;
 	}
 
 	public int getID() {
 		return id;
 	}
 
-	public int hashCode() {
-		return name.hashCode();
+	public String getName() {
+		return name;
 	}
 
-	public boolean equals(Object o) {
-		if (!(o instanceof KiraPermission)) {
-			return false;
-		}
-		return ((KiraPermission) o).id == id;
+	@Override
+	public int hashCode() {
+		return name.hashCode();
 	}
 }

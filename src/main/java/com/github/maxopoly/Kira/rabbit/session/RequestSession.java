@@ -12,9 +12,9 @@ public abstract class RequestSession {
 
 	public abstract JSONObject getRequest();
 
-	public abstract void handleReply(JSONObject json);
-
 	public String getSendingKey() {
 		return sendingKey;
 	}
+
+	public abstract void handleReply(JSONObject json);
 }

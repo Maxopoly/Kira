@@ -3,6 +3,7 @@ package com.github.maxopoly.Kira.rabbit.input;
 import org.json.JSONObject;
 
 import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
 import com.github.maxopoly.Kira.relay.GroupChat;
 import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.relay.actions.MinecraftLocation;
@@ -17,7 +18,7 @@ public class SnitchHitMessage extends RabbitMessage {
 	}
 
 	@Override
-	public void handle(JSONObject json) {
+	public void handle(JSONObject json, RabbitInputSupplier supplier) {
 		String groupName = json.getString("groupName");
 		GroupChatManager man = KiraMain.getInstance().getGroupChatManager();
 		GroupChat chat = man.getGroupChat(groupName);

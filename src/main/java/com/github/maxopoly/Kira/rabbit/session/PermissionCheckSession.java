@@ -26,12 +26,12 @@ public abstract class PermissionCheckSession extends RequestSession {
 		return json;
 	}
 
+	public abstract void handlePermissionReply(boolean hasPerm);
+
 	@Override
 	public void handleReply(JSONObject json) {
 		boolean hasPermission = json.getBoolean("hasPermission");
 		handlePermissionReply(hasPermission);
 	}
-
-	public abstract void handlePermissionReply(boolean hasPerm);
 
 }

@@ -1,49 +1,47 @@
 package com.github.maxopoly.Kira.api.input;
 
-import com.github.maxopoly.Kira.api.KiraAPIConnection;
-import com.github.maxopoly.Kira.command.InputSupplier;
+import com.github.maxopoly.Kira.api.APISession;
+import com.github.maxopoly.Kira.command.model.top.InputSupplier;
 import com.github.maxopoly.Kira.user.KiraUser;
 
 public class APISupplier implements InputSupplier {
 	
-	private KiraUser user;
-	private KiraAPIConnection connection;
+	private APISession session;
 	
-	public APISupplier(KiraUser user, KiraAPIConnection connection) {
-		this.user = user;
-		this.connection = connection;
-	}
-
-	@Override
-	public String getIdentifier() {
-		if (user == null) {
-			return "Unidentified API connection";
-		}
-		return user.toString();
-	}
-
-	@Override
-	public KiraUser getUser() {
-		return user;
-	}
-
-	@Override
-	public void reportBack(String msg) {
-		throw new IllegalAccessError();
-	}
-
-	@Override
-	public boolean hasPermission(String perm) {
-		return false;
+	public APISupplier(APISession session) {
+		this.session = session;
 	}
 
 	@Override
 	public long getChannelID() {
 		return -1;
 	}
+
+	@Override
+	public String getIdentifier() {
+		if (session == null) {
+			return "Unidentified API connection";
+		}
+		return session.getUser().toString();
+	}
+
+	public APISession getSession() {
+		return session;
+	}
+
+	@Override
+	public KiraUser getUser() {
+		return session.getUser();
+	}
+
+	@Override
+	public boolean hasPermission(String perm) {
+		return false;
+	}
 	
-	public KiraAPIConnection getConnection() {
-		return connection;
+	@Override
+	public void reportBack(String msg) {
+		throw new IllegalAccessError();
 	}
 
 }

@@ -10,12 +10,12 @@ public class Quote {
 		this.author = author;
 	}
 
-	public String getQuote() {
-		return quote;
-	}
-
 	public String getAuthor() {
 		return author;
+	}
+
+	public String getQuote() {
+		return quote;
 	}
 
 }
