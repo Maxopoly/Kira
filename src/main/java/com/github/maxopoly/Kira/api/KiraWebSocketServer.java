@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 import org.java_websocket.WebSocket;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
@@ -23,9 +24,10 @@ public class KiraWebSocketServer extends WebSocketServer {
 
 	
 	public KiraWebSocketServer(Logger logger) {
-		super(new InetSocketAddress("localhost/kira/api",14314));
+		super(new InetSocketAddress("mc.civclassic.com",14314));
 		this.logger = logger;
 		connections = new HashMap<>();
+		logger.info("Starting Web socket API server");
 		start();
 	}
 	
@@ -40,7 +42,7 @@ public class KiraWebSocketServer extends WebSocketServer {
 
 	@Override
 	public void onError(WebSocket conn, Exception ex) {
-		KiraMain.getInstance().getLogger().warn("Error occured in API handling of " + conn.getRemoteSocketAddress(), ex);	
+		KiraMain.getInstance().getLogger().warn("Error occured in API handling of " + conn, ex);	
 	}
 
 	@Override
@@ -66,19 +68,19 @@ public class KiraWebSocketServer extends WebSocketServer {
 		String tokenString = handshake.getFieldValue("apiToken");
 		if (tokenString.equals("")) {
 			logger.info("Closing connection with " + conn.getRemoteSocketAddress() + ", because no api token was given");
-			conn.close(400, "No token supplied");
+			conn.close(CloseFrame.POLICY_VALIDATION, "No token supplied");
 			return null;
 		}
 		String appId = handshake.getFieldValue("applicationId");
 		if (appId.equals("")) {
 			logger.info("Closing connection with " + conn.getRemoteSocketAddress() + ", because no application id was given");
-			conn.close(400, "No app id supplied");
+			conn.close(CloseFrame.POLICY_VALIDATION, "No app id supplied");
 			return null;
 		}
 		String versionString = handshake.getFieldValue("apiVersion");
 		if (versionString.equals("")) {
 			logger.info("Closing connection with " + conn.getRemoteSocketAddress() + ", because no api version was given");
-			conn.close(400, "No api version supplied");
+			conn.close(CloseFrame.POLICY_VALIDATION, "No api version supplied");
 			return null;
 		}
 		int version;
@@ -87,24 +89,24 @@ public class KiraWebSocketServer extends WebSocketServer {
 		}
 		catch (NumberFormatException e) {
 			logger.info("Closing connection with " + conn.getRemoteSocketAddress() + ", because illegal version " + versionString + " was supplied");
-			conn.close(400, "Illegal version, not a number");
+			conn.close(CloseFrame.POLICY_VALIDATION, "Illegal version, not a number");
 			return null;
 		}
 		if (version != API_VERSION) {
 			logger.info("Closing connection with " + conn.getRemoteSocketAddress() + ", because they are using an outdated api version");
-			conn.close(400, "Outdated version, newest one is " + API_VERSION);
+			conn.close(CloseFrame.POLICY_VALIDATION, "Outdated version, newest one is " + API_VERSION);
 			return null;
 		}
 		APITokenManager tokenMan = KiraMain.getInstance().getAPISessionManager().getTokenManager();
 		APIToken token = tokenMan.getToken(tokenString);
 		if (token == null) {
 			logger.info("Closing connection with " + conn.getRemoteSocketAddress() + ", because they supplied an invalid token");
-			conn.close(400, "Invalid token");
+			conn.close(CloseFrame.POLICY_VALIDATION, "Invalid token");
 			return null;
 		}
 		if (token.isOutdated()) {
 			logger.info("Closing connection with " + conn.getRemoteSocketAddress() + ", because their token had timed out");
-			conn.close(400, "Outdated token");
+			conn.close(CloseFrame.POLICY_VALIDATION, "Outdated token");
 		}
 		return token.generateSession(conn);
 	}

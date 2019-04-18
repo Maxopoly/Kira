@@ -103,7 +103,7 @@ public class APISession {
 				for(SkynetAction action : skynets) {
 					skyArray.put(action.getJSON());
 				}
-				json.put("group-messages", groupMessages);
+				json.put("skynet", skyArray);
 				skynets.clear();
 			}
 		}

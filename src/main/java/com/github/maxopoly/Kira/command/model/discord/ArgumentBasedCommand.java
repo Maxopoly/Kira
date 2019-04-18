@@ -21,7 +21,13 @@ public abstract class ArgumentBasedCommand extends Command {
 
 	@Override
 	public String handleInternal(String argument, InputSupplier sender) {
-		String [] args = argument.split(" ");
+		String [] args;
+		if (argument.length() == 0) {
+			args = new String [0];
+		}
+		else {
+			args = argument.split(" ");
+		}
 		if (args.length < minArgs) {
 			return getIdentifier() + " requires at least " + minArgs + " parameter\nUsage: "
 					+ getUsage();

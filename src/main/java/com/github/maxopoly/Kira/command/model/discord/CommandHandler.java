@@ -11,6 +11,7 @@ import com.github.maxopoly.Kira.command.discord.CreateRelayChannelHereCommand;
 import com.github.maxopoly.Kira.command.discord.CreateRelayConfig;
 import com.github.maxopoly.Kira.command.discord.DeauthDiscordCommand;
 import com.github.maxopoly.Kira.command.discord.DeleteRelayCommand;
+import com.github.maxopoly.Kira.command.discord.GenerateAPIToken;
 import com.github.maxopoly.Kira.command.discord.GetWeightCommand;
 import com.github.maxopoly.Kira.command.discord.GiveDefaultPermission;
 import com.github.maxopoly.Kira.command.discord.GiveRoleCommand;
@@ -45,7 +46,7 @@ public class CommandHandler extends TextInputHandler<Command, String, InputSuppl
 		if (index == -1) {
 			return "";
 		}
-		return fullArgument.substring(index, fullArgument.length());
+		return fullArgument.substring(index + 1, fullArgument.length());
 	}
 
 	@Override
@@ -99,6 +100,7 @@ public class CommandHandler extends TextInputHandler<Command, String, InputSuppl
 		registerCommand(new ChannelInfoCommand());
 		registerCommand(new DeleteRelayCommand());
 		registerCommand(new InfoCommand());
+		registerCommand(new GenerateAPIToken());
 		logger.info("Loaded total of " + commands.values().size() + " commands");
 	}
 

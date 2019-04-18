@@ -27,13 +27,16 @@ import net.dv8tion.jda.core.entities.TextChannel;
 public class GroupChatManager {
 
 	private static final String accessPermSuffix = "_ACCESS";
+	private static final long channelPerms = 379968L;
 
 	public static float getChatCountLimit() {
 		return 4.0f;
 	}
+
 	public static String getNameLayerManageChannelPermission() {
 		return "KIRA_MANAGE_CHANNEL";
 	}
+
 	private Map<String, GroupChat> groupChatByName;
 	private Map<Long, Set<GroupChat>> chatsByChannelId;
 	private Map<Integer, Float> ownedChatsByUserId;
@@ -60,11 +63,10 @@ public class GroupChatManager {
 
 	public void addMember(GroupChat chat, KiraUser user) {
 		KiraRoleManager roleMan = KiraMain.getInstance().getKiraRoleManager();
-		if (roleMan.getRoles(user).contains(chat.getTiedRole())) {
-			return;
+		if (!roleMan.getRoles(user).contains(chat.getTiedRole())) {
+			logger.info("Giving tied role for chat " + chat.getName() + " to " + user.toString());
+			KiraMain.getInstance().getKiraRoleManager().giveRoleToUser(user, chat.getTiedRole());
 		}
-		logger.info("Giving tied role for chat " + chat.getName() + " to " + user.toString());
-		KiraMain.getInstance().getKiraRoleManager().giveRoleToUser(user, chat.getTiedRole());
 		Guild guild = KiraMain.getInstance().getGuild();
 		if (guild.getIdLong() == chat.getGuildId()) {
 			Channel channel = KiraMain.getInstance().getJDA().getTextChannelById(chat.getDiscordChannelId());
@@ -75,14 +77,20 @@ public class GroupChatManager {
 				return;
 			}
 			if (member != null) {
-				PermissionOverride perm = channel.createPermissionOverride(member).complete();
-				perm.getManager().grant(379968L).queue();
+				PermissionOverride perm = channel.getPermissionOverride(member);
+				if (perm == null) {
+					perm = channel.createPermissionOverride(member).complete();
+				}
+				if (perm.getAllowedRaw() != channelPerms) {
+					logger.info("Adjusting channel perms to " + chat.getName() + " for " + user.toString());
+					perm.getManager().grant(channelPerms).queue();
+				}
 			}
 		}
 	}
 
 	public void applyToAll(Consumer<GroupChat> function) {
-		for(GroupChat chat : groupChatByName.values()) {
+		for (GroupChat chat : groupChatByName.values()) {
 			function.accept(chat);
 		}
 	}
@@ -120,10 +128,9 @@ public class GroupChatManager {
 		TextChannel channel = KiraMain.getInstance().getJDA().getTextChannelById(chat.getDiscordChannelId());
 		boolean isManaged;
 		if (channel == null) {
-			//already deleted
+			// already deleted
 			isManaged = false;
-		}
-		else {
+		} else {
 			isManaged = channel.getGuild().getIdLong() == KiraMain.getInstance().getGuild().getIdLong();
 		}
 		logger.info("Deleting channel for " + chat.getName());
@@ -167,7 +174,7 @@ public class GroupChatManager {
 		}
 		return count;
 	}
-	
+
 	public void putGroupChat(GroupChat chat) {
 		groupChatByName.put(chat.getName().toLowerCase(), chat);
 		Set<GroupChat> existing = chatsByChannelId.get(chat.getDiscordChannelId());
@@ -195,15 +202,13 @@ public class GroupChatManager {
 	}
 
 	public void syncAccess(GroupChat chat, Set<Integer> intendedMembers) {
-		DAO dao = KiraMain.getInstance().getDAO();
 		UserManager userMan = KiraMain.getInstance().getUserManager();
 		Set<Integer> currentMembers = dao.getGroupChatMembers(chat);
 		// remove all members that shouldnt be there
 		currentMembers.stream().filter(i -> !intendedMembers.contains(i))
 				.forEach(i -> removeMember(chat, userMan.getUser(i)));
 		// add all that are missing
-		intendedMembers.stream().filter(i -> !currentMembers.contains(i))
-				.forEach(i -> addMember(chat, userMan.getUser(i)));
+		intendedMembers.stream().forEach(i -> addMember(chat, userMan.getUser(i)));
 	}
 
 }

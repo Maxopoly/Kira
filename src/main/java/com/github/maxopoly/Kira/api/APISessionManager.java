@@ -70,7 +70,7 @@ public class APISessionManager {
 	}
 
 	public void handleGroupMessage(GroupChatMessageAction action) {
-		List<APISession> applyingSessions = snitchTakers.get(action.getGroupName());
+		List<APISession> applyingSessions = chatTakers.get(action.getGroupName());
 		iterateAndCleanUp(applyingSessions, (session, a) -> {
 			session.sendGroupChatMessage(action);
 		}, action);

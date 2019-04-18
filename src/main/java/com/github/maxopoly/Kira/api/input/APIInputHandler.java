@@ -23,6 +23,6 @@ public class APIInputHandler extends JsonInputHandler<APISupplier> {
 
 	@Override
 	protected void registerCommands() {
-
+		//soon
 	}
 }
