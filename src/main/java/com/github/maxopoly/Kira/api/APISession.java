@@ -109,6 +109,8 @@ public class APISession {
 		}
 		connection.send(json.toString());
 	}
+	
+	
 
 	public boolean receivesSkynet() {
 		return receivesSkynet;

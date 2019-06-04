@@ -86,9 +86,7 @@ public class KiraMain {
 	private KiraRoleManager kiraRoleManager;
 	private GroupChatManager groupChatManager;
 	private RelayConfigManager relayConfigManager;
-
 	private RequestSessionManager requestSessionManager;
-
 	private APISessionManager apiSessionManager;
 
 	public APISessionManager getAPISessionManager() {
@@ -149,6 +147,10 @@ public class KiraMain {
 
 	public UserManager getUserManager() {
 		return userManager;
+	}
+	
+	public ConfigManager getConfig() {
+		return configManager;
 	}
 
 	private boolean loadConfig() {

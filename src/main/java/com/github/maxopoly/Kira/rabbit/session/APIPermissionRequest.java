@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 
@@ -46,7 +47,7 @@ public class APIPermissionRequest extends RequestSession {
 			json.getJSONArray("read_chat").forEach( s -> chatGroups.add((String)s));
 		}
 		boolean skynet = dataRequested.contains(APIDataType.SKYNET);
-		APIToken token = APIToken.generate(supplier.getUser(), snitchGroups, chatGroups, skynet, expirationTime);
+		APIToken token = APIToken.generate(supplier.getUser(), snitchGroups, chatGroups, skynet, expirationTime, TimeUnit.MINUTES.toMillis(5));
 		KiraMain.getInstance().getAPISessionManager().getTokenManager().registerToken(token);
 		supplier.reportBack("Your token is: " + token.getToken());
 	}

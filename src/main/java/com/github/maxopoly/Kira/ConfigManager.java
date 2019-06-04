@@ -3,6 +3,8 @@ package com.github.maxopoly.Kira;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -123,6 +125,16 @@ public class ConfigManager {
 	
 	public long getAPIRate() {
 		return ParsingUtils.parseTime(config.optString("apirate", "500ms"));
+	}
+	
+	public Map<String, Long> getConsoleForwardingMapping() {
+		JSONObject json = config.getJSONObject("consoleforward");
+		Map <String, Long> result = new TreeMap<>();
+		for(String key : json.keySet()) {
+			long value = json.getLong(key);
+			result.put(key, value);
+		}
+		return result;
 	}
 
 	public boolean reload() {

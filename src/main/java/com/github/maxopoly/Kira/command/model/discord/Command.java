@@ -41,6 +41,7 @@ public abstract class Command extends TextInput<String, InputSupplier> {
 		if (!supplier.hasPermission(getRequiredPermission())) {
 			supplier.reportBack("You don't have the required permission to do this");
 			logger.info(supplier.getIdentifier() + " attempted to run forbidden command: " + getIdentifier());
+			return;
 		}
 		String reply = handleInternal(argument, supplier);
 		supplier.reportBack(reply);
