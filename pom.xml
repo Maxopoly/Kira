@@ -48,7 +48,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>com.github.maxopoly.Kira.KiraMain</mainClass>
+							<mainClass>com.github.maxopoly.kira.KiraMain</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

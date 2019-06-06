@@ -10,12 +10,12 @@ import java.util.function.Consumer;
 
 import org.apache.logging.log4j.Logger;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.database.DAO;
 import com.github.maxopoly.Kira.permission.KiraRole;
 import com.github.maxopoly.Kira.permission.KiraRoleManager;
 import com.github.maxopoly.Kira.user.KiraUser;
 import com.github.maxopoly.Kira.user.UserManager;
+import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.Channel;

@@ -2,7 +2,6 @@ package com.github.maxopoly.Kira.command.model.discord;
 
 import org.apache.logging.log4j.Logger;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.discord.AuthCommand;
 import com.github.maxopoly.Kira.command.discord.ChannelInfoCommand;
 import com.github.maxopoly.Kira.command.discord.ConfigureRelayConfigCommand;
@@ -29,6 +28,7 @@ import com.github.maxopoly.Kira.command.discord.SyncUsernameCommand;
 import com.github.maxopoly.Kira.command.discord.TieRelayConfigCommand;
 import com.github.maxopoly.Kira.command.model.top.InputSupplier;
 import com.github.maxopoly.Kira.command.model.top.TextInputHandler;
+import com.github.maxopoly.kira.KiraMain;
 
 public class CommandHandler extends TextInputHandler<Command, String, InputSupplier> {
 

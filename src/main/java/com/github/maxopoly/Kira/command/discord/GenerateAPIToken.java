@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.api.token.APIDataType;
 import com.github.maxopoly.Kira.command.model.discord.ArgumentBasedCommand;
 import com.github.maxopoly.Kira.command.model.top.InputSupplier;
 import com.github.maxopoly.Kira.rabbit.session.APIPermissionRequest;
 import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.KiraMain;
 
 public class GenerateAPIToken extends ArgumentBasedCommand {
 

@@ -1,11 +1,11 @@
 package com.github.maxopoly.Kira.relay;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.permission.KiraRole;
 import com.github.maxopoly.Kira.relay.actions.GroupChatMessageAction;
 import com.github.maxopoly.Kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.Kira.relay.actions.SkynetAction;
 import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;

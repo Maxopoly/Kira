@@ -2,7 +2,7 @@ package com.github.maxopoly.Kira.command.model.top;
 
 import org.apache.logging.log4j.Logger;
 
-import com.github.maxopoly.Kira.KiraMain;
+import com.github.maxopoly.kira.KiraMain;
 
 public abstract class TextInput <A, S extends InputSupplier> {
 

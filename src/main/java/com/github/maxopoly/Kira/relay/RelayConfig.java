@@ -5,11 +5,11 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.relay.actions.GroupChatMessageAction;
 import com.github.maxopoly.Kira.relay.actions.MinecraftLocation;
 import com.github.maxopoly.Kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.Kira.relay.actions.SkynetAction;
+import com.github.maxopoly.kira.KiraMain;
 
 public class RelayConfig {
 

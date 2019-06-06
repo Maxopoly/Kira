@@ -1,9 +1,9 @@
 package com.github.maxopoly.Kira.command.discord;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.model.discord.Command;
 import com.github.maxopoly.Kira.command.model.top.InputSupplier;
 import com.github.maxopoly.Kira.user.UserManager;
+import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;

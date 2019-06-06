@@ -2,10 +2,10 @@ package com.github.maxopoly.Kira.rabbit.input;
 
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
 import com.github.maxopoly.Kira.relay.actions.SkynetAction;
 import com.github.maxopoly.Kira.relay.actions.SkynetType;
+import com.github.maxopoly.kira.KiraMain;
 
 public class SkynetMessage extends RabbitMessage {
 

@@ -1,10 +1,10 @@
 package com.github.maxopoly.Kira.command.discord;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.model.discord.Command;
 import com.github.maxopoly.Kira.command.model.top.InputSupplier;
 import com.github.maxopoly.Kira.permission.KiraRole;
 import com.github.maxopoly.Kira.permission.KiraRoleManager;
+import com.github.maxopoly.kira.KiraMain;
 
 public class GiveDefaultPermission extends Command {
 

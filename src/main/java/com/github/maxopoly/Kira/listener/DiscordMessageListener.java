@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.model.discord.CommandHandler;
 import com.github.maxopoly.Kira.command.model.discord.DiscordCommandChannelSupplier;
 import com.github.maxopoly.Kira.command.model.discord.DiscordCommandPMSupplier;
@@ -13,6 +12,7 @@ import com.github.maxopoly.Kira.relay.GroupChat;
 import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.user.KiraUser;
 import com.github.maxopoly.Kira.user.UserManager;
+import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;

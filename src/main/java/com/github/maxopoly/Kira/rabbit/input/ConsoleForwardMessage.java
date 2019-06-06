@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
+import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.entities.TextChannel;
 

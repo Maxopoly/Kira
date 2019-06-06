@@ -2,10 +2,10 @@ package com.github.maxopoly.Kira.command.discord;
 
 import java.util.Set;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.model.discord.ArgumentBasedCommand;
 import com.github.maxopoly.Kira.command.model.top.InputSupplier;
 import com.github.maxopoly.Kira.relay.GroupChat;
+import com.github.maxopoly.kira.KiraMain;
 
 public class ChannelInfoCommand extends ArgumentBasedCommand {
 

@@ -12,10 +12,10 @@ import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.api.input.APISupplier;
 import com.github.maxopoly.Kira.api.token.APIToken;
 import com.github.maxopoly.Kira.api.token.APITokenManager;
+import com.github.maxopoly.kira.KiraMain;
 
 public class KiraWebSocketServer extends WebSocketServer {
 

@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira;
+package com.github.maxopoly.kira;
 
 import java.io.Console;
 import java.util.Scanner;

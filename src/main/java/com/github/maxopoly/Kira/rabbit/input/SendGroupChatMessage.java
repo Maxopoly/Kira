@@ -2,11 +2,11 @@ package com.github.maxopoly.Kira.rabbit.input;
 
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
 import com.github.maxopoly.Kira.relay.GroupChat;
 import com.github.maxopoly.Kira.relay.GroupChatManager;
 import com.github.maxopoly.Kira.relay.actions.GroupChatMessageAction;
+import com.github.maxopoly.kira.KiraMain;
 
 public class SendGroupChatMessage extends RabbitMessage {
 
