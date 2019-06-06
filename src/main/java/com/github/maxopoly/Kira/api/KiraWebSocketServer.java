@@ -21,7 +21,39 @@ public class KiraWebSocketServer extends WebSocketServer {
 
 	private static final int API_VERSION = 1;
 
+	/**
+	 * Takes an URI and returns the last key-value mapping for each query parameter pair.
+	 * If the URI contains no query parameters, returns an empty map.
+	 * Ignores the fragment part of the URI.
+	 * Malformed keys/values (unsupported encoding) are ignored.
+	 * Note that keys are case sensitive as per RFC 3986. https://tools.ietf.org/html/rfc3986#page-11
+	 */
+	public static Map<String, String> getQueryParams(String uri) {
+		Map<String, String> queryPairs = new HashMap<String, String>();
+
+		int paramsSepIdx = uri.indexOf("?");
+		if (paramsSepIdx < 0) return queryPairs; // no query params in URI
+		String query = uri.substring(paramsSepIdx + 1);
+
+		int fragmentSepIdx = query.indexOf("#");
+		if (fragmentSepIdx >= 0) {
+			query = query.substring(0, fragmentSepIdx);
+		}
+
+		String[] pairs = query.split("&");
+		for (String pair : pairs) {
+			int kvSep = pair.indexOf("=");
+			try {
+			String key = URLDecoder.decode(pair.substring(0, kvSep), "UTF-8");
+			String value = URLDecoder.decode(pair.substring(kvSep + 1), "UTF-8");
+			queryPairs.put(key, value);
+			} catch (UnsupportedEncodingException ignored) {
+			}
+		}
+		return queryPairs;
+	}
 	private Map <WebSocket, APISession> connections;
+
 	private Logger logger;
 
 	public KiraWebSocketServer(Logger logger) {
@@ -112,37 +144,5 @@ public class KiraWebSocketServer extends WebSocketServer {
 			conn.close(CloseFrame.POLICY_VALIDATION, "Outdated token");
 		}
 		return token.generateSession(conn);
-	}
-
-	/**
-	 * Takes an URI and returns the last key-value mapping for each query parameter pair.
-	 * If the URI contains no query parameters, returns an empty map.
-	 * Ignores the fragment part of the URI.
-	 * Malformed keys/values (unsupported encoding) are ignored.
-	 * Note that keys are case sensitive as per RFC 3986. https://tools.ietf.org/html/rfc3986#page-11
-	 */
-	public static Map<String, String> getQueryParams(String uri) {
-		Map<String, String> queryPairs = new HashMap<String, String>();
-
-		int paramsSepIdx = uri.indexOf("?");
-		if (paramsSepIdx < 0) return queryPairs; // no query params in URI
-		String query = uri.substring(paramsSepIdx + 1);
-
-		int fragmentSepIdx = query.indexOf("#");
-		if (fragmentSepIdx >= 0) {
-			query = query.substring(0, fragmentSepIdx);
-		}
-
-		String[] pairs = query.split("&");
-		for (String pair : pairs) {
-			int kvSep = pair.indexOf("=");
-			try {
-			String key = URLDecoder.decode(pair.substring(0, kvSep), "UTF-8");
-			String value = URLDecoder.decode(pair.substring(kvSep + 1), "UTF-8");
-			queryPairs.put(key, value);
-			} catch (UnsupportedEncodingException ignored) {
-			}
-		}
-		return queryPairs;
 	}
 }

@@ -6,6 +6,7 @@ import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.command.discord.AuthCommand;
 import com.github.maxopoly.Kira.command.discord.ChannelInfoCommand;
 import com.github.maxopoly.Kira.command.discord.ConfigureRelayConfigCommand;
+import com.github.maxopoly.Kira.command.discord.ConsoleCommand;
 import com.github.maxopoly.Kira.command.discord.CreateDefaultPermsCommand;
 import com.github.maxopoly.Kira.command.discord.CreateRelayChannelHereCommand;
 import com.github.maxopoly.Kira.command.discord.CreateRelayConfig;
@@ -101,6 +102,7 @@ public class CommandHandler extends TextInputHandler<Command, String, InputSuppl
 		registerCommand(new DeleteRelayCommand());
 		registerCommand(new InfoCommand());
 		registerCommand(new GenerateAPIToken());
+		registerCommand(new ConsoleCommand());
 		logger.info("Loaded total of " + commands.values().size() + " commands");
 	}
 

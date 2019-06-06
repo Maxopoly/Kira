@@ -101,6 +101,10 @@ public class KiraMain {
 		return commandHandler;
 	}
 
+	public ConfigManager getConfig() {
+		return configManager;
+	}
+
 	public DAO getDAO() {
 		return dao;
 	}
@@ -144,13 +148,9 @@ public class KiraMain {
 	public DiscordRoleManager getRoleManager() {
 		return roleManager;
 	}
-
+	
 	public UserManager getUserManager() {
 		return userManager;
-	}
-	
-	public ConfigManager getConfig() {
-		return configManager;
 	}
 
 	private boolean loadConfig() {

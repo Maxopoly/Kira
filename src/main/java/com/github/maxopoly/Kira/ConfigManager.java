@@ -24,6 +24,10 @@ public class ConfigManager {
 		this.logger = logger;
 	}
 
+	public long getAPIRate() {
+		return ParsingUtils.parseTime(config.optString("apirate", "500ms"));
+	}
+
 	public long getAuthroleID() {
 		try {
 			return config.getJSONObject("bot").getLong("authroleid");
@@ -40,6 +44,16 @@ public class ConfigManager {
 			logger.error("Failed to parse bot token", e);
 			return null;
 		}
+	}
+
+	public Map<String, Long> getConsoleForwardingMapping() {
+		JSONObject json = config.getJSONObject("consoleforward");
+		Map <String, Long> result = new TreeMap<>();
+		for(String key : json.keySet()) {
+			long value = json.getLong(key);
+			result.put(key, value);
+		}
+		return result;
 	}
 
 	public DBConnection getDatabase() {
@@ -103,7 +117,8 @@ public class ConfigManager {
 			return null;
 		}
 	}
-
+	
+	
 	public long getRelaySectionID() {
 		try {
 			return config.getLong("relayCategory");
@@ -112,7 +127,7 @@ public class ConfigManager {
 			return -1L;
 		}
 	}
-
+	
 	public long getServerID() {
 		try {
 			return config.getJSONObject("bot").getLong("serverid");
@@ -120,21 +135,6 @@ public class ConfigManager {
 			logger.error("Failed to parse server id", e);
 			return -1L;
 		}
-	}
-	
-	
-	public long getAPIRate() {
-		return ParsingUtils.parseTime(config.optString("apirate", "500ms"));
-	}
-	
-	public Map<String, Long> getConsoleForwardingMapping() {
-		JSONObject json = config.getJSONObject("consoleforward");
-		Map <String, Long> result = new TreeMap<>();
-		for(String key : json.keySet()) {
-			long value = json.getLong(key);
-			result.put(key, value);
-		}
-		return result;
 	}
 
 	public boolean reload() {

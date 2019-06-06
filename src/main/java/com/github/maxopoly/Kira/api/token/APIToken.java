@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import org.java_websocket.WebSocket;
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.KiraMain;
 import com.github.maxopoly.Kira.api.APISession;
 import com.github.maxopoly.Kira.user.KiraUser;
 
@@ -15,11 +14,6 @@ public class APIToken {
 
 	private static final String VALID_CHARACTERS = "ABCDEFGHIJKLMOPGRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	private static final SecureRandom rng = new SecureRandom();
-
-	public static APIToken generate(KiraUser user, List<String> snitchGroups, List<String> chatGroups, boolean skyNet,
-			long expirationTime, long validTime) {
-		return new APIToken(generateCode(64), user, snitchGroups, chatGroups, skyNet, expirationTime, validTime);
-	}
 
 	public static APIToken generate(APISession session) {
 		return generate(session.getUser(), session.getSnitchGroups(), session.getChatGroups(), session.receivesSkynet(),
@@ -42,6 +36,11 @@ public class APIToken {
 		return generate(session.getUser(), session.getSnitchGroups(), session.getChatGroups(), session.receivesSkynet(),
 				-1L, TimeUnit.HOURS.toMillis(3));
 	} */
+
+	public static APIToken generate(KiraUser user, List<String> snitchGroups, List<String> chatGroups, boolean skyNet,
+			long expirationTime, long validTime) {
+		return new APIToken(generateCode(64), user, snitchGroups, chatGroups, skyNet, expirationTime, validTime);
+	}
 
 	private static String generateCode(int length) {
 		StringBuilder sb = new StringBuilder(length);

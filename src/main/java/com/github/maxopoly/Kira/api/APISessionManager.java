@@ -48,16 +48,11 @@ public class APISessionManager {
 		}, sendingInterval, sendingInterval, TimeUnit.MILLISECONDS);
 	}
 
-	private void sendUpdates() {
-		Iterator<APISession> iter = sessions.iterator();
-		while (iter.hasNext()) {
-			APISession session = iter.next();
-			if (session.isClosed()) {
-				iter.remove();
-			}
-			if (session.hasPendingNotifications()) {
-				session.popAndSendPendingNotifications();
-			}
+	public void closeSocket() {
+		try {
+			socketServer.stop();
+		} catch (IOException | InterruptedException e) {
+			logger.warn("Failed to close web socket", e);
 		}
 	}
 
@@ -107,14 +102,6 @@ public class APISessionManager {
 		}
 	}
 
-	public void closeSocket() {
-		try {
-			socketServer.stop();
-		} catch (IOException | InterruptedException e) {
-			logger.warn("Failed to close web socket", e);
-		}
-	}
-
 	public void registerSession(APISession session) {
 		for (String chat : session.getChatGroups()) {
 			List<APISession> existing = chatTakers.computeIfAbsent(chat, s -> new LinkedList<>());
@@ -135,6 +122,19 @@ public class APISessionManager {
 		}
 		synchronized (sessions) {
 			sessions.add(session);
+		}
+	}
+
+	private void sendUpdates() {
+		Iterator<APISession> iter = sessions.iterator();
+		while (iter.hasNext()) {
+			APISession session = iter.next();
+			if (session.isClosed()) {
+				iter.remove();
+			}
+			if (session.hasPendingNotifications()) {
+				session.popAndSendPendingNotifications();
+			}
 		}
 	}
 
