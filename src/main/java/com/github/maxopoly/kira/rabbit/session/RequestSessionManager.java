@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.rabbit.session;
+package com.github.maxopoly.kira.rabbit.session;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.rabbit.RabbitHandler;
+import com.github.maxopoly.kira.rabbit.RabbitHandler;
 
 public class RequestSessionManager {
 

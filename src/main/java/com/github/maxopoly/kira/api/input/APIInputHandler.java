@@ -1,9 +1,9 @@
-package com.github.maxopoly.Kira.api.input;
+package com.github.maxopoly.kira.api.input;
 
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.command.model.json.JsonInputHandler;
+import com.github.maxopoly.kira.command.model.json.JsonInputHandler;
 
 public class APIInputHandler extends JsonInputHandler<APISupplier> {
 

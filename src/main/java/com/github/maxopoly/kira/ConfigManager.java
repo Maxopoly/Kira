@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.database.DBConnection;
-import com.github.maxopoly.Kira.util.ParsingUtils;
+import com.github.maxopoly.kira.database.DBConnection;
+import com.github.maxopoly.kira.util.ParsingUtils;
 import com.rabbitmq.client.ConnectionFactory;
 
 public class ConfigManager {

@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.relay;
+package com.github.maxopoly.kira.relay;
 
 public enum DiscordPing {
 	

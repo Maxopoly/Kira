@@ -1,10 +1,10 @@
-package com.github.maxopoly.Kira.command.model.json;
+package com.github.maxopoly.kira.command.model.json;
 
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.command.model.top.InputSupplier;
-import com.github.maxopoly.Kira.command.model.top.TextInputHandler;
+import com.github.maxopoly.kira.command.model.top.InputSupplier;
+import com.github.maxopoly.kira.command.model.top.TextInputHandler;
 
 public abstract class JsonInputHandler <S extends InputSupplier> extends TextInputHandler<JsonInput<S>, JSONObject, S>{
 	

@@ -1,6 +1,6 @@
-package com.github.maxopoly.Kira.command.model.discord;
+package com.github.maxopoly.kira.command.model.discord;
 
-import com.github.maxopoly.Kira.command.model.top.InputSupplier;
+import com.github.maxopoly.kira.command.model.top.InputSupplier;
 
 public abstract class ArgumentBasedCommand extends Command {
 

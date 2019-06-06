@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.database;
+package com.github.maxopoly.kira.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,14 +17,14 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
 
-import com.github.maxopoly.Kira.permission.KiraPermission;
-import com.github.maxopoly.Kira.permission.KiraRole;
-import com.github.maxopoly.Kira.permission.KiraRoleManager;
-import com.github.maxopoly.Kira.relay.GroupChat;
-import com.github.maxopoly.Kira.relay.RelayConfig;
-import com.github.maxopoly.Kira.relay.RelayConfigManager;
-import com.github.maxopoly.Kira.user.KiraUser;
-import com.github.maxopoly.Kira.user.UserManager;
+import com.github.maxopoly.kira.permission.KiraPermission;
+import com.github.maxopoly.kira.permission.KiraRole;
+import com.github.maxopoly.kira.permission.KiraRoleManager;
+import com.github.maxopoly.kira.relay.GroupChat;
+import com.github.maxopoly.kira.relay.RelayConfig;
+import com.github.maxopoly.kira.relay.RelayConfigManager;
+import com.github.maxopoly.kira.user.KiraUser;
+import com.github.maxopoly.kira.user.UserManager;
 import com.github.maxopoly.kira.KiraMain;
 
 public class DAO {

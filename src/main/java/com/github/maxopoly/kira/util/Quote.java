@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.util;
+package com.github.maxopoly.kira.util;
 
 public class Quote {
 

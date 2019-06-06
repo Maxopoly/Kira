@@ -1,8 +1,8 @@
-package com.github.maxopoly.Kira.command.discord;
+package com.github.maxopoly.kira.command.discord;
 
-import com.github.maxopoly.Kira.command.model.discord.ArgumentBasedCommand;
-import com.github.maxopoly.Kira.command.model.top.InputSupplier;
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.command.model.discord.ArgumentBasedCommand;
+import com.github.maxopoly.kira.command.model.top.InputSupplier;
+import com.github.maxopoly.kira.user.KiraUser;
 import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.entities.Channel;

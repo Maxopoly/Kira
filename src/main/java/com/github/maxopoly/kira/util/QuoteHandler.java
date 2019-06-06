@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.util;
+package com.github.maxopoly.kira.util;
 
 import java.io.IOException;
 import java.util.LinkedList;

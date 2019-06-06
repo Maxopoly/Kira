@@ -1,11 +1,11 @@
-package com.github.maxopoly.Kira.rabbit;
+package com.github.maxopoly.kira.rabbit;
 
 import java.util.UUID;
 
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.relay.GroupChat;
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.relay.GroupChat;
+import com.github.maxopoly.kira.user.KiraUser;
 
 import net.dv8tion.jda.core.entities.Channel;
 

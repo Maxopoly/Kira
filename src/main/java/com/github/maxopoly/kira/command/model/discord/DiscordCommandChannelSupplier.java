@@ -1,6 +1,6 @@
-package com.github.maxopoly.Kira.command.model.discord;
+package com.github.maxopoly.kira.command.model.discord;
 
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.user.KiraUser;
 import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.JDA;

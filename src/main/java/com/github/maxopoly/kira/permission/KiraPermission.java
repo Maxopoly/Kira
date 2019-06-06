@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.permission;
+package com.github.maxopoly.kira.permission;
 
 public class KiraPermission {
 

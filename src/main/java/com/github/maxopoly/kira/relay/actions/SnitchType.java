@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.relay.actions;
+package com.github.maxopoly.kira.relay.actions;
 
 /**
  * Describes the different kinds of snitches

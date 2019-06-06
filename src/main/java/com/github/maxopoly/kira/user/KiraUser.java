@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.user;
+package com.github.maxopoly.kira.user;
 
 import java.util.UUID;
 

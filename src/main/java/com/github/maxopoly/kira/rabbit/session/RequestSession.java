@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.rabbit.session;
+package com.github.maxopoly.kira.rabbit.session;
 
 import org.json.JSONObject;
 

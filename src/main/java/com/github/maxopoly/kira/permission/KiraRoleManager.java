@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.permission;
+package com.github.maxopoly.kira.permission;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.user.KiraUser;
 import com.github.maxopoly.kira.KiraMain;
 
 public class KiraRoleManager {

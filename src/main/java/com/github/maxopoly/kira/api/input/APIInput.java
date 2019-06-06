@@ -1,6 +1,6 @@
-package com.github.maxopoly.Kira.api.input;
+package com.github.maxopoly.kira.api.input;
 
-import com.github.maxopoly.Kira.command.model.json.JsonInput;
+import com.github.maxopoly.kira.command.model.json.JsonInput;
 
 public abstract class APIInput extends JsonInput<APISupplier> {
 

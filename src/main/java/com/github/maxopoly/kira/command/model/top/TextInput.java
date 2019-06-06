@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.command.model.top;
+package com.github.maxopoly.kira.command.model.top;
 
 import org.apache.logging.log4j.Logger;
 

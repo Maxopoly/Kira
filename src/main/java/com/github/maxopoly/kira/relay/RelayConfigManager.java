@@ -1,11 +1,11 @@
-package com.github.maxopoly.Kira.relay;
+package com.github.maxopoly.kira.relay;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.github.maxopoly.Kira.database.DAO;
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.database.DAO;
+import com.github.maxopoly.kira.user.KiraUser;
 
 public class RelayConfigManager {
 

@@ -1,11 +1,11 @@
-package com.github.maxopoly.Kira.command.discord;
+package com.github.maxopoly.kira.command.discord;
 
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import com.github.maxopoly.Kira.command.model.discord.ArgumentBasedCommand;
-import com.github.maxopoly.Kira.command.model.top.InputSupplier;
+import com.github.maxopoly.kira.command.model.discord.ArgumentBasedCommand;
+import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.KiraMain;
 
 public class RunIngameCommand extends ArgumentBasedCommand {

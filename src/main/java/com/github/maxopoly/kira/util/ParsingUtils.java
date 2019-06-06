@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.util;
+package com.github.maxopoly.kira.util;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;

@@ -1,8 +1,8 @@
-package com.github.maxopoly.Kira.api.input;
+package com.github.maxopoly.kira.api.input;
 
-import com.github.maxopoly.Kira.api.APISession;
-import com.github.maxopoly.Kira.command.model.top.InputSupplier;
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.api.APISession;
+import com.github.maxopoly.kira.command.model.top.InputSupplier;
+import com.github.maxopoly.kira.user.KiraUser;
 
 public class APISupplier implements InputSupplier {
 	

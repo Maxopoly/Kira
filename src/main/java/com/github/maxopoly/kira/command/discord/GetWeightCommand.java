@@ -1,12 +1,12 @@
-package com.github.maxopoly.Kira.command.discord;
+package com.github.maxopoly.kira.command.discord;
 
 import java.text.DecimalFormat;
 import java.util.Set;
 
-import com.github.maxopoly.Kira.command.model.discord.Command;
-import com.github.maxopoly.Kira.command.model.top.InputSupplier;
-import com.github.maxopoly.Kira.relay.GroupChat;
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.command.model.discord.Command;
+import com.github.maxopoly.kira.command.model.top.InputSupplier;
+import com.github.maxopoly.kira.relay.GroupChat;
+import com.github.maxopoly.kira.user.KiraUser;
 import com.github.maxopoly.kira.KiraMain;
 
 public class GetWeightCommand extends Command {

@@ -1,10 +1,10 @@
-package com.github.maxopoly.Kira.relay;
+package com.github.maxopoly.kira.relay;
 
-import com.github.maxopoly.Kira.permission.KiraRole;
-import com.github.maxopoly.Kira.relay.actions.GroupChatMessageAction;
-import com.github.maxopoly.Kira.relay.actions.PlayerHitSnitchAction;
-import com.github.maxopoly.Kira.relay.actions.SkynetAction;
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.permission.KiraRole;
+import com.github.maxopoly.kira.relay.actions.GroupChatMessageAction;
+import com.github.maxopoly.kira.relay.actions.PlayerHitSnitchAction;
+import com.github.maxopoly.kira.relay.actions.SkynetAction;
+import com.github.maxopoly.kira.user.KiraUser;
 import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.JDA;

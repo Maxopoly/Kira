@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.api.token;
+package com.github.maxopoly.kira.api.token;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 import org.java_websocket.WebSocket;
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.api.APISession;
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.api.APISession;
+import com.github.maxopoly.kira.user.KiraUser;
 
 public class APIToken {
 

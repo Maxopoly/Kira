@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.database;
+package com.github.maxopoly.kira.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;

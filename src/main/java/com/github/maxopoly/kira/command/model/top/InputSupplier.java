@@ -1,6 +1,6 @@
-package com.github.maxopoly.Kira.command.model.top;
+package com.github.maxopoly.kira.command.model.top;
 
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.user.KiraUser;
 
 public interface InputSupplier {
 

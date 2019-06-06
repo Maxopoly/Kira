@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.relay;
+package com.github.maxopoly.kira.relay;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -10,11 +10,11 @@ import java.util.function.Consumer;
 
 import org.apache.logging.log4j.Logger;
 
-import com.github.maxopoly.Kira.database.DAO;
-import com.github.maxopoly.Kira.permission.KiraRole;
-import com.github.maxopoly.Kira.permission.KiraRoleManager;
-import com.github.maxopoly.Kira.user.KiraUser;
-import com.github.maxopoly.Kira.user.UserManager;
+import com.github.maxopoly.kira.database.DAO;
+import com.github.maxopoly.kira.permission.KiraRole;
+import com.github.maxopoly.kira.permission.KiraRoleManager;
+import com.github.maxopoly.kira.user.KiraUser;
+import com.github.maxopoly.kira.user.UserManager;
 import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.entities.Category;

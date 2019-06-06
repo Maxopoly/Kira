@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.command.model.top;
+package com.github.maxopoly.kira.command.model.top;
 
 import java.util.Collection;
 import java.util.HashMap;

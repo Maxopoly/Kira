@@ -1,13 +1,13 @@
-package com.github.maxopoly.Kira.command.discord;
+package com.github.maxopoly.kira.command.discord;
 
 import java.util.UUID;
 
-import com.github.maxopoly.Kira.command.model.discord.ArgumentBasedCommand;
-import com.github.maxopoly.Kira.command.model.top.InputSupplier;
-import com.github.maxopoly.Kira.permission.KiraRole;
-import com.github.maxopoly.Kira.permission.KiraRoleManager;
-import com.github.maxopoly.Kira.user.AuthManager;
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.command.model.discord.ArgumentBasedCommand;
+import com.github.maxopoly.kira.command.model.top.InputSupplier;
+import com.github.maxopoly.kira.permission.KiraRole;
+import com.github.maxopoly.kira.permission.KiraRoleManager;
+import com.github.maxopoly.kira.user.AuthManager;
+import com.github.maxopoly.kira.user.KiraUser;
 import com.github.maxopoly.kira.KiraMain;
 
 public class AuthCommand extends ArgumentBasedCommand {

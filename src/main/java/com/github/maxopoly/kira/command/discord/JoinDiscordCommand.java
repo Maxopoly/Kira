@@ -1,9 +1,9 @@
-package com.github.maxopoly.Kira.command.discord;
+package com.github.maxopoly.kira.command.discord;
 
 import java.util.UUID;
 
-import com.github.maxopoly.Kira.command.model.discord.Command;
-import com.github.maxopoly.Kira.command.model.top.InputSupplier;
+import com.github.maxopoly.kira.command.model.discord.Command;
+import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.KiraMain;
 
 public class JoinDiscordCommand extends Command {

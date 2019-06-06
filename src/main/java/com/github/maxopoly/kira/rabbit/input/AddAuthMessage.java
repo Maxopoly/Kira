@@ -1,10 +1,10 @@
-package com.github.maxopoly.Kira.rabbit.input;
+package com.github.maxopoly.kira.rabbit.input;
 
 import java.util.UUID;
 
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
+import com.github.maxopoly.kira.rabbit.RabbitInputSupplier;
 import com.github.maxopoly.kira.KiraMain;
 
 public class AddAuthMessage extends RabbitMessage {

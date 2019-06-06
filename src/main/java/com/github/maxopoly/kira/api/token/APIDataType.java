@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.api.token;
+package com.github.maxopoly.kira.api.token;
 
 public enum APIDataType {
 	

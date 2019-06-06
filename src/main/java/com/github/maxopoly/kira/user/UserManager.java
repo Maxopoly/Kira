@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.user;
+package com.github.maxopoly.kira.user;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Logger;
 
-import com.github.maxopoly.Kira.permission.KiraRoleManager;
+import com.github.maxopoly.kira.permission.KiraRoleManager;
 import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.JDA;

@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.api;
+package com.github.maxopoly.kira.api;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,10 +7,10 @@ import org.java_websocket.WebSocket;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.relay.actions.GroupChatMessageAction;
-import com.github.maxopoly.Kira.relay.actions.PlayerHitSnitchAction;
-import com.github.maxopoly.Kira.relay.actions.SkynetAction;
-import com.github.maxopoly.Kira.user.KiraUser;
+import com.github.maxopoly.kira.relay.actions.GroupChatMessageAction;
+import com.github.maxopoly.kira.relay.actions.PlayerHitSnitchAction;
+import com.github.maxopoly.kira.relay.actions.SkynetAction;
+import com.github.maxopoly.kira.user.KiraUser;
 
 public class APISession {
 

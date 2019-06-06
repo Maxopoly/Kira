@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.rabbit.input;
+package com.github.maxopoly.kira.rabbit.input;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,11 +7,11 @@ import java.util.UUID;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.rabbit.RabbitInputSupplier;
-import com.github.maxopoly.Kira.relay.GroupChat;
-import com.github.maxopoly.Kira.relay.GroupChatManager;
-import com.github.maxopoly.Kira.user.KiraUser;
-import com.github.maxopoly.Kira.user.UserManager;
+import com.github.maxopoly.kira.rabbit.RabbitInputSupplier;
+import com.github.maxopoly.kira.relay.GroupChat;
+import com.github.maxopoly.kira.relay.GroupChatManager;
+import com.github.maxopoly.kira.user.KiraUser;
+import com.github.maxopoly.kira.user.UserManager;
 import com.github.maxopoly.kira.KiraMain;
 
 public class SyncGroupChatMembers extends RabbitMessage {

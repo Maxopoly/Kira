@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.rabbit.session;
+package com.github.maxopoly.kira.rabbit.session;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 
-import com.github.maxopoly.Kira.api.token.APIDataType;
-import com.github.maxopoly.Kira.api.token.APIToken;
-import com.github.maxopoly.Kira.command.model.top.InputSupplier;
+import com.github.maxopoly.kira.api.token.APIDataType;
+import com.github.maxopoly.kira.api.token.APIToken;
+import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.KiraMain;
 
 public class APIPermissionRequest extends RequestSession {

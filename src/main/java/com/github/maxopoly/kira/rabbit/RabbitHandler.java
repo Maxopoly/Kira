@@ -1,4 +1,4 @@
-package com.github.maxopoly.Kira.rabbit;
+package com.github.maxopoly.kira.rabbit;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
