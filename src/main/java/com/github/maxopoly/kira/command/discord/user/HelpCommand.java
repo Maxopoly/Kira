@@ -1,4 +1,4 @@
-package com.github.maxopoly.kira.command.discord;
+package com.github.maxopoly.kira.command.discord.user;
 
 import java.util.Collections;
 import java.util.Comparator;

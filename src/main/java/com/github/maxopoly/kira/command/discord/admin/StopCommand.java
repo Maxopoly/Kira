@@ -1,18 +1,18 @@
-package com.github.maxopoly.kira.command.discord;
+package com.github.maxopoly.kira.command.discord.admin;
 
 import com.github.maxopoly.kira.command.model.discord.Command;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.KiraMain;
 
-public class CreateDefaultPermsCommand extends Command {
+public class StopCommand extends Command {
 
-	public CreateDefaultPermsCommand() {
-		super("createdefaultperms");
+	public StopCommand() {
+		super("stop", "end", "quit", "exit");
 	}
 
 	@Override
 	public String getFunctionality() {
-		return "Initializes basic permissions";
+		return "Stops the bot completly";
 	}
 
 	@Override
@@ -22,12 +22,13 @@ public class CreateDefaultPermsCommand extends Command {
 
 	@Override
 	public String getUsage() {
-		return "createdefaultperms";
+		return "stop";
 	}
 
 	@Override
 	public String handleInternal(String argument, InputSupplier sender) {
-		KiraMain.getInstance().getKiraRoleManager().setupDefaultPermissions();
-		return "Setup basic permissions";
+		KiraMain.getInstance().stop();
+		return "Thank you and good bye";
 	}
+
 }

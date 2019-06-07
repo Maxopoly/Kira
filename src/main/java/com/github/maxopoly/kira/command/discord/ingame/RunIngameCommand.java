@@ -1,4 +1,4 @@
-package com.github.maxopoly.kira.command.discord;
+package com.github.maxopoly.kira.command.discord.ingame;
 
 import java.util.Arrays;
 import java.util.UUID;

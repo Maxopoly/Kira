@@ -1,4 +1,4 @@
-package com.github.maxopoly.kira.command.discord;
+package com.github.maxopoly.kira.command.discord.relay;
 
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
