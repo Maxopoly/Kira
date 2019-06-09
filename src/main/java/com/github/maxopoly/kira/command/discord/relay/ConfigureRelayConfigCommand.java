@@ -10,6 +10,7 @@ import com.github.maxopoly.kira.relay.RelayConfig;
 import com.github.maxopoly.kira.relay.RelayConfigManager;
 import com.github.maxopoly.kira.relay.actions.GroupChatMessageAction;
 import com.github.maxopoly.kira.relay.actions.MinecraftLocation;
+import com.github.maxopoly.kira.relay.actions.NewPlayerAction;
 import com.github.maxopoly.kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.kira.relay.actions.SkynetAction;
 import com.github.maxopoly.kira.relay.actions.SkynetType;
@@ -88,6 +89,8 @@ public class ConfigureRelayConfigCommand extends ArgumentBasedCommand {
 				+ "relayconfig [name] skynetlogoutformat [your login message]\n"
 				+ "relayconfig [name] skynetformat [your skynet format]\n"
 				+ "relayconfig [name] skynetenabled [true|false]\n"
+				+ "relayconfig [name] newplayerformat [your new player announcement format]\n"
+				+ "relayconfig [name] newplayerenabled [true|false]\n"
 				+ "relayconfig [name] timeformat [your time format like HH:mm:ss]";
 	}
 
@@ -154,6 +157,12 @@ public class ConfigureRelayConfigCommand extends ArgumentBasedCommand {
 					+ "\n");
 			reply.append(" - Skynet login format (skynetloginformat): " + relay.getSkynetLoginString() + "\n");
 			reply.append(" - Skynet logout format (skynetlogoutformat): " + relay.getSkynetLogoutString() + "\n");
+			reply.append(" - Relaying of new player logins (newplayerenabled): "
+					+ relay.isNewPlayerEnabled() + "\n");
+			reply.append(" - new player announcement format (newplayerformat): " + relay.getNewPlayerFormat() + "\n");
+			reply.append("    Example: "
+					+ relay.formatNewPlayerMessage(new NewPlayerAction(System.currentTimeMillis(), "ttk2"))
+					+ "\n");
 			reply.append(" - Use \"help relayconfig\" for more information on how to configure these properties\n");
 			return reply.toString();
 		}
@@ -340,6 +349,23 @@ public class ConfigureRelayConfigCommand extends ArgumentBasedCommand {
 				reply.append("Example skynet logout message would look like this:\n");
 				reply.append(relay
 						.formatSkynetMessage(new SkynetAction(System.currentTimeMillis(), "ttk2", SkynetType.LOGOUT)));
+				reply.append('\n');
+			}
+			break;
+		case "newplayerenabled":
+			Boolean newPlayerEnabled = attemptBooleanParsing(arguments, reply);
+			if (newPlayerEnabled != null) {
+				relay.updateNewPlayerEnabled(newPlayerEnabled);
+				reply.append("Setting new player announcements status to: " + relay.isNewPlayerEnabled());
+			}
+			break;
+		case "newplayerformat":
+			if (passLengthCheck(arguments, 512, reply)) {
+				reply.append("Setting new player announcements format to: " + arguments + "\n");
+				relay.updateNewPlayerFormat(arguments);
+				reply.append("Example new player announcements message would look like this:\n");
+				reply.append(relay
+						.formatNewPlayerMessage(new NewPlayerAction(System.currentTimeMillis(), "ttk2")));
 				reply.append('\n');
 			}
 			break;

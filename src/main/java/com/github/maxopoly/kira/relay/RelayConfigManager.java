@@ -45,7 +45,7 @@ public class RelayConfigManager {
 				"`[%TIME%]` `[%GROUP%]` **[%PLAYER%]** %MESSAGE% %PING%",
 				"`[%TIME%]` `[%GROUP%]` **%PLAYER%** %ACTION% at %SNITCH% (%X%,%Y%,%Z%) %PING%", "logged in", "logged out",
 				"is", "@here", "@everyone", false, "HH:mm:ss", "`[%TIME%]` **%PLAYER%** %ACTION%", "logged in",
-				"logged out", false, creator);
+				"logged out", false, "`[%TIME%]` **%PLAYER%** is brand new!", false, creator);
 		if (config == null) {
 			return null;
 		}

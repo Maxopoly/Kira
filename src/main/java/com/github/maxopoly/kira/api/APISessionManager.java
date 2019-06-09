@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
+import com.github.maxopoly.kira.relay.actions.NewPlayerAction;
 import org.apache.logging.log4j.Logger;
 
 import com.github.maxopoly.kira.api.input.APIInputHandler;
@@ -74,6 +75,14 @@ public class APISessionManager {
 	public void handleSkynetMessage(SkynetAction action) {
 		iterateAndCleanUp(skynetTakers, (session, a) -> {
 			session.sendSkynetAlert(action);
+		}, action);
+	}
+
+	public void handleNewPlayerMessage(NewPlayerAction action) {
+		// reuse skynetTakers because this is from the same event source
+		// and thus visible to the same audience
+		iterateAndCleanUp(skynetTakers, (session, a) -> {
+			session.sendNewPlayerAlert(action);
 		}, action);
 	}
 

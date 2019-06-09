@@ -8,6 +8,7 @@ import com.github.maxopoly.kira.rabbit.input.AddAuthMessage;
 import com.github.maxopoly.kira.rabbit.input.ConsoleForwardMessage;
 import com.github.maxopoly.kira.rabbit.input.CreateGroupChatMessage;
 import com.github.maxopoly.kira.rabbit.input.DeleteGroupChatMessage;
+import com.github.maxopoly.kira.rabbit.input.NewPlayerMessage;
 import com.github.maxopoly.kira.rabbit.input.ReplyToUserMessage;
 import com.github.maxopoly.kira.rabbit.input.RequestSessionReplyMessage;
 import com.github.maxopoly.kira.rabbit.input.SendGroupChatMessage;
@@ -43,6 +44,7 @@ public class RabbitInputProcessor extends JsonInputHandler<RabbitInputSupplier> 
 		registerCommand(new SnitchHitMessage());
 		registerCommand(new RequestSessionReplyMessage());
 		registerCommand(new SkynetMessage());
+		registerCommand(new NewPlayerMessage());
 		registerCommand(new ConsoleForwardMessage(KiraMain.getInstance().getConfig().getConsoleForwardingMapping()));
 	}
 
