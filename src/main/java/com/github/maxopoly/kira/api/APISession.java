@@ -43,7 +43,6 @@ public class APISession {
 		this.newPlayers = new LinkedList<>();
 		this.connection = connection;
 		this.isClosed = false;
-		
 	}
 
 	public void close() {
@@ -76,6 +75,17 @@ public class APISession {
 
 	public boolean isClosed() {
 		return isClosed;
+	}
+
+	public void sendAuthMessage() {
+		JSONObject json = new JSONObject();
+		json.put("type", "auth");
+		json.put("valid", true);
+		json.put("expires",  expirationTime);
+		json.put("chats", getChatGroups());
+		json.put("snitches", getSnitchGroups());
+		json.put("skynet", receivesSkynet());
+		connection.send(json.toString());
 	}
 
 	public void popAndSendPendingNotifications() {

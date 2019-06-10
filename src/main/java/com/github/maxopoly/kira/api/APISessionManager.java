@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.github.maxopoly.kira.relay.actions.NewPlayerAction;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 import com.github.maxopoly.kira.api.input.APIInputHandler;
 import com.github.maxopoly.kira.api.token.APITokenManager;
 import com.github.maxopoly.kira.relay.actions.GroupChatMessageAction;
-import com.github.maxopoly.kira.relay.actions.MinecraftAction;
 import com.github.maxopoly.kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.kira.relay.actions.SkynetAction;
 
@@ -67,34 +66,33 @@ public class APISessionManager {
 
 	public void handleGroupMessage(GroupChatMessageAction action) {
 		List<APISession> applyingSessions = chatTakers.get(action.getGroupName());
-		iterateAndCleanUp(applyingSessions, (session, a) -> {
+		iterateAndCleanUp(applyingSessions, (session) -> {
 			session.sendGroupChatMessage(action);
-		}, action);
+		});
 	}
 
 	public void handleSkynetMessage(SkynetAction action) {
-		iterateAndCleanUp(skynetTakers, (session, a) -> {
+		iterateAndCleanUp(skynetTakers, (session) -> {
 			session.sendSkynetAlert(action);
-		}, action);
+		});
 	}
 
 	public void handleNewPlayerMessage(NewPlayerAction action) {
 		// reuse skynetTakers because this is from the same event source
 		// and thus visible to the same audience
-		iterateAndCleanUp(skynetTakers, (session, a) -> {
+		iterateAndCleanUp(skynetTakers, (session) -> {
 			session.sendNewPlayerAlert(action);
-		}, action);
+		});
 	}
 
 	public void handleSnitchHit(PlayerHitSnitchAction action) {
 		List<APISession> applyingSessions = snitchTakers.get(action.getGroupName());
-		iterateAndCleanUp(applyingSessions, (session, a) -> {
+		iterateAndCleanUp(applyingSessions, (session) -> {
 			session.sendSnitchAlert(action);
-		}, action);
+		});
 	}
 
-	private void iterateAndCleanUp(List<APISession> sessionList, BiConsumer<APISession, MinecraftAction> function,
-			MinecraftAction action) {
+	private void iterateAndCleanUp(List<APISession> sessionList, Consumer<APISession> function) {
 		if (sessionList == null) {
 			return;
 		}
@@ -106,7 +104,7 @@ public class APISessionManager {
 					iter.remove();
 					continue;
 				}
-				function.accept(session, action);
+				function.accept(session);
 			}
 		}
 	}
