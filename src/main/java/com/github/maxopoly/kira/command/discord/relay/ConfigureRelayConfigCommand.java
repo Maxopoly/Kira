@@ -124,34 +124,34 @@ public class ConfigureRelayConfigCommand extends ArgumentBasedCommand {
 			reply.append(" - Relay snitch alerts to Discord (showsnitches): " + relay.shouldShowSnitches() + "\n");
 			reply.append(
 					" - Auto deletes discord messages (deletemessages): " + relay.shouldDeleteDiscordMessage() + "\n");
-			reply.append(" - Format used for group chat messages (chatformat): " + relay.getChatFormat() + "\n");
+			reply.append(" - Format used for group chat messages (chatformat): " + verbatimFormat(relay.getChatFormat()) + "\n");
 			reply.append(
 					"    Example: " + relay.formatChatMessage(new GroupChatMessageAction(System.currentTimeMillis(),
 							"exampleGroup", "ttk2", "hello, this is an example message")) + "\n");
-			reply.append(" - Format used for snitch alerts (snitchformat): " + relay.getSnitchFormat() + "\n");
+			reply.append(" - Format used for snitch alerts (snitchformat): " + verbatimFormat(relay.getSnitchFormat()) + "\n");
 			reply.append("    Example: " + relay.formatSnitchOutput(
 					new PlayerHitSnitchAction(System.currentTimeMillis(), "ttk2", "SecretBaseSnitch", "exampleGroup",
 							new MinecraftLocation("world", 420, 100, 420), SnitchHitType.ENTER, SnitchType.ENTRY))
 					+ "\n");
 			reply.append(" - Format used for entering a snitch range (snitchentermessage): "
-					+ relay.getSnitchEnterString() + "\n");
+					+ verbatimFormat(relay.getSnitchEnterString()) + "\n");
 			reply.append(" - Format used for logins within a snitch range (snitchloginmessage): "
-					+ relay.getSnitchLoginAction() + "\n");
+					+ verbatimFormat(relay.getSnitchLoginAction()) + "\n");
 			reply.append(" - Format used for logouts within a snitch range (snitchloginmessage): "
-					+ relay.getSnitchLogoutAction() + "\n");
+					+ verbatimFormat(relay.getSnitchLogoutAction()) + "\n");
 			reply.append(
 					" - Regex which will trigger an @ here ping for both chat messages and snitch alerts (hereformat): "
-							+ relay.getHereFormat() + "\n");
+							+ verbatimFormat(relay.getHereFormat()) + "\n");
 			reply.append(
 					" - Regex which will trigger an @ everyone ping for both chat messages and snitch alerts (everyoneformat): "
-							+ relay.getEveryoneFormat() + "\n");
+							+ verbatimFormat(relay.getEveryoneFormat()) + "\n");
 			reply.append(
-					"- Time format used for the time stamps of messages (timeformat): " + relay.getTimeFormat() + "\n");
+					"- Time format used for the time stamps of messages (timeformat): " + verbatimFormat(relay.getTimeFormat()) + "\n");
 			reply.append("    Example: " + relay.getFormattedTime(System.currentTimeMillis()) + "\n");
 			reply.append(" - Is allowed to use @ here and @ everyone (ping): " + relay.shouldPing() + "\n");
 			reply.append(" - Relaying of logins/logout, referred to as Skynet enabled (skynetenabled): "
 					+ relay.isSkynetEnabled() + "\n");
-			reply.append(" - Skynet format (skynetformat): " + relay.getSkynetFormat() + "\n");
+			reply.append(" - Skynet format (skynetformat): " + verbatimFormat(relay.getSkynetFormat()) + "\n");
 			reply.append("    Example: "
 					+ relay.formatSkynetMessage(new SkynetAction(System.currentTimeMillis(), "ttk2", SkynetType.LOGIN))
 					+ "\n");
@@ -159,7 +159,7 @@ public class ConfigureRelayConfigCommand extends ArgumentBasedCommand {
 			reply.append(" - Skynet logout format (skynetlogoutformat): " + relay.getSkynetLogoutString() + "\n");
 			reply.append(" - Relaying of new player logins (newplayerenabled): "
 					+ relay.isNewPlayerEnabled() + "\n");
-			reply.append(" - new player announcement format (newplayerformat): " + relay.getNewPlayerFormat() + "\n");
+			reply.append(" - new player announcement format (newplayerformat): " + verbatimFormat(relay.getNewPlayerFormat()) + "\n");
 			reply.append("    Example: "
 					+ relay.formatNewPlayerMessage(new NewPlayerAction(System.currentTimeMillis(), "ttk2"))
 					+ "\n");
@@ -383,6 +383,17 @@ public class ConfigureRelayConfigCommand extends ArgumentBasedCommand {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Wraps the input string in a code block to
+	 * display the formatting codes instead of applying them.
+	 *
+	 * @param input The string containing formatting codes.
+	 * @return "`` input ``"
+	 */
+	private String verbatimFormat(String input) {
+		return "`` " +input+ " ``";
 	}
 
 }
