@@ -136,6 +136,14 @@ public class ConfigManager {
 			return -1L;
 		}
 	}
+	
+	public int getAPIPort() {
+		return config.getJSONObject("api").getInt("port");
+	}
+	
+	public String getAPIInetAdress() {
+		return config.getJSONObject("api").getString("address");
+	}
 
 	public boolean reload() {
 		final StringBuilder sb = new StringBuilder();

@@ -15,6 +15,7 @@ import org.java_websocket.server.WebSocketServer;
 import com.github.maxopoly.kira.api.input.APISupplier;
 import com.github.maxopoly.kira.api.token.APIToken;
 import com.github.maxopoly.kira.api.token.APITokenManager;
+import com.github.maxopoly.kira.ConfigManager;
 import com.github.maxopoly.kira.KiraMain;
 
 public class KiraWebSocketServer extends WebSocketServer {
@@ -29,7 +30,7 @@ public class KiraWebSocketServer extends WebSocketServer {
 	 * Note that keys are case sensitive as per RFC 3986. https://tools.ietf.org/html/rfc3986#page-11
 	 */
 	public static Map<String, String> getQueryParams(String uri) {
-		Map<String, String> queryPairs = new HashMap<String, String>();
+		Map<String, String> queryPairs = new HashMap<>();
 
 		int paramsSepIdx = uri.indexOf("?");
 		if (paramsSepIdx < 0) return queryPairs; // no query params in URI
@@ -52,12 +53,13 @@ public class KiraWebSocketServer extends WebSocketServer {
 		}
 		return queryPairs;
 	}
+	
 	private Map <WebSocket, APISession> connections;
 
 	private Logger logger;
 
-	public KiraWebSocketServer(Logger logger) {
-		super(new InetSocketAddress("mc.civclassic.com",14314));
+	public KiraWebSocketServer(Logger logger, ConfigManager config) {
+		super(new InetSocketAddress(config.getAPIInetAdress(),config.getAPIPort()));
 		this.logger = logger;
 		connections = new HashMap<>();
 		logger.info("Starting Web socket API server");

@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import com.github.maxopoly.kira.relay.actions.NewPlayerAction;
 import org.apache.logging.log4j.Logger;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.api.input.APIInputHandler;
 import com.github.maxopoly.kira.api.token.APITokenManager;
 import com.github.maxopoly.kira.relay.actions.GroupChatMessageAction;
@@ -41,7 +42,7 @@ public class APISessionManager {
 		this.skynetTakers = new LinkedList<>();
 		this.inputHandler = new APIInputHandler(logger);
 		this.tokenManager = new APITokenManager();
-		this.socketServer = new KiraWebSocketServer(logger);
+		this.socketServer = new KiraWebSocketServer(logger, KiraMain.getInstance().getConfig());
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleAtFixedRate(() -> {
 			sendUpdates();
