@@ -90,6 +90,7 @@ public class KiraWebSocketServer extends WebSocketServer {
 		if (session != null) {
 			KiraMain.getInstance().getAPISessionManager().registerSession(session);
 			connections.put(conn, session);
+			session.sendAuthMessage();
 		}
 	}
 
