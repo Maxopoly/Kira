@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.github.maxopoly.kira.relay.actions.GroupChatMessageAction;
+import com.github.maxopoly.kira.relay.actions.NewPlayerAction;
 import com.github.maxopoly.kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.kira.relay.actions.SkynetAction;
 import com.github.maxopoly.kira.user.KiraUser;
@@ -25,7 +26,8 @@ public class APISession {
 	private List<PlayerHitSnitchAction> snitchHits;
 	private List<GroupChatMessageAction> groupMessages;
 	private List<SkynetAction> skynets;
-	
+	private List<NewPlayerAction> newPlayers;
+
 	private boolean isClosed;
 
 	public APISession(KiraUser user, List<String> snitchGroups, List<String> chatGroups, boolean skyNet,
@@ -38,6 +40,7 @@ public class APISession {
 		this.snitchHits = new LinkedList<>();
 		this.groupMessages = new LinkedList<>();
 		this.skynets = new LinkedList<>();
+		this.newPlayers = new LinkedList<>();
 		this.connection = connection;
 		this.isClosed = false;
 		
@@ -67,7 +70,8 @@ public class APISession {
 	}
 
 	public boolean hasPendingNotifications() {
-		return !(snitchHits.isEmpty() && groupMessages.isEmpty() && skynets.isEmpty());
+		return !(snitchHits.isEmpty() && groupMessages.isEmpty()
+				&& skynets.isEmpty() && newPlayers.isEmpty());
 	}
 
 	public boolean isClosed() {
@@ -107,10 +111,18 @@ public class APISession {
 				skynets.clear();
 			}
 		}
+		synchronized (newPlayers) {
+			if (!newPlayers.isEmpty()) {
+				JSONArray newPlayersArray = new JSONArray();
+				for(NewPlayerAction action : newPlayers) {
+					newPlayersArray.put(action.getJSON());
+				}
+				json.put("new-players", newPlayersArray);
+				newPlayers.clear();
+			}
+		}
 		connection.send(json.toString());
 	}
-	
-	
 
 	public boolean receivesSkynet() {
 		return receivesSkynet;
@@ -121,13 +133,19 @@ public class APISession {
 			groupMessages.add(action);
 		}
 	}
-	
+
 	public void sendSkynetAlert(SkynetAction action) {
 		synchronized (skynets) {
 			skynets.add(action);
 		}
 	}
-	
+
+	public void sendNewPlayerAlert(NewPlayerAction action) {
+		synchronized (newPlayers) {
+			newPlayers.add(action);
+		}
+	}
+
 	public void sendSnitchAlert(PlayerHitSnitchAction action) {
 		synchronized (snitchHits) {
 			snitchHits.add(action);
