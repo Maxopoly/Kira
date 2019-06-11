@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class DiscordMessageListener extends ListenerAdapter {
 
-	private final static String channelKeyword = "!kira ";
+	private String keyWord;
 	private CommandHandler cmdHandler;
 	private Logger logger;
 	private UserManager userManager;
@@ -31,6 +31,7 @@ public class DiscordMessageListener extends ListenerAdapter {
 		this.logger = logger;
 		this.ownID = ownID;
 		this.userManager = userManager;
+		this.keyWord = KiraMain.getInstance().getConfig().getCommandPrefix();
 	}
 
 	@Override
@@ -48,10 +49,10 @@ public class DiscordMessageListener extends ListenerAdapter {
 			logger.info(
 					String.format("CHAT [%s][%s] %s: %s", event.getGuild().getName(), event.getTextChannel().getName(),
 							event.getMember().getEffectiveName(), event.getMessage().getContentDisplay()));
-			if (content.startsWith(channelKeyword)) {
+			if (content.startsWith(keyWord)) {
 				InputSupplier supplier = new DiscordCommandChannelSupplier(user, event.getGuild().getIdLong(),
 						event.getChannel().getIdLong());
-				cmdHandler.handle(content.substring(channelKeyword.length()), supplier);
+				cmdHandler.handle(content.substring(keyWord.length()), supplier);
 				return;
 			}
 			GroupChatManager chatMan = KiraMain.getInstance().getGroupChatManager();

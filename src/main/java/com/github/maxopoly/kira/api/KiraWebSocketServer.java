@@ -6,6 +6,8 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.net.ssl.SSLContext;
+
 import org.apache.logging.log4j.Logger;
 import org.java_websocket.WebSocket;
 import org.java_websocket.framing.CloseFrame;
@@ -32,18 +34,18 @@ public class KiraWebSocketServer extends WebSocketServer {
 	public static Map<String, String> getQueryParams(String uri) {
 		Map<String, String> queryPairs = new HashMap<>();
 
-		int paramsSepIdx = uri.indexOf("?");
+		int paramsSepIdx = uri.indexOf('?');
 		if (paramsSepIdx < 0) return queryPairs; // no query params in URI
 		String query = uri.substring(paramsSepIdx + 1);
 
-		int fragmentSepIdx = query.indexOf("#");
+		int fragmentSepIdx = query.indexOf('#');
 		if (fragmentSepIdx >= 0) {
 			query = query.substring(0, fragmentSepIdx);
 		}
 
 		String[] pairs = query.split("&");
 		for (String pair : pairs) {
-			int kvSep = pair.indexOf("=");
+			int kvSep = pair.indexOf('=');
 			try {
 			String key = URLDecoder.decode(pair.substring(0, kvSep), "UTF-8");
 			String value = URLDecoder.decode(pair.substring(kvSep + 1), "UTF-8");
@@ -147,5 +149,9 @@ public class KiraWebSocketServer extends WebSocketServer {
 			conn.close(CloseFrame.POLICY_VALIDATION, "Outdated token");
 		}
 		return token.generateSession(conn);
+	}
+	
+	private SSLContext genSSLContext() {
+		return null;
 	}
 }

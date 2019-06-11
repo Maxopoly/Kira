@@ -144,6 +144,14 @@ public class ConfigManager {
 	public String getAPIInetAdress() {
 		return config.getJSONObject("api").getString("address");
 	}
+	
+	public String getCommandPrefix() {
+		try {
+			return config.getString("commandprefix");
+		} catch (JSONException e) {
+			return "!kira ";
+		}
+	}
 
 	public boolean reload() {
 		final StringBuilder sb = new StringBuilder();

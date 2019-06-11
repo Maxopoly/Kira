@@ -1,11 +1,11 @@
 package com.github.maxopoly.kira.command.model.discord;
 
 import com.github.maxopoly.kira.user.KiraUser;
+import com.github.maxopoly.kira.util.DiscordMessageDivider;
 import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 public class DiscordCommandChannelSupplier extends DiscordCommandSupplier {
@@ -35,12 +35,7 @@ public class DiscordCommandChannelSupplier extends DiscordCommandSupplier {
 		if (channel == null) {
 			return;
 		}
-		Member member = guild.getMemberById(user.getDiscordID());
-		String tag = "";
-		if (member != null) {
-			tag = member.getAsMention() + "\n";
-		}
-		channel.sendMessage(tag + msg).queue();
+		DiscordMessageDivider.sendTextChannelMessage(user, channel, msg);
 	}
 
 }

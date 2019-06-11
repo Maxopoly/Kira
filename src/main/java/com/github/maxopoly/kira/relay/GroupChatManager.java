@@ -151,7 +151,8 @@ public class GroupChatManager {
 		dao.deleteGroupChat(chat);
 		if (!isManaged && channel != null) {
 			channel.sendMessage("Relay " + chat.getName()
-					+ " which was previously linked to this channel is being deleted as requested by a user. It will no longer broadcast anything");
+					+ " which was previously linked to this channel is being deleted as requested by a user. It will no longer broadcast anything")
+					.queue();
 		}
 	}
 

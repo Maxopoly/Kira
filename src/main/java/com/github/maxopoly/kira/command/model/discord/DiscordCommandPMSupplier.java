@@ -1,10 +1,7 @@
 package com.github.maxopoly.kira.command.model.discord;
 
 import com.github.maxopoly.kira.user.KiraUser;
-import com.github.maxopoly.kira.KiraMain;
-
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.PrivateChannel;
+import com.github.maxopoly.kira.util.DiscordMessageDivider;
 
 public class DiscordCommandPMSupplier extends  DiscordCommandSupplier {
 
@@ -19,9 +16,6 @@ public class DiscordCommandPMSupplier extends  DiscordCommandSupplier {
 
 	@Override
 	public void reportBack(String msg) {
-		JDA jda = KiraMain.getInstance().getJDA();
-		net.dv8tion.jda.core.entities.User discordUser = jda.getUserById(user.getDiscordID());
-		PrivateChannel pm = discordUser.openPrivateChannel().complete();
-		pm.sendMessage(msg).queue();
+		DiscordMessageDivider.sendPrivateMessage(user, msg);
 	}
 }

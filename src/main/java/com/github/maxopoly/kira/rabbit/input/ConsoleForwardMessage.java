@@ -7,6 +7,7 @@ import java.util.Map;
 import org.json.JSONObject;
 
 import com.github.maxopoly.kira.rabbit.RabbitInputSupplier;
+import com.github.maxopoly.kira.util.DiscordMessageDivider;
 import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -38,7 +39,7 @@ public class ConsoleForwardMessage extends RabbitMessage {
 		}
 		String cleanedUp = String.format("**[%s] **`%s`", timeFormat.format(LocalTime.now()),
 				msg.replaceAll("[^\\p{InBasic_Latin}\\p{InLatin-1Supplement}]", ""));
-		channel.sendMessage(cleanedUp).queue();
+		DiscordMessageDivider.sendTextChannelMessage(null, channel, cleanedUp);
 	}
 
 }
