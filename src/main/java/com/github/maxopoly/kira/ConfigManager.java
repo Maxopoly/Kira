@@ -152,6 +152,24 @@ public class ConfigManager {
 			return "!kira ";
 		}
 	}
+	
+	public String getAPISSLCertPath() {
+		try {
+			return config.getJSONObject("api").getString("sslCertPath");
+		} catch (JSONException e) {
+			logger.error("No SSL cert given in config");
+			return null;
+		}
+	}
+	
+	public String getAPISSLCertPassword() {
+		try {
+			return config.getJSONObject("api").getString("sslCertPassword");
+		} catch (JSONException e) {
+			logger.error("No SSL cert password in config");
+			return null;
+		}
+	}
 
 	public boolean reload() {
 		final StringBuilder sb = new StringBuilder();

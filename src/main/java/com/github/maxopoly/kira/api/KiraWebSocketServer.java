@@ -1,5 +1,6 @@
 package com.github.maxopoly.kira.api;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.java_websocket.WebSocket;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 import org.java_websocket.server.WebSocketServer;
 
 import com.github.maxopoly.kira.api.input.APISupplier;
@@ -65,6 +67,14 @@ public class KiraWebSocketServer extends WebSocketServer {
 		this.logger = logger;
 		connections = new HashMap<>();
 		logger.info("Starting Web socket API server");
+		SSLContext sslContext = genSSLContext();
+		if (sslContext == null) {
+			logger.warn("No SSL certificate loaded for API, API will not use TLS");
+		}
+		else {
+			this.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(sslContext));
+			logger.info("SSL certificate loaded for API websocket server, using TLSv1.2");
+		}
 		start();
 	}
 
@@ -152,6 +162,12 @@ public class KiraWebSocketServer extends WebSocketServer {
 	}
 	
 	private SSLContext genSSLContext() {
-		return null;
+		ConfigManager config = KiraMain.getInstance().getConfig();
+		String path = config.getAPISSLCertPath();
+		String pw = config.getAPISSLCertPassword();
+		if (path == null || pw == null) {
+			return null;
+		}
+		return SSLContextFactory.generate(new File(path), pw);
 	}
 }
