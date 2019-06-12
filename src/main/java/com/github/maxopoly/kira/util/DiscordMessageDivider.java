@@ -85,6 +85,9 @@ public class DiscordMessageDivider {
 				sb.append('\n');
 			}
 		}
+		if (sb.length() != 0) {
+			receiver.accept(sb.toString());
+		}
 	}
 
 	private DiscordMessageDivider() {
