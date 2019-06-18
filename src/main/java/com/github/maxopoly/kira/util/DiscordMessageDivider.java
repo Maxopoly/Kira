@@ -44,6 +44,9 @@ public class DiscordMessageDivider {
 	 * @param msg      Message to send
 	 */
 	private static void sendMessageInternal(KiraUser user, Guild guild, Consumer<String> receiver, String msg) {
+		if (msg.trim().length() == 0) {
+			return;
+		}
 		String tag = "";
 		if (guild != null && user != null) {
 			Member member = guild.getMemberById(user.getDiscordID());
