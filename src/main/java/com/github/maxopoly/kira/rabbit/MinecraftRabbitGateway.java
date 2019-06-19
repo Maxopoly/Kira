@@ -26,13 +26,6 @@ public class MinecraftRabbitGateway {
 		rabbit.sendMessage("requestrelaycreation", json);
 	}
 
-	public void runCommand(UUID uuid, String command) {
-		JSONObject json = new JSONObject();
-		json.put("uuid", uuid.toString());
-		json.put("command", command);
-		rabbit.sendMessage("ingame", json);
-	}
-
 	public void sendGroupChatMessage(KiraUser sender, GroupChat chat, String msg) {
 		JSONObject json = new JSONObject();
 		json.put("group", chat.getName());

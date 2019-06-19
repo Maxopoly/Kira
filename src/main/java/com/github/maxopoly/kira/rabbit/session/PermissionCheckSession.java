@@ -11,7 +11,7 @@ public abstract class PermissionCheckSession extends RequestSession {
 	private String permission;
 
 	public PermissionCheckSession(UUID player, String group, String permission) {
-		super("permissioncheck");
+		super("permissioncheck", null);
 		this.playerUUID = player;
 		this.group = group;
 		this.permission = permission;

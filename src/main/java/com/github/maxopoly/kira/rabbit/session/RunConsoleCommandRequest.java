@@ -13,7 +13,7 @@ public class RunConsoleCommandRequest extends RequestSession {
 	private InputSupplier supplier;
 
 	public RunConsoleCommandRequest(String msg, UUID sender, InputSupplier supplier) {
-		super("consolemessageop");
+		super("consolemessageop", supplier);
 		this.msg = msg;
 		this.sender = sender;
 		this.supplier = supplier;

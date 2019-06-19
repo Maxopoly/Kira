@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import com.github.maxopoly.kira.command.discord.admin.CreateDefaultPermsCommand;
 import com.github.maxopoly.kira.command.discord.admin.DeauthDiscordCommand;
 import com.github.maxopoly.kira.command.discord.admin.GiveDefaultPermission;
+import com.github.maxopoly.kira.command.discord.admin.GivePermissionToRoleCommand;
 import com.github.maxopoly.kira.command.discord.admin.GiveRoleCommand;
 import com.github.maxopoly.kira.command.discord.admin.ListPermissionsForUserCommand;
 import com.github.maxopoly.kira.command.discord.admin.ReloadPermissionCommand;
@@ -103,6 +104,7 @@ public class CommandHandler extends TextInputHandler<Command, String, InputSuppl
 		registerCommand(new InfoCommand());
 		registerCommand(new GenerateAPIToken());
 		registerCommand(new ConsoleCommand());
+		registerCommand(new GivePermissionToRoleCommand());
 		logger.info("Loaded total of " + commands.values().size() + " commands");
 	}
 

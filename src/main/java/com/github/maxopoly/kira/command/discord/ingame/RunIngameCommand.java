@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import com.github.maxopoly.kira.command.model.discord.ArgumentBasedCommand;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
+import com.github.maxopoly.kira.rabbit.session.SendIngameCommandSession;
 import com.github.maxopoly.kira.KiraMain;
 
 public class RunIngameCommand extends ArgumentBasedCommand {
@@ -14,6 +15,7 @@ public class RunIngameCommand extends ArgumentBasedCommand {
 
 	public RunIngameCommand() {
 		super("ingame", 1, 100, "mc");
+		doesRequireIngameAccount();
 	}
 
 	@Override
@@ -23,7 +25,7 @@ public class RunIngameCommand extends ArgumentBasedCommand {
 
 	@Override
 	public String getRequiredPermission() {
-		return "test";
+		return "ingame_command";
 	}
 
 	@Override
@@ -49,7 +51,8 @@ public class RunIngameCommand extends ArgumentBasedCommand {
 		if (commandString.length() > 255) {
 			return "Your command is too long";
 		}
-		KiraMain.getInstance().getMCRabbitGateway().runCommand(uuid, commandString);
-		return "Ran command '" + commandString + "' as " + sender.getUser().getName();
+		KiraMain.getInstance().getRequestSessionManager()
+		.request(new SendIngameCommandSession(sender, commandString));
+		return "Running command '" + commandString + "' as " + sender.getUser().getName();
 	}
 }

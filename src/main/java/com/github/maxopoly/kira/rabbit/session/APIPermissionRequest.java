@@ -22,7 +22,7 @@ public class APIPermissionRequest extends RequestSession {
 
 	public APIPermissionRequest(UUID player, InputSupplier supplier, Collection<APIDataType> dataRequested,
 			long expirationTime) {
-		super("apiperms");
+		super("apiperms", supplier);
 		this.playerUUID = player;
 		this.supplier = supplier;
 		this.dataRequested = dataRequested;

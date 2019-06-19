@@ -12,6 +12,7 @@ public class RequestSessionManager {
 
 	private static final String idField = "RequestSessionId";
 	private static final String keyField = "RequestSessionKey";
+	private static final String channelField = "DiscordChannelKey";
 
 	private Map<Long, RequestSession> sessions;
 	private long counter;
@@ -45,6 +46,9 @@ public class RequestSessionManager {
 		sessions.put(id, session);
 		json.put(keyField, session.getSendingKey());
 		json.put(idField, id);
+		if (session.getRequester() != null) {
+			json.put(channelField, session.getRequester().getChannelID());
+		}
 		rabbit.sendMessage("requestsession", json);
 	}
 }

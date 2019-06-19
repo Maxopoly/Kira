@@ -2,18 +2,26 @@ package com.github.maxopoly.kira.rabbit.session;
 
 import org.json.JSONObject;
 
+import com.github.maxopoly.kira.command.model.top.InputSupplier;
+
 public abstract class RequestSession {
 
 	private String sendingKey;
+	private InputSupplier requester;
 
-	public RequestSession(String sendingKey) {
+	public RequestSession(String sendingKey, InputSupplier requester) {
 		this.sendingKey = sendingKey;
+		this.requester = requester;
 	}
 
 	public abstract JSONObject getRequest();
 
 	public String getSendingKey() {
 		return sendingKey;
+	}
+	
+	public InputSupplier getRequester() {
+		return requester;
 	}
 
 	public abstract void handleReply(JSONObject json);
