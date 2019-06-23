@@ -14,7 +14,7 @@ import net.dv8tion.jda.core.entities.User;
 
 public class DiscordMessageDivider {
 
-	private static final int allowedLength = 1950;
+	private static final int MAX_MSG_LENGTH = 1950;
 
 	public static void sendTextChannelMessage(KiraUser user, TextChannel channel, String msg) {
 		sendMessageInternal(user, channel.getGuild(), s -> {
@@ -53,12 +53,12 @@ public class DiscordMessageDivider {
 			if (member != null) {
 				tag = member.getAsMention() + "\n";
 			}
-			if (msg.length() + tag.length() > allowedLength) {
-				receiver.accept(tag + msg);
-				return;
-			}
 		}
-		int allowedLengthWithoutTag = allowedLength - tag.length();
+		if (msg.length() + tag.length() <= MAX_MSG_LENGTH) {
+			receiver.accept(tag + msg);
+			return;
+		}
+		int allowedLengthWithoutTag = MAX_MSG_LENGTH - tag.length();
 		String[] split = msg.split("\n");
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < split.length; i++) {
