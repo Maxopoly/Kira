@@ -139,6 +139,7 @@ public class APISessionManager {
 			APISession session = iter.next();
 			if (session.isClosed()) {
 				iter.remove();
+				continue;
 			}
 			if (session.hasPendingNotifications()) {
 				session.popAndSendPendingNotifications();

@@ -91,6 +91,9 @@ public class KiraWebSocketServer extends WebSocketServer {
 	public void onError(WebSocket conn, Exception ex) {
 		String remoteAddr = conn == null ? "(no connection)" : conn.getRemoteSocketAddress().toString();
 		KiraMain.getInstance().getLogger().warn("Error occured in API handling of " + remoteAddr, ex);
+		if (conn != null) {
+			conn.close(CloseFrame.UNEXPECTED_CONDITION);
+		}
 	}
 
 	@Override
@@ -102,6 +105,7 @@ public class KiraWebSocketServer extends WebSocketServer {
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
 		APISession session = setupSession(conn, handshake);
 		if (session != null) {
+			logger.info("Set up API session with " + conn.getRemoteSocketAddress());
 			KiraMain.getInstance().getAPISessionManager().registerSession(session);
 			connections.put(conn, session);
 			session.sendAuthMessage();

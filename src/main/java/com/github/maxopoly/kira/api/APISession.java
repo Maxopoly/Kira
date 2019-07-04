@@ -74,7 +74,7 @@ public class APISession {
 	}
 
 	public boolean isClosed() {
-		return isClosed;
+		return isClosed || !connection.isOpen();
 	}
 
 	public void sendAuthMessage() {
