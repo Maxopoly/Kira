@@ -1,5 +1,6 @@
 package com.github.maxopoly.kira.util;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 import com.github.maxopoly.kira.KiraMain;
@@ -11,8 +12,9 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.requests.restaction.MessageAction;
 
-public class DiscordMessageDivider {
+public class DiscordMessageSender {
 
 	private static final int MAX_MSG_LENGTH = 1950;
 
@@ -29,6 +31,19 @@ public class DiscordMessageDivider {
 		sendMessageInternal(null, null, s -> {
 			pm.sendMessage(s).queue();
 		}, msg);
+	}
+	
+	private Map<Long, StringBuffer> queuedMessages;
+	
+	
+	private void queueMessage(String msg, long id, Consumer<String> sendFunction) {
+		StringBuffer sb = queuedMessages.computeIfAbsent(id, a -> new StringBuffer());
+		if (sb.length() + msg.length() > MAX_MSG_LENGTH) {
+			//send and empty current one
+			sendFunction.accept(sb.toString());
+			sb.setLength(0);
+		}
+		sb.append(msg);
 	}
 
 	/**
@@ -93,7 +108,7 @@ public class DiscordMessageDivider {
 		}
 	}
 
-	private DiscordMessageDivider() {
+	private DiscordMessageSender() {
 
 	}
 

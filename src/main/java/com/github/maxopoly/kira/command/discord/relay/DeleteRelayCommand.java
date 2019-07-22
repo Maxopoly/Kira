@@ -17,7 +17,7 @@ public class DeleteRelayCommand extends ArgumentBasedCommand {
 
 	@Override
 	public String getFunctionality() {
-		return "Sets which configuration to use for a specific relay";
+		return "Deletes a relay";
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class DeleteRelayCommand extends ArgumentBasedCommand {
 
 	@Override
 	public String getUsage() {
-		return "setrelayconfig [group] [relay]";
+		return "deleterelay [group]";
 	}
 
 	@Override

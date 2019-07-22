@@ -1,7 +1,7 @@
 package com.github.maxopoly.kira.command.model.discord;
 
 import com.github.maxopoly.kira.user.KiraUser;
-import com.github.maxopoly.kira.util.DiscordMessageDivider;
+import com.github.maxopoly.kira.util.DiscordMessageSender;
 
 public class DiscordCommandPMSupplier extends  DiscordCommandSupplier {
 
@@ -16,6 +16,6 @@ public class DiscordCommandPMSupplier extends  DiscordCommandSupplier {
 
 	@Override
 	public void reportBack(String msg) {
-		DiscordMessageDivider.sendPrivateMessage(user, msg);
+		DiscordMessageSender.sendPrivateMessage(user, msg);
 	}
 }

@@ -7,34 +7,32 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.github.maxopoly.kira.KiraMain;
+
 public class WebUtil {
 
 	public static String readPage(String stringURL) {
-		//taken from https://stackoverflow.com/questions/238547/how-do-you-programmatically-download-a-webpage-in-java
-	    InputStream is = null;
-	    BufferedReader br;
-	    String line;
-	    StringBuilder sb = new StringBuilder();
-	    try {
-	    	URL url = new URL(stringURL);
-	    	is = url.openStream();  // throws an IOException
-	        br = new BufferedReader(new InputStreamReader(is));
-
-	        while ((line = br.readLine()) != null) {
-	            sb.append(line);
-	        }
-	    } catch (MalformedURLException mue) {
-	         mue.printStackTrace();
-	    } catch (IOException ioe) {
-	         ioe.printStackTrace();
-	    } finally {
-	        try {
-	            if (is != null) is.close();
-	        } catch (IOException ioe) {
-	            // nothing to see here
-	        }
-	    }
-	    return sb.toString();
+		// based on
+		// https://stackoverflow.com/questions/238547/how-do-you-programmatically-download-a-webpage-in-java
+		URL url;
+		try {
+			url = new URL(stringURL);
+		} catch (MalformedURLException e) {
+			KiraMain.getInstance().getLogger().error("Malformed URL", e);
+			return "";
+		}
+		String line;
+		StringBuilder sb = new StringBuilder();
+		try (InputStream is = url.openStream();
+				InputStreamReader isr = new InputStreamReader(is);
+				BufferedReader br = new BufferedReader(isr)) {
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+		} catch (IOException ioe) {
+			KiraMain.getInstance().getLogger().error("Failed to read web page", ioe);
+		}
+		return sb.toString();
 	}
 
 }

@@ -1,7 +1,7 @@
 package com.github.maxopoly.kira.command.model.discord;
 
 import com.github.maxopoly.kira.user.KiraUser;
-import com.github.maxopoly.kira.util.DiscordMessageDivider;
+import com.github.maxopoly.kira.util.DiscordMessageSender;
 import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.JDA;
@@ -35,7 +35,7 @@ public class DiscordCommandChannelSupplier extends DiscordCommandSupplier {
 		if (channel == null) {
 			return;
 		}
-		DiscordMessageDivider.sendTextChannelMessage(user, channel, msg);
+		DiscordMessageSender.sendTextChannelMessage(user, channel, msg);
 	}
 
 }
