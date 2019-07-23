@@ -2,6 +2,7 @@ package com.github.maxopoly.kira.command.model.discord;
 
 import org.apache.logging.log4j.Logger;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.command.discord.admin.CreateDefaultPermsCommand;
 import com.github.maxopoly.kira.command.discord.admin.DeauthDiscordCommand;
 import com.github.maxopoly.kira.command.discord.admin.GiveDefaultPermission;
@@ -11,6 +12,9 @@ import com.github.maxopoly.kira.command.discord.admin.ListPermissionsForUserComm
 import com.github.maxopoly.kira.command.discord.admin.ReloadPermissionCommand;
 import com.github.maxopoly.kira.command.discord.admin.StopCommand;
 import com.github.maxopoly.kira.command.discord.admin.SyncUsernameCommand;
+import com.github.maxopoly.kira.command.discord.api.GenerateAPIToken;
+import com.github.maxopoly.kira.command.discord.api.ListTokens;
+import com.github.maxopoly.kira.command.discord.api.RevokeAPIToken;
 import com.github.maxopoly.kira.command.discord.ingame.ConsoleCommand;
 import com.github.maxopoly.kira.command.discord.ingame.RunIngameCommand;
 import com.github.maxopoly.kira.command.discord.relay.ConfigureRelayConfigCommand;
@@ -20,7 +24,6 @@ import com.github.maxopoly.kira.command.discord.relay.DeleteRelayCommand;
 import com.github.maxopoly.kira.command.discord.relay.TieRelayConfigCommand;
 import com.github.maxopoly.kira.command.discord.user.AuthCommand;
 import com.github.maxopoly.kira.command.discord.user.ChannelInfoCommand;
-import com.github.maxopoly.kira.command.discord.user.GenerateAPIToken;
 import com.github.maxopoly.kira.command.discord.user.GetWeightCommand;
 import com.github.maxopoly.kira.command.discord.user.HelpCommand;
 import com.github.maxopoly.kira.command.discord.user.InfoCommand;
@@ -29,7 +32,6 @@ import com.github.maxopoly.kira.command.discord.user.QuoteCommand;
 import com.github.maxopoly.kira.command.discord.user.SelfInfoCommand;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.command.model.top.TextInputHandler;
-import com.github.maxopoly.kira.KiraMain;
 
 public class CommandHandler extends TextInputHandler<Command, String, InputSupplier> {
 
@@ -105,6 +107,8 @@ public class CommandHandler extends TextInputHandler<Command, String, InputSuppl
 		registerCommand(new GenerateAPIToken());
 		registerCommand(new ConsoleCommand());
 		registerCommand(new GivePermissionToRoleCommand());
+		registerCommand(new ListTokens());
+		registerCommand(new RevokeAPIToken());
 		logger.info("Loaded total of " + commands.values().size() + " commands");
 	}
 

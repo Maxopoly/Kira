@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.command.model.discord.ArgumentBasedCommand;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.rabbit.session.SendIngameCommandSession;
-import com.github.maxopoly.kira.KiraMain;
 
 public class RunIngameCommand extends ArgumentBasedCommand {
 

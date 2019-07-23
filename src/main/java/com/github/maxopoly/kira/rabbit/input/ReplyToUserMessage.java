@@ -4,14 +4,13 @@ import java.util.UUID;
 
 import org.json.JSONObject;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.command.model.discord.DiscordCommandChannelSupplier;
 import com.github.maxopoly.kira.command.model.discord.DiscordCommandPMSupplier;
 import com.github.maxopoly.kira.rabbit.RabbitInputSupplier;
 import com.github.maxopoly.kira.user.KiraUser;
 
 import net.dv8tion.jda.core.entities.TextChannel;
-
-import com.github.maxopoly.kira.KiraMain;
 
 public class ReplyToUserMessage extends RabbitMessage {
 

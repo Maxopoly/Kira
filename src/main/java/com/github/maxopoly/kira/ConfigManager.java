@@ -24,8 +24,34 @@ public class ConfigManager {
 		this.logger = logger;
 	}
 
+	public String getAPIInetAdress() {
+		return config.getJSONObject("api").getString("address");
+	}
+
+	public int getAPIPort() {
+		return config.getJSONObject("api").getInt("port");
+	}
+
 	public long getAPIRate() {
 		return ParsingUtils.parseTime(config.optString("apirate", "500ms"));
+	}
+
+	public String getAPISSLCertPassword() {
+		try {
+			return config.getJSONObject("api").getString("sslCertPassword");
+		} catch (JSONException e) {
+			logger.error("No SSL cert password in config");
+			return null;
+		}
+	}
+
+	public String getAPISSLCertPath() {
+		try {
+			return config.getJSONObject("api").getString("sslCertPath");
+		} catch (JSONException e) {
+			logger.error("No SSL cert given in config");
+			return null;
+		}
 	}
 
 	public long getAuthroleID() {
@@ -46,6 +72,15 @@ public class ConfigManager {
 		}
 	}
 
+	public String getCommandPrefix() {
+		try {
+			return config.getString("commandprefix");
+		} catch (JSONException e) {
+			return "!kira ";
+		}
+	}
+	
+	
 	public Map<String, Long> getConsoleForwardingMapping() {
 		JSONObject json = config.getJSONObject("consoleforward");
 		Map <String, Long> result = new TreeMap<>();
@@ -55,7 +90,7 @@ public class ConfigManager {
 		}
 		return result;
 	}
-
+	
 	public DBConnection getDatabase() {
 		try {
 			JSONObject json = config.getJSONObject("db");
@@ -70,7 +105,7 @@ public class ConfigManager {
 			return null;
 		}
 	}
-
+	
 	public String getIncomingQueueName() {
 		try {
 			JSONObject json = config.getJSONObject("rabbitmq");
@@ -80,7 +115,7 @@ public class ConfigManager {
 			return null;
 		}
 	}
-
+	
 	public String getOutgoingQueueName() {
 		try {
 			JSONObject json = config.getJSONObject("rabbitmq");
@@ -90,7 +125,7 @@ public class ConfigManager {
 			return null;
 		}
 	}
-
+	
 	public ConnectionFactory getRabbitConfig() {
 		try {
 			JSONObject json = config.getJSONObject("rabbitmq");
@@ -118,7 +153,6 @@ public class ConfigManager {
 		}
 	}
 	
-	
 	public long getRelaySectionID() {
 		try {
 			return config.getLong("relayCategory");
@@ -134,40 +168,6 @@ public class ConfigManager {
 		} catch (JSONException e) {
 			logger.error("Failed to parse server id", e);
 			return -1L;
-		}
-	}
-	
-	public int getAPIPort() {
-		return config.getJSONObject("api").getInt("port");
-	}
-	
-	public String getAPIInetAdress() {
-		return config.getJSONObject("api").getString("address");
-	}
-	
-	public String getCommandPrefix() {
-		try {
-			return config.getString("commandprefix");
-		} catch (JSONException e) {
-			return "!kira ";
-		}
-	}
-	
-	public String getAPISSLCertPath() {
-		try {
-			return config.getJSONObject("api").getString("sslCertPath");
-		} catch (JSONException e) {
-			logger.error("No SSL cert given in config");
-			return null;
-		}
-	}
-	
-	public String getAPISSLCertPassword() {
-		try {
-			return config.getJSONObject("api").getString("sslCertPassword");
-		} catch (JSONException e) {
-			logger.error("No SSL cert password in config");
-			return null;
 		}
 	}
 

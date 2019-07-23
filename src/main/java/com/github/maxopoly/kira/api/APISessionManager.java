@@ -13,13 +13,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import com.github.maxopoly.kira.relay.actions.NewPlayerAction;
 import org.apache.logging.log4j.Logger;
 
 import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.api.input.APIInputHandler;
 import com.github.maxopoly.kira.api.token.APITokenManager;
 import com.github.maxopoly.kira.relay.actions.GroupChatMessageAction;
+import com.github.maxopoly.kira.relay.actions.NewPlayerAction;
 import com.github.maxopoly.kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.kira.relay.actions.SkynetAction;
 
@@ -41,20 +41,12 @@ public class APISessionManager {
 		this.snitchTakers = new HashMap<>();
 		this.skynetTakers = new LinkedList<>();
 		this.inputHandler = new APIInputHandler(logger);
-		this.tokenManager = new APITokenManager();
+		this.tokenManager = new APITokenManager(logger);
 		this.socketServer = new KiraWebSocketServer(logger, KiraMain.getInstance().getConfig());
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleAtFixedRate(() -> {
 			sendUpdates();
 		}, sendingInterval, sendingInterval, TimeUnit.MILLISECONDS);
-	}
-
-	public void closeSocket() {
-		try {
-			socketServer.stop();
-		} catch (IOException | InterruptedException e) {
-			logger.warn("Failed to close web socket", e);
-		}
 	}
 
 	public APIInputHandler getInputHandler() {
@@ -72,17 +64,17 @@ public class APISessionManager {
 		});
 	}
 
-	public void handleSkynetMessage(SkynetAction action) {
-		iterateAndCleanUp(skynetTakers, (session) -> {
-			session.sendSkynetAlert(action);
-		});
-	}
-
 	public void handleNewPlayerMessage(NewPlayerAction action) {
 		// reuse skynetTakers because this is from the same event source
 		// and thus visible to the same audience
 		iterateAndCleanUp(skynetTakers, (session) -> {
 			session.sendNewPlayerAlert(action);
+		});
+	}
+
+	public void handleSkynetMessage(SkynetAction action) {
+		iterateAndCleanUp(skynetTakers, (session) -> {
+			session.sendSkynetAlert(action);
 		});
 	}
 
@@ -145,6 +137,15 @@ public class APISessionManager {
 				session.popAndSendPendingNotifications();
 			}
 		}
+	}
+
+	public void shutdown() {
+		try {
+			socketServer.stop();
+		} catch (IOException | InterruptedException e) {
+			logger.warn("Failed to close web socket", e);
+		}
+		tokenManager.saveTokens();
 	}
 
 }

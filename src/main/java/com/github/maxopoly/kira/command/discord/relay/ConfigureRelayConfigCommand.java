@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.command.model.discord.ArgumentBasedCommand;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.relay.RelayConfig;
@@ -17,7 +18,6 @@ import com.github.maxopoly.kira.relay.actions.SkynetType;
 import com.github.maxopoly.kira.relay.actions.SnitchHitType;
 import com.github.maxopoly.kira.relay.actions.SnitchType;
 import com.github.maxopoly.kira.user.KiraUser;
-import com.github.maxopoly.kira.KiraMain;
 
 public class ConfigureRelayConfigCommand extends ArgumentBasedCommand {
 

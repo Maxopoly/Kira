@@ -5,12 +5,12 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.relay.actions.GroupChatMessageAction;
 import com.github.maxopoly.kira.relay.actions.MinecraftLocation;
 import com.github.maxopoly.kira.relay.actions.NewPlayerAction;
 import com.github.maxopoly.kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.kira.relay.actions.SkynetAction;
-import com.github.maxopoly.kira.KiraMain;
 
 public class RelayConfig {
 
@@ -83,6 +83,14 @@ public class RelayConfig {
 		return output;
 	}
 
+	public String formatNewPlayerMessage(NewPlayerAction action) {
+		String output = newPlayerFormat;
+		output = output.replace("%PLAYER%", action.getPlayer());
+		output = output.replace("%TIME%", getFormattedTime(action.getTimeStamp()));
+		output = reformatPings(output);
+		return output;
+	}
+
 	public String formatSkynetMessage(SkynetAction action) {
 		String output = skynetFormat;
 		String actionString;
@@ -97,14 +105,6 @@ public class RelayConfig {
 			throw new IllegalArgumentException();
 		}
 		output = output.replace("%ACTION%", actionString);
-		output = output.replace("%PLAYER%", action.getPlayer());
-		output = output.replace("%TIME%", getFormattedTime(action.getTimeStamp()));
-		output = reformatPings(output);
-		return output;
-	}
-
-	public String formatNewPlayerMessage(NewPlayerAction action) {
-		String output = newPlayerFormat;
 		output = output.replace("%PLAYER%", action.getPlayer());
 		output = output.replace("%TIME%", getFormattedTime(action.getTimeStamp()));
 		output = reformatPings(output);
@@ -164,6 +164,10 @@ public class RelayConfig {
 		return name;
 	}
 
+	public String getNewPlayerFormat() {
+		return newPlayerFormat;
+	}
+
 	public int getOwnerID() {
 		return ownerID;
 	}
@@ -178,10 +182,6 @@ public class RelayConfig {
 
 	public String getSkynetLogoutString() {
 		return skynetLogoutString;
-	}
-
-	public String getNewPlayerFormat() {
-		return newPlayerFormat;
 	}
 
 	public String getSnitchEnterString() {
@@ -204,12 +204,12 @@ public class RelayConfig {
 		return timeFormat;
 	}
 
-	public boolean isSkynetEnabled() {
-		return skynetEnabled;
-	}
-
 	public boolean isNewPlayerEnabled() {
 		return newPlayerEnabled;
+	}
+
+	public boolean isSkynetEnabled() {
+		return skynetEnabled;
 	}
 
 	private String reformatPings(String output) {
@@ -293,6 +293,16 @@ public class RelayConfig {
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
 
+	public void updateNewPlayerEnabled(boolean newPlayerEnabled) {
+		this.newPlayerEnabled = newPlayerEnabled;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
+	public void updateNewPlayerFormat(String newPlayerFormat) {
+		this.newPlayerFormat = newPlayerFormat;
+		KiraMain.getInstance().getDAO().updateRelayConfig(this);
+	}
+
 	public void updateRelayFromDiscord(boolean relayFromDiscord) {
 		this.relayFromDiscord = relayFromDiscord;
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
@@ -330,16 +340,6 @@ public class RelayConfig {
 
 	public void updateSkynetLogoutString(String skynetLogoutString) {
 		this.skynetLogoutString = skynetLogoutString;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public void updateNewPlayerEnabled(boolean newPlayerEnabled) {
-		this.newPlayerEnabled = newPlayerEnabled;
-		KiraMain.getInstance().getDAO().updateRelayConfig(this);
-	}
-
-	public void updateNewPlayerFormat(String newPlayerFormat) {
-		this.newPlayerFormat = newPlayerFormat;
 		KiraMain.getInstance().getDAO().updateRelayConfig(this);
 	}
 

@@ -7,6 +7,7 @@ import org.java_websocket.WebSocket;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.github.maxopoly.kira.api.token.APIToken;
 import com.github.maxopoly.kira.relay.actions.GroupChatMessageAction;
 import com.github.maxopoly.kira.relay.actions.NewPlayerAction;
 import com.github.maxopoly.kira.relay.actions.PlayerHitSnitchAction;
@@ -42,7 +43,7 @@ public class APISession {
 		this.skynets = new LinkedList<>();
 		this.newPlayers = new LinkedList<>();
 		this.connection = connection;
-		this.isClosed = false;
+		this.isClosed = false;				
 	}
 
 	public void close() {
@@ -53,10 +54,14 @@ public class APISession {
 		return chatGroups;
 	}
 
+	public long getExpirationTime() {
+		return expirationTime;
+	}
+
 	public List<String> getSnitchGroups() {
 		return snitchGroups;
 	}
-
+	
 	public KiraUser getUser() {
 		return user;
 	}
@@ -75,17 +80,6 @@ public class APISession {
 
 	public boolean isClosed() {
 		return isClosed || !connection.isOpen();
-	}
-
-	public void sendAuthMessage() {
-		JSONObject json = new JSONObject();
-		json.put("type", "auth");
-		json.put("valid", true);
-		json.put("expires",  expirationTime);
-		json.put("chats", getChatGroups());
-		json.put("snitches", getSnitchGroups());
-		json.put("skynet", receivesSkynet());
-		connection.send(json.toString());
 	}
 
 	public void popAndSendPendingNotifications() {
@@ -138,21 +132,40 @@ public class APISession {
 		return receivesSkynet;
 	}
 
+	public void sendAuthMessage() {
+		JSONObject json = new JSONObject();
+		json.put("type", "auth");
+		json.put("valid", true);
+		json.put("expires",  expirationTime);
+		json.put("chats", getChatGroups());
+		json.put("snitches", getSnitchGroups());
+		json.put("skynet", receivesSkynet());
+		connection.send(json.toString());
+	}
+	
+	public void sendReplacementToken(APIToken token) {
+		JSONObject json = new JSONObject();
+		json.put("type", "new-token");
+		json.put("secret", token.getSecret());
+		json.put("expires", token.getExpirationTime());
+		connection.send(json.toString());
+	}
+
 	public void sendGroupChatMessage(GroupChatMessageAction action) {
 		synchronized (groupMessages) {
 			groupMessages.add(action);
 		}
 	}
 
-	public void sendSkynetAlert(SkynetAction action) {
-		synchronized (skynets) {
-			skynets.add(action);
-		}
-	}
-
 	public void sendNewPlayerAlert(NewPlayerAction action) {
 		synchronized (newPlayers) {
 			newPlayers.add(action);
+		}
+	}
+
+	public void sendSkynetAlert(SkynetAction action) {
+		synchronized (skynets) {
+			skynets.add(action);
 		}
 	}
 

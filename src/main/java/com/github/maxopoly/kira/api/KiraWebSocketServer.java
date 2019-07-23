@@ -16,11 +16,11 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 import org.java_websocket.server.WebSocketServer;
 
+import com.github.maxopoly.kira.ConfigManager;
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.api.input.APISupplier;
 import com.github.maxopoly.kira.api.token.APIToken;
 import com.github.maxopoly.kira.api.token.APITokenManager;
-import com.github.maxopoly.kira.ConfigManager;
-import com.github.maxopoly.kira.KiraMain;
 
 public class KiraWebSocketServer extends WebSocketServer {
 
@@ -78,6 +78,16 @@ public class KiraWebSocketServer extends WebSocketServer {
 		start();
 	}
 
+	private SSLContext genSSLContext() {
+		ConfigManager config = KiraMain.getInstance().getConfig();
+		String path = config.getAPISSLCertPath();
+		String pw = config.getAPISSLCertPassword();
+		if (path == null || pw == null) {
+			return null;
+		}
+		return SSLContextFactory.generate(new File(path), pw);
+	}
+
 	private APISession getAPISession(WebSocket socket) {
 		return connections.get(socket);
 	}
@@ -116,7 +126,7 @@ public class KiraWebSocketServer extends WebSocketServer {
 	public void onStart() {
 		//already did everything in constructor, but still have to override this
 	}
-
+	
 	private APISession setupSession(WebSocket conn, ClientHandshake handshake) {
 		Map<String, String> queryParams = getQueryParams(handshake.getResourceDescriptor());
 		String tokenString = queryParams.get("apiToken");
@@ -163,15 +173,5 @@ public class KiraWebSocketServer extends WebSocketServer {
 			conn.close(CloseFrame.POLICY_VALIDATION, "Outdated token");
 		}
 		return token.generateSession(conn);
-	}
-	
-	private SSLContext genSSLContext() {
-		ConfigManager config = KiraMain.getInstance().getConfig();
-		String path = config.getAPISSLCertPath();
-		String pw = config.getAPISSLCertPassword();
-		if (path == null || pw == null) {
-			return null;
-		}
-		return SSLContextFactory.generate(new File(path), pw);
 	}
 }

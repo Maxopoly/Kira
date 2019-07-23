@@ -1,12 +1,12 @@
 package com.github.maxopoly.kira.relay;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.permission.KiraRole;
 import com.github.maxopoly.kira.relay.actions.GroupChatMessageAction;
 import com.github.maxopoly.kira.relay.actions.NewPlayerAction;
 import com.github.maxopoly.kira.relay.actions.PlayerHitSnitchAction;
 import com.github.maxopoly.kira.relay.actions.SkynetAction;
 import com.github.maxopoly.kira.user.KiraUser;
-import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
@@ -86,24 +86,6 @@ public class GroupChat {
 		return true;
 	}
 
-	public boolean sendSkynet(SkynetAction action) {
-		if (!config.isSkynetEnabled()) {
-			return true;
-		}
-		JDA jda = KiraMain.getInstance().getJDA();
-		Guild guild = jda.getGuildById(guildId);
-		if (guild == null) {
-			return false;
-		}
-		TextChannel channel = guild.getTextChannelById(channelId);
-		if (channel == null) {
-			return false;
-		}
-		String msg = config.formatSkynetMessage(action);
-		channel.sendMessage(msg).queue();
-		return true;
-	}
-
 	public boolean sendNewPlayer(NewPlayerAction action) {
 		if (!config.isNewPlayerEnabled()) {
 			return true;
@@ -118,6 +100,24 @@ public class GroupChat {
 			return false;
 		}
 		String msg = config.formatNewPlayerMessage(action);
+		channel.sendMessage(msg).queue();
+		return true;
+	}
+
+	public boolean sendSkynet(SkynetAction action) {
+		if (!config.isSkynetEnabled()) {
+			return true;
+		}
+		JDA jda = KiraMain.getInstance().getJDA();
+		Guild guild = jda.getGuildById(guildId);
+		if (guild == null) {
+			return false;
+		}
+		TextChannel channel = guild.getTextChannelById(channelId);
+		if (channel == null) {
+			return false;
+		}
+		String msg = config.formatSkynetMessage(action);
 		channel.sendMessage(msg).queue();
 		return true;
 	}

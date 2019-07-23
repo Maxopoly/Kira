@@ -1,9 +1,9 @@
 package com.github.maxopoly.kira.command.discord.ingame;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.command.model.discord.Command;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.rabbit.session.RunConsoleCommandRequest;
-import com.github.maxopoly.kira.KiraMain;
 
 public class ConsoleCommand extends Command {
 

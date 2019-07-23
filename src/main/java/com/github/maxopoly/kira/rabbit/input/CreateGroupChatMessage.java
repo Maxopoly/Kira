@@ -7,12 +7,12 @@ import java.util.UUID;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.rabbit.RabbitInputSupplier;
 import com.github.maxopoly.kira.relay.GroupChat;
 import com.github.maxopoly.kira.relay.GroupChatManager;
 import com.github.maxopoly.kira.user.KiraUser;
 import com.github.maxopoly.kira.user.UserManager;
-import com.github.maxopoly.kira.KiraMain;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;

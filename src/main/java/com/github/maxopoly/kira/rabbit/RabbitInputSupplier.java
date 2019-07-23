@@ -1,8 +1,8 @@
 package com.github.maxopoly.kira.rabbit;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.user.KiraUser;
-import com.github.maxopoly.kira.KiraMain;
 
 public class RabbitInputSupplier implements InputSupplier {
 

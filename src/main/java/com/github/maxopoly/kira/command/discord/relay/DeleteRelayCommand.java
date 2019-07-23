@@ -1,12 +1,12 @@
 package com.github.maxopoly.kira.command.discord.relay;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.command.model.discord.ArgumentBasedCommand;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.rabbit.session.PermissionCheckSession;
 import com.github.maxopoly.kira.relay.GroupChat;
 import com.github.maxopoly.kira.relay.GroupChatManager;
 import com.github.maxopoly.kira.user.KiraUser;
-import com.github.maxopoly.kira.KiraMain;
 
 public class DeleteRelayCommand extends ArgumentBasedCommand {
 

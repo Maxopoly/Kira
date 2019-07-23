@@ -1,15 +1,15 @@
-package com.github.maxopoly.kira.command.discord.user;
+package com.github.maxopoly.kira.command.discord.api;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.api.token.APIDataType;
 import com.github.maxopoly.kira.command.model.discord.ArgumentBasedCommand;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.rabbit.session.APIPermissionRequest;
 import com.github.maxopoly.kira.user.KiraUser;
-import com.github.maxopoly.kira.KiraMain;
 
 public class GenerateAPIToken extends ArgumentBasedCommand {
 

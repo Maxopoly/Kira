@@ -1,8 +1,8 @@
 package com.github.maxopoly.kira.api;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.KeyManagementException;
@@ -57,12 +57,9 @@ public class SSLContextFactory {
         return context;
     }
 
-	protected static byte[] parseDERFromPEM(byte[] pem, String beginDelimiter, String endDelimiter) {
-		String data = new String(pem);
-		data = data.replace("\n", "");
-		String[] tokens = data.split(beginDelimiter);
-		tokens = tokens[1].split(endDelimiter);
-		return Base64.getDecoder().decode(tokens[0]);
+	protected static X509Certificate generateCertificateFromDER(byte[] certBytes) throws CertificateException {
+		CertificateFactory factory = CertificateFactory.getInstance("X.509");
+		return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certBytes));
 	}
 
 	protected static RSAPrivateKey generatePrivateKeyFromDER(byte[] keyBytes)
@@ -72,9 +69,12 @@ public class SSLContextFactory {
 		return (RSAPrivateKey) factory.generatePrivate(spec);
 	}
 
-	protected static X509Certificate generateCertificateFromDER(byte[] certBytes) throws CertificateException {
-		CertificateFactory factory = CertificateFactory.getInstance("X.509");
-		return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certBytes));
+	protected static byte[] parseDERFromPEM(byte[] pem, String beginDelimiter, String endDelimiter) {
+		String data = new String(pem);
+		data = data.replace("\n", "");
+		String[] tokens = data.split(beginDelimiter);
+		tokens = tokens[1].split(endDelimiter);
+		return Base64.getDecoder().decode(tokens[0]);
 	}
 
 	private SSLContextFactory() {

@@ -3,6 +3,7 @@ package com.github.maxopoly.kira.rabbit;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.command.model.json.JsonInputHandler;
 import com.github.maxopoly.kira.rabbit.input.AddAuthMessage;
 import com.github.maxopoly.kira.rabbit.input.ConsoleForwardMessage;
@@ -15,7 +16,6 @@ import com.github.maxopoly.kira.rabbit.input.SendGroupChatMessage;
 import com.github.maxopoly.kira.rabbit.input.SkynetMessage;
 import com.github.maxopoly.kira.rabbit.input.SnitchHitMessage;
 import com.github.maxopoly.kira.rabbit.input.SyncGroupChatMembers;
-import com.github.maxopoly.kira.KiraMain;
 
 public class RabbitInputProcessor extends JsonInputHandler<RabbitInputSupplier> {
 

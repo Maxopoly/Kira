@@ -16,12 +16,12 @@ public abstract class RequestSession {
 
 	public abstract JSONObject getRequest();
 
-	public String getSendingKey() {
-		return sendingKey;
-	}
-	
 	public InputSupplier getRequester() {
 		return requester;
+	}
+	
+	public String getSendingKey() {
+		return sendingKey;
 	}
 
 	public abstract void handleReply(JSONObject json);

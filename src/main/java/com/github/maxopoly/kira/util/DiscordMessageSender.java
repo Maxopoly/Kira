@@ -12,39 +12,10 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.requests.restaction.MessageAction;
 
 public class DiscordMessageSender {
 
 	private static final int MAX_MSG_LENGTH = 1950;
-
-	public static void sendTextChannelMessage(KiraUser user, TextChannel channel, String msg) {
-		sendMessageInternal(user, channel.getGuild(), s -> {
-			channel.sendMessage(s).queue();
-		}, msg);
-	}
-
-	public static void sendPrivateMessage(KiraUser user, String msg) {
-		JDA jda = KiraMain.getInstance().getJDA();
-		User discordUser = jda.getUserById(user.getDiscordID());
-		PrivateChannel pm = discordUser.openPrivateChannel().complete();
-		sendMessageInternal(null, null, s -> {
-			pm.sendMessage(s).queue();
-		}, msg);
-	}
-	
-	private Map<Long, StringBuffer> queuedMessages;
-	
-	
-	private void queueMessage(String msg, long id, Consumer<String> sendFunction) {
-		StringBuffer sb = queuedMessages.computeIfAbsent(id, a -> new StringBuffer());
-		if (sb.length() + msg.length() > MAX_MSG_LENGTH) {
-			//send and empty current one
-			sendFunction.accept(sb.toString());
-			sb.setLength(0);
-		}
-		sb.append(msg);
-	}
 
 	/**
 	 * Splits up arbitrary messages into ones not exceeding the character limit of
@@ -108,8 +79,36 @@ public class DiscordMessageSender {
 		}
 	}
 
+	public static void sendPrivateMessage(KiraUser user, String msg) {
+		JDA jda = KiraMain.getInstance().getJDA();
+		User discordUser = jda.getUserById(user.getDiscordID());
+		PrivateChannel pm = discordUser.openPrivateChannel().complete();
+		sendMessageInternal(null, null, s -> {
+			pm.sendMessage(s).queue();
+		}, msg);
+	}
+	
+	public static void sendTextChannelMessage(KiraUser user, TextChannel channel, String msg) {
+		sendMessageInternal(user, channel.getGuild(), s -> {
+			channel.sendMessage(s).queue();
+		}, msg);
+	}
+	
+	
+	private Map<Long, StringBuffer> queuedMessages;
+
 	private DiscordMessageSender() {
 
+	}
+
+	private void queueMessage(String msg, long id, Consumer<String> sendFunction) {
+		StringBuffer sb = queuedMessages.computeIfAbsent(id, a -> new StringBuffer());
+		if (sb.length() + msg.length() > MAX_MSG_LENGTH) {
+			//send and empty current one
+			sendFunction.accept(sb.toString());
+			sb.setLength(0);
+		}
+		sb.append(msg);
 	}
 
 }

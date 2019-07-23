@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Logger;
 
-import com.github.maxopoly.kira.permission.KiraRoleManager;
 import com.github.maxopoly.kira.KiraMain;
+import com.github.maxopoly.kira.permission.KiraRoleManager;
 
 import net.dv8tion.jda.core.JDA;
 

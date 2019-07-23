@@ -1,11 +1,11 @@
 package com.github.maxopoly.kira.command.discord.relay;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.command.model.discord.ArgumentBasedCommand;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.relay.RelayConfig;
 import com.github.maxopoly.kira.relay.RelayConfigManager;
 import com.github.maxopoly.kira.user.KiraUser;
-import com.github.maxopoly.kira.KiraMain;
 
 public class CreateRelayConfig extends ArgumentBasedCommand {
 

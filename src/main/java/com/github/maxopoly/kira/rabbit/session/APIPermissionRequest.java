@@ -4,14 +4,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.api.token.APIDataType;
 import com.github.maxopoly.kira.api.token.APIToken;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
-import com.github.maxopoly.kira.KiraMain;
 
 public class APIPermissionRequest extends RequestSession {
 
@@ -47,9 +46,9 @@ public class APIPermissionRequest extends RequestSession {
 			json.getJSONArray("read_chat").forEach( s -> chatGroups.add((String)s));
 		}
 		boolean skynet = dataRequested.contains(APIDataType.SKYNET);
-		APIToken token = APIToken.generate(supplier.getUser(), snitchGroups, chatGroups, skynet, expirationTime, TimeUnit.MINUTES.toMillis(5));
+		APIToken token = APIToken.generate(supplier.getUser(), snitchGroups, chatGroups, skynet, expirationTime);
 		KiraMain.getInstance().getAPISessionManager().getTokenManager().registerToken(token);
-		supplier.reportBack("Your token is: " + token.getToken());
+		supplier.reportBack("Your token is: " + token.getSecret());
 	}
 
 }

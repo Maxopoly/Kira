@@ -272,7 +272,7 @@ public class KiraMain {
 
 	public void stop() {
 		rabbit.shutdown();
-		apiSessionManager.closeSocket();
+		apiSessionManager.shutdown();
 		shutdown = true;
 		new Thread(new Runnable() {
 

@@ -1,9 +1,9 @@
 package com.github.maxopoly.kira.command.discord.admin;
 
+import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.command.model.discord.Command;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.permission.KiraRoleManager;
-import com.github.maxopoly.kira.KiraMain;
 
 public class ReloadPermissionCommand extends Command {
 
