@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.api.input.APIInputHandler;
+import com.github.maxopoly.kira.api.token.APIToken;
 import com.github.maxopoly.kira.api.token.APITokenManager;
 import com.github.maxopoly.kira.relay.actions.GroupChatMessageAction;
 import com.github.maxopoly.kira.relay.actions.NewPlayerAction;
@@ -140,6 +141,18 @@ public class APISessionManager {
 	}
 
 	public void shutdown() {
+		for(APISession session: sessions) {
+			APIToken replacementToken = APIToken.generate(session);
+			tokenManager.registerToken(replacementToken);
+			
+			try  {
+				session.sendReplacementToken(replacementToken);
+				session.close();
+			}
+			catch (Exception e) {
+				logger.error("Failed to close API connection", e);
+			}
+		}
 		try {
 			socketServer.stop();
 		} catch (IOException | InterruptedException e) {

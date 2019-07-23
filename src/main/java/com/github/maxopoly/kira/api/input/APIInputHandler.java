@@ -3,6 +3,7 @@ package com.github.maxopoly.kira.api.input;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
+import com.github.maxopoly.kira.api.input.packets.RequestReplacementToken;
 import com.github.maxopoly.kira.command.model.json.JsonInputHandler;
 
 public class APIInputHandler extends JsonInputHandler<APISupplier> {
@@ -23,6 +24,6 @@ public class APIInputHandler extends JsonInputHandler<APISupplier> {
 
 	@Override
 	protected void registerCommands() {
-		//soon
+		registerCommand(new RequestReplacementToken());
 	}
 }

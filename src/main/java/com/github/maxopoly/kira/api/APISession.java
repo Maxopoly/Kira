@@ -29,8 +29,6 @@ public class APISession {
 	private List<SkynetAction> skynets;
 	private List<NewPlayerAction> newPlayers;
 
-	private boolean isClosed;
-
 	public APISession(KiraUser user, List<String> snitchGroups, List<String> chatGroups, boolean skyNet,
 			long expirationTime, WebSocket connection) {
 		this.user = user;
@@ -42,12 +40,17 @@ public class APISession {
 		this.groupMessages = new LinkedList<>();
 		this.skynets = new LinkedList<>();
 		this.newPlayers = new LinkedList<>();
-		this.connection = connection;
-		this.isClosed = false;				
+		this.connection = connection;	
 	}
 
 	public void close() {
-		this.isClosed = true;
+		if (!isClosed()) {
+			//flush out
+			if (hasPendingNotifications()) {
+				popAndSendPendingNotifications();
+			}
+			this.connection.close();
+		}
 	}
 
 	public List<String> getChatGroups() {
@@ -79,7 +82,7 @@ public class APISession {
 	}
 
 	public boolean isClosed() {
-		return isClosed || !connection.isOpen();
+		return !connection.isOpen();
 	}
 
 	public void popAndSendPendingNotifications() {
