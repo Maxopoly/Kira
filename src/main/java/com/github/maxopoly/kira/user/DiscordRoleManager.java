@@ -53,7 +53,8 @@ public class DiscordRoleManager {
 		}
 		Member self = guild.getSelfMember();
 		if (self.canInteract(member)) {
-			guild.getController().setNickname(member, user.getName()).queue();
+			//has to be complete() instead of queue() because of a bug in JDA/Discord which results in race conditions
+			guild.getController().setNickname(member, user.getName()).complete();
 		}
 		guild.getController().addSingleRoleToMember(member, role).queue();
 	}

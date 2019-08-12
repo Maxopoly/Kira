@@ -135,7 +135,8 @@ public class DAO {
 				int id = rs.getInt(1);
 				return new RelayConfig(id, name, relayFromDiscord, relayToDiscord, showSnitches, deleteMessages,
 						snitchFormat, loginAction, logoutAction, enterAction, chatFormat, hereFormat, everyoneFormat,
-						canPing, timeFormat, skynetLogin, skynetLogout, skynetFormat, relaySkynet, newPlayerFormat, relayNewPlayer, creatorID);
+						canPing, timeFormat, skynetLogin, skynetLogout, skynetFormat, relaySkynet, newPlayerFormat,
+						relayNewPlayer, creatorID);
 			}
 		} catch (SQLException e) {
 			logger.error("Failed to create relay config", e);
@@ -162,8 +163,7 @@ public class DAO {
 					+ "canPing boolean not null, timeFormat text not null, skynetFormat text not null, relaySkynet boolean not null,"
 					+ "skynetLogin text not null, skynetLogout text not null,"
 					+ "newPlayerFormat text not null, relayNewPlayer boolean not null,"
-					+ "owner_id int references users (id) on delete cascade,"
-					+ timestampField + ");")) {
+					+ "owner_id int references users (id) on delete cascade," + timestampField + ");")) {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS group_chats "
@@ -183,7 +183,7 @@ public class DAO {
 				prep.execute();
 			}
 			try (PreparedStatement prep = conn.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS role_members " + "(user_id int references users(id) on delete cascade, "
+					"CREATE TABLE IF NOT EXISTS role_members (user_id int references users(id) on delete cascade, "
 							+ "role_id int references roles(id) on delete cascade," + timestampField
 							+ ", unique(role_id, user_id));")) {
 				prep.execute();

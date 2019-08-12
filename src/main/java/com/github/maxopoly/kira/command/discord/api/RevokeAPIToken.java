@@ -39,7 +39,7 @@ public class RevokeAPIToken extends ArgumentBasedCommand {
 		}
 		List<APIToken> tokens = KiraMain.getInstance().getAPISessionManager().getTokenManager()
 				.getTokensForUser(sender.getUser());
-		if (number > tokens.size()) {
+		if (number > tokens.size() || number <= 0) {
 			return String.format("You can not delete token %d, because there are only %d tokens total", number,
 					tokens.size());
 		}
