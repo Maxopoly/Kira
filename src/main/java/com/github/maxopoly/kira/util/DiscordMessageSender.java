@@ -6,12 +6,12 @@ import java.util.function.Consumer;
 import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.user.KiraUser;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 public class DiscordMessageSender {
 
@@ -95,14 +95,14 @@ public class DiscordMessageSender {
 	}
 	
 	
-	private Map<Long, StringBuffer> queuedMessages;
+	private Map<Long, StringBuilder> queuedMessages;
 
 	private DiscordMessageSender() {
 
 	}
 
 	private void queueMessage(String msg, long id, Consumer<String> sendFunction) {
-		StringBuffer sb = queuedMessages.computeIfAbsent(id, a -> new StringBuffer());
+		StringBuilder sb = queuedMessages.computeIfAbsent(id, a -> new StringBuilder());
 		if (sb.length() + msg.length() > MAX_MSG_LENGTH) {
 			//send and empty current one
 			sendFunction.accept(sb.toString());

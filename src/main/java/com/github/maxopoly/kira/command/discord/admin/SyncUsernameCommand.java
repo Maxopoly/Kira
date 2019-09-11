@@ -5,8 +5,8 @@ import com.github.maxopoly.kira.command.model.discord.Command;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
 import com.github.maxopoly.kira.user.UserManager;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 
 public class SyncUsernameCommand extends Command {
 
@@ -50,7 +50,7 @@ public class SyncUsernameCommand extends Command {
 				return; //no perm
 			}
 			sb.append("Changing name of " + user.toString() + " from " + member.getNickname() + " to " + user.getName() + "\n");
-			guild.getController().setNickname(member, user.getName()).queue();
+			guild.modifyNickname(member, user.getName()).queue();
 
 		});
 		sb.append("Successfully updated all usernames");

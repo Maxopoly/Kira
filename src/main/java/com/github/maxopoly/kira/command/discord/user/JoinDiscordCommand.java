@@ -1,7 +1,5 @@
 package com.github.maxopoly.kira.command.discord.user;
 
-import java.util.UUID;
-
 import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.command.model.discord.Command;
 import com.github.maxopoly.kira.command.model.top.InputSupplier;
@@ -9,6 +7,7 @@ import com.github.maxopoly.kira.command.model.top.InputSupplier;
 public class JoinDiscordCommand extends Command {
 	public JoinDiscordCommand() {
 		super("invite");
+		doesRequireIngameAccount();
 	}
 
 	@Override
@@ -28,13 +27,6 @@ public class JoinDiscordCommand extends Command {
 
 	@Override
 	public String handleInternal(String argument, InputSupplier sender) {
-		if (sender.getUser() == null) {
-			return "You are not allowed to do that";
-		}
-		UUID uuid = sender.getUser().getIngameUUID();
-		if (uuid == null) {
-			return "You are not allowed to do this, link an ingame account";
-		}
-		return KiraMain.getInstance().getJDA().asBot().getInviteUrl();
+		return KiraMain.getInstance().getJDA().getInviteUrl();
 	}
 }

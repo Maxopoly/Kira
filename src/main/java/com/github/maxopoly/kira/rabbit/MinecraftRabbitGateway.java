@@ -7,7 +7,7 @@ import org.json.JSONObject;
 import com.github.maxopoly.kira.relay.GroupChat;
 import com.github.maxopoly.kira.user.KiraUser;
 
-import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class MinecraftRabbitGateway {
 
@@ -17,7 +17,7 @@ public class MinecraftRabbitGateway {
 		this.rabbit = rabbit;
 	}
 
-	public void requestRelayCreation(KiraUser sender, String name, Channel channel) {
+	public void requestRelayCreation(KiraUser sender, String name, TextChannel channel) {
 		JSONObject json = new JSONObject();
 		json.put("group", name);
 		json.put("sender", sender.getIngameUUID().toString());

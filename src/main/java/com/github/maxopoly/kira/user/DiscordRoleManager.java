@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 
 public class DiscordRoleManager {
 
@@ -54,14 +54,13 @@ public class DiscordRoleManager {
 		Member self = guild.getSelfMember();
 		if (self.canInteract(member)) {
 			//has to be complete() instead of queue() because of a bug in JDA/Discord which results in race conditions
-			guild.getController().setNickname(member, user.getName()).complete();
+			guild.modifyNickname(member, user.getName()).complete();
 		}
-		guild.getController().addSingleRoleToMember(member, role).queue();
+		guild.addRoleToMember(member, role).complete();
 	}
 
 	public void syncFully() {
 		Set<KiraUser> authUsers = userManager.getAllUsers();
-		authUsers.stream().filter(u -> u.hasIngameAccount());
 		Role role = guild.getRoleById(roleID);
 		List<Member> members = guild.getMembersWithRoles(role);
 
@@ -96,7 +95,7 @@ public class DiscordRoleManager {
 		members.forEach(m -> {
 			KiraUser tiedUser = userByDiscordID.get(m.getUser().getIdLong());
 			if (tiedUser != null && self.canInteract(m)) {
-				guild.getController().setNickname(m, tiedUser.getName()).queue();
+				guild.modifyNickname(m, tiedUser.getName()).queue();
 			}
 		});
 	}
@@ -126,7 +125,7 @@ public class DiscordRoleManager {
 			return false;
 		}
 		logger.info("Taking auth role from " + member.getEffectiveName());
-		guild.getController().removeSingleRoleFromMember(member, role).queue();
+		guild.removeRoleFromMember(member, role).queue();
 		return true;
 	}
 }

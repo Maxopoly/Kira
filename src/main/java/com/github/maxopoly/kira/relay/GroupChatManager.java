@@ -17,17 +17,16 @@ import com.github.maxopoly.kira.permission.KiraRoleManager;
 import com.github.maxopoly.kira.user.KiraUser;
 import com.github.maxopoly.kira.user.UserManager;
 
-import net.dv8tion.jda.core.entities.Category;
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.PermissionOverride;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Category;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class GroupChatManager {
 
-	private static final String accessPermSuffix = "_ACCESS";
-	private static final long channelPerms = 379968L;
+	private static final String ACCESS_PERM_SUFFIX = "_ACCESS";
+	private static final long CHANNEL_PERMS = 379968L;
 
 	public static float getChatCountLimit() {
 		return 4.0f;
@@ -48,7 +47,7 @@ public class GroupChatManager {
 	private RelayConfigManager relayConfigManager;
 
 	public GroupChatManager(DAO dao, Logger logger, long sectionID, RelayConfigManager relayConfigManager) {
-		groupChatByName = new ConcurrentHashMap<String, GroupChat>();
+		groupChatByName = new ConcurrentHashMap<>();
 		chatsByChannelId = new TreeMap<>();
 		ownedChatsByUserId = new TreeMap<>();
 		this.dao = dao;
@@ -69,7 +68,7 @@ public class GroupChatManager {
 		}
 		Guild guild = KiraMain.getInstance().getGuild();
 		if (guild.getIdLong() == chat.getGuildId()) {
-			Channel channel = KiraMain.getInstance().getJDA().getTextChannelById(chat.getDiscordChannelId());
+			TextChannel channel = KiraMain.getInstance().getJDA().getTextChannelById(chat.getDiscordChannelId());
 			Member member = guild.getMemberById(user.getDiscordID());
 			if (channel == null) {
 				logger.error(
@@ -81,9 +80,9 @@ public class GroupChatManager {
 				if (perm == null) {
 					perm = channel.createPermissionOverride(member).complete();
 				}
-				if (perm.getAllowedRaw() != channelPerms) {
+				if (perm.getAllowedRaw() != CHANNEL_PERMS) {
 					logger.info("Adjusting channel perms to " + chat.getName() + " for " + user.toString());
-					perm.getManager().grant(channelPerms).queue();
+					perm.getManager().grant(CHANNEL_PERMS).queue();
 				}
 			}
 		}
@@ -102,7 +101,7 @@ public class GroupChatManager {
 			logger.warn("Tried to create channel, but category for it could not be found");
 			return null;
 		}
-		Channel channel = cat.createTextChannel(name).complete();
+		TextChannel channel = cat.createTextChannel(name).complete();
 		if (channel == null) {
 			logger.warn("Tried to create channel, but it didn't work");
 			return null;
@@ -111,7 +110,7 @@ public class GroupChatManager {
 	}
 
 	public GroupChat createGroupChat(String name, long guildID, long channelID, KiraUser creator) {
-		KiraRole role = KiraMain.getInstance().getKiraRoleManager().getOrCreateRole(name + accessPermSuffix);
+		KiraRole role = KiraMain.getInstance().getKiraRoleManager().getOrCreateRole(name + ACCESS_PERM_SUFFIX);
 		int id = dao.createGroupChat(guildID, channelID, name, role, creator.getID(),
 				relayConfigManager.getDefaultConfig());
 		if (id == -1) {

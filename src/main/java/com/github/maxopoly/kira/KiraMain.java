@@ -26,10 +26,10 @@ import com.github.maxopoly.kira.user.KiraUser;
 import com.github.maxopoly.kira.user.UserManager;
 import com.rabbitmq.client.ConnectionFactory;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
 
 public class KiraMain {
 
@@ -38,6 +38,7 @@ public class KiraMain {
 	public static KiraMain getInstance() {
 		return instance;
 	}
+	
 	public static void main(String[] args) {
 		instance = new KiraMain();
 		if (!instance.loadConfig()) {
@@ -71,6 +72,7 @@ public class KiraMain {
 		instance.rabbit.beginAsyncListen();
 		instance.parseInput();
 	}
+	
 	private Logger logger = LogManager.getLogger("Main");
 	private JDA jda;
 	private boolean shutdown = false;
@@ -145,7 +147,7 @@ public class KiraMain {
 		return requestSessionManager;
 	}
 
-	public DiscordRoleManager getRoleManager() {
+	public DiscordRoleManager getDiscordRoleManager() {
 		return roleManager;
 	}
 	

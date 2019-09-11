@@ -10,7 +10,7 @@ import com.github.maxopoly.kira.command.model.discord.DiscordCommandPMSupplier;
 import com.github.maxopoly.kira.rabbit.RabbitInputSupplier;
 import com.github.maxopoly.kira.user.KiraUser;
 
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class ReplyToUserMessage extends RabbitMessage {
 

@@ -14,9 +14,11 @@ import com.github.maxopoly.kira.relay.GroupChatManager;
 import com.github.maxopoly.kira.user.KiraUser;
 import com.github.maxopoly.kira.user.UserManager;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class DiscordMessageListener extends ListenerAdapter {
 
@@ -36,7 +38,7 @@ public class DiscordMessageListener extends ListenerAdapter {
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
-		if (event.getAuthor().isBot() || event.getAuthor().getIdLong() == ownID) {
+		if (!isValidDiscordAccount(event.getAuthor())) {
 			return;
 		}
 		KiraUser user = userManager.getOrCreateUserByDiscordID(event.getAuthor().getIdLong());
@@ -76,6 +78,24 @@ public class DiscordMessageListener extends ListenerAdapter {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+		if (!isValidDiscordAccount(event.getUser())) {
+			return;
+		}
+		KiraUser user = userManager.getOrCreateUserByDiscordID(event.getUser().getIdLong());
+		if (user.hasIngameAccount()) {
+			KiraMain.getInstance().getDiscordRoleManager().giveDiscordRole(user);
+		}
+	}
+	
+	private boolean isValidDiscordAccount(User user) {
+		if (user == null) {
+			return false;
+		}
+		return !(user.isBot() || user.getIdLong() == ownID);
 	}
 
 	private String sanitize(String input) {

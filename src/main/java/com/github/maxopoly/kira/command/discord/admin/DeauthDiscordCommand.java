@@ -32,7 +32,7 @@ public class DeauthDiscordCommand extends ArgumentBasedCommand {
 	public String handle(InputSupplier sender, String[] args) {
 		StringBuilder reply = new StringBuilder();
 		UserManager userManager = KiraMain.getInstance().getUserManager();
-		DiscordRoleManager authManager = KiraMain.getInstance().getRoleManager();
+		DiscordRoleManager authManager = KiraMain.getInstance().getDiscordRoleManager();
 		KiraUser user = userManager.parseUser(args[0], reply);
 		if (user == null) {
 			reply.append("User not found, no action was taken\n");

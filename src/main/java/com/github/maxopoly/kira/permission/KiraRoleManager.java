@@ -22,7 +22,7 @@ public class KiraRoleManager {
 	public KiraRoleManager() {
 		roleById = new TreeMap<>();
 		userRoles = new TreeMap<>();
-		roleByName = new HashMap<String, KiraRole>();
+		roleByName = new HashMap<>();
 		permissionsByName = new HashMap<>();
 		permissionsById = new TreeMap<>();
 	}
@@ -38,11 +38,7 @@ public class KiraRoleManager {
 	}
 
 	public void addRole(int userID, KiraRole role, boolean saveToDb) {
-		Set<KiraRole> existingRoles = userRoles.get(userID);
-		if (existingRoles == null) {
-			existingRoles = new HashSet<>();
-			userRoles.put(userID, existingRoles);
-		}
+		Set<KiraRole> existingRoles = userRoles.computeIfAbsent(userID, s ->  new HashSet<>());
 		if (existingRoles.contains(role)) {
 			return;
 		}

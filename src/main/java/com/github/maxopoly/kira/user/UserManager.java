@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.github.maxopoly.kira.KiraMain;
 import com.github.maxopoly.kira.permission.KiraRoleManager;
 
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.api.JDA;
 
 public class UserManager {
 
@@ -91,8 +91,8 @@ public class UserManager {
 				return null;
 			}
 			JDA jda = KiraMain.getInstance().getJDA();
-			List<net.dv8tion.jda.core.entities.User> users = jda.getUsersByName(parts[0], true);
-			for (net.dv8tion.jda.core.entities.User discordUser : users) {
+			List<net.dv8tion.jda.api.entities.User> users = jda.getUsersByName(parts[0], true);
+			for (net.dv8tion.jda.api.entities.User discordUser : users) {
 				if (discordUser.getDiscriminator().equals(parts[1])) {
 					KiraUser user = getOrCreateUserByDiscordID(discordUser.getIdLong());
 					if (user == null) {
