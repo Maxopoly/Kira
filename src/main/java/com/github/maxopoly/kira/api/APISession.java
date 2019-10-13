@@ -153,6 +153,14 @@ public class APISession {
 		json.put("expires", token.getExpirationTime());
 		connection.send(json.toString());
 	}
+	
+	public void sendInGameCommandResponse(String command, String response) {
+		JSONObject json = new JSONObject();
+		json.put("type", "ingame-response");
+		json.put("command", command);
+		json.put("response", response);
+		connection.send(json.toString());
+	}
 
 	public void sendGroupChatMessage(GroupChatMessageAction action) {
 		synchronized (groupMessages) {

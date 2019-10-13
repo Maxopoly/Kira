@@ -6,8 +6,10 @@ import com.github.maxopoly.kira.command.model.top.InputSupplier;
 
 public class SendIngameCommandSession extends RequestSession {
 	
-	private InputSupplier supplier;
-	private String command;
+	protected static final String replyField = "reply";
+	
+	protected InputSupplier supplier;
+	protected String command;
 	
 	public SendIngameCommandSession(InputSupplier supplier, String command) {
 		super("ingame", supplier);
@@ -25,7 +27,7 @@ public class SendIngameCommandSession extends RequestSession {
 
 	@Override
 	public void handleReply(JSONObject json) {
-		String reply = json.getString("reply");
+		String reply = json.getString(replyField);
 		if (reply.trim().length() == 0) {
 			reply = "Server sent empty reply";
 		}
