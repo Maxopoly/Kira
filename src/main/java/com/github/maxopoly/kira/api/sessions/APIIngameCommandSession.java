@@ -7,13 +7,10 @@ import com.github.maxopoly.kira.rabbit.session.SendIngameCommandSession;
 
 public class APIIngameCommandSession extends SendIngameCommandSession {
 	
-	private APISupplier supplier;
-	
 	private String identifer;
 	
 	public APIIngameCommandSession(APISupplier supplier, String command, String id) {
 		super(supplier, command);
-		this.supplier = supplier;
 	}
 
 	@Override
@@ -22,6 +19,6 @@ public class APIIngameCommandSession extends SendIngameCommandSession {
 		if (reply.trim().length() == 0) {
 			reply = "";
 		}
-		supplier.getSession().sendInGameCommandResponse(identifer, reply);
+		((APISupplier)requester).getSession().sendInGameCommandResponse(identifer, reply);
 	}
 }

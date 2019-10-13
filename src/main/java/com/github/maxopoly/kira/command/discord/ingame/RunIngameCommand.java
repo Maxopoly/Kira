@@ -11,7 +11,7 @@ import com.github.maxopoly.kira.rabbit.session.SendIngameCommandSession;
 
 public class RunIngameCommand extends ArgumentBasedCommand {
 
-	private String commandRegex = "[a-zA-Z0-9_\\- !?\\.]+";
+	public static final Pattern commandPattern = Pattern.compile("[a-zA-Z0-9_\\- !?\\.]+");
 
 	public RunIngameCommand() {
 		super("ingame", 1, 100, "mc");
@@ -45,7 +45,8 @@ public class RunIngameCommand extends ArgumentBasedCommand {
 		StringBuilder sb = new StringBuilder();
 		Arrays.stream(args).forEach(s -> sb.append(s + " "));
 		String commandString = sb.toString().trim();
-		if (!Pattern.matches(commandRegex, commandString)) {
+		
+		if (!commandPattern.matcher(commandString).matches()) {
 			return "Your command contained illegal characters";
 		}
 		if (commandString.length() > 255) {
