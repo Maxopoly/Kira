@@ -7,7 +7,7 @@ import com.github.maxopoly.kira.command.model.top.InputSupplier;
 public abstract class RequestSession {
 
 	private String sendingKey;
-	private InputSupplier requester;
+	protected final InputSupplier requester;
 
 	public RequestSession(String sendingKey, InputSupplier requester) {
 		this.sendingKey = sendingKey;
