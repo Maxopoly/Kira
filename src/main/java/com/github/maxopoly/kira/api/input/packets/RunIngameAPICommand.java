@@ -10,27 +10,25 @@ import com.github.maxopoly.kira.command.discord.ingame.RunIngameCommand;
 
 public class RunIngameAPICommand extends APIInput {
 
-    public RunIngameAPICommand() {
-        super("in-game");
-    }
+	public RunIngameAPICommand() {
+		super("in-game");
+	}
 
-    @Override
-    public void handle(JSONObject argument, APISupplier supplier) {
-        
-        if(argument.isNull("command") || argument.isNull("identifier")) {
-            return;
-        }
-        
-        String command = argument.getString("command");
-        String id = argument.getString("id");
-        
-        if (!RunIngameCommand.commandPattern.matcher(command).matches() || command.length() > 255) {
-            return;
-        }
-        
-        APIIngameCommandSession cmd = new APIIngameCommandSession(supplier, command, id);
-        
-        KiraMain.getInstance().getRequestSessionManager().request(cmd);
-    }
+	@Override
+	public void handle(JSONObject argument, APISupplier supplier) {
+		String command = argument.optString("command");
+		if (command == null) {
+			return;
+		}
+		if (!RunIngameCommand.commandPattern.matcher(command).matches() || command.length() > 255) {
+			return;
+		}
+		String id = argument.optString("identifier");
+		if (id == null) {
+			return;
+		}
+		APIIngameCommandSession cmd = new APIIngameCommandSession(supplier, command, id);
+		KiraMain.getInstance().getRequestSessionManager().request(cmd);
+	}
 
 }

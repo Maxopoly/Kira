@@ -1,6 +1,10 @@
 package com.github.maxopoly.kira.util;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import com.github.maxopoly.kira.KiraMain;
@@ -95,14 +99,16 @@ public class DiscordMessageSender {
 	}
 	
 	
-	private Map<Long, StringBuilder> queuedMessages;
+	private Map<Long, StringBuilder> queuedMessagesByChannel;
+	private List<StringBuilder> messageQueue;
 
 	private DiscordMessageSender() {
-
+		queuedMessagesByChannel = new ConcurrentHashMap<>();
+		messageQueue = new LinkedList<>();
 	}
 
 	private void queueMessage(String msg, long id, Consumer<String> sendFunction) {
-		StringBuilder sb = queuedMessages.computeIfAbsent(id, a -> new StringBuilder());
+		StringBuilder sb = queuedMessagesByChannel.computeIfAbsent(id, a -> new StringBuilder());
 		if (sb.length() + msg.length() > MAX_MSG_LENGTH) {
 			//send and empty current one
 			sendFunction.accept(sb.toString());

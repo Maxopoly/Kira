@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
+import com.github.maxopoly.kira.KiraMain;
+
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -30,7 +32,12 @@ public class DiscordRoleManager {
 		this.logger = logger;
 		this.scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleWithFixedDelay(() -> {
+			try {
 			syncFully();
+			}
+			catch (Exception e) {
+				KiraMain.getInstance().getLogger().error("Failed to fix user roles", e);
+			}
 		}, 60, 60, TimeUnit.SECONDS);
 	}
 
@@ -54,9 +61,9 @@ public class DiscordRoleManager {
 		Member self = guild.getSelfMember();
 		if (self.canInteract(member)) {
 			//has to be complete() instead of queue() because of a bug in JDA/Discord which results in race conditions
-			guild.modifyNickname(member, user.getName()).complete();
+			guild.modifyNickname(member, user.getName()).queue();
 		}
-		guild.addRoleToMember(member, role).complete();
+		guild.addRoleToMember(member, role).queue();
 	}
 
 	public void syncFully() {

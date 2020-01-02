@@ -174,7 +174,7 @@ public class ConfigManager {
 	public boolean reload() {
 		final StringBuilder sb = new StringBuilder();
 		try {
-			Files.readAllLines(new File(configFileName).toPath()).forEach(line -> sb.append(line));
+			Files.readAllLines(new File(configFileName).toPath()).forEach(sb::append);
 			config = new JSONObject(sb.toString());
 			return true;
 		} catch (IOException | JSONException e) {
