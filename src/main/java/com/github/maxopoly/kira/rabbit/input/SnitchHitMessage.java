@@ -33,7 +33,7 @@ public class SnitchHitMessage extends RabbitMessage {
 		int z = json.getInt("z");
 		String world = json.optString("world", "world");
 		SnitchHitType hitType = SnitchHitType.valueOf(json.optString("type", "ENTER"));
-		SnitchType snitchType = SnitchType.valueOf(json.optString("snitchtype", "ENTRY"));
+		SnitchType snitchType = SnitchType.getType(json.optString("snitchtype", "ENTRY"));
 		long timestamp = json.optLong("timestamp", System.currentTimeMillis());
 		PlayerHitSnitchAction snitchAction = new PlayerHitSnitchAction(timestamp, victimName, snitchName, groupName,
 				new MinecraftLocation(world, x, y, z), hitType, snitchType);
