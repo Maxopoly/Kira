@@ -76,7 +76,7 @@
 		<dependency>
 			<groupId>net.dv8tion</groupId>
 			<artifactId>JDA</artifactId>
-			<version>4.0.0_46</version>
+			<version>4.1.1_153</version>
 		</dependency>
 		<dependency>
 			<groupId>com.zaxxer</groupId>
@@ -110,7 +110,7 @@
 		<repository>
 			<id>jcenter</id>
 			<name>jcenter-bintray</name>
-			<url>http://jcenter.bintray.com</url>
+			<url>https://jcenter.bintray.com</url>
 		</repository>
 	</repositories>
 </project>

@@ -15,6 +15,7 @@ import com.github.maxopoly.kira.KiraMain;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 public class DiscordRoleManager {
 
@@ -102,7 +103,12 @@ public class DiscordRoleManager {
 		members.forEach(m -> {
 			KiraUser tiedUser = userByDiscordID.get(m.getUser().getIdLong());
 			if (tiedUser != null && self.canInteract(m)) {
-				guild.modifyNickname(m, tiedUser.getName()).queue();
+				try {
+					guild.modifyNickname(m, tiedUser.getName()).queue();
+				}
+				catch (ErrorResponseException e) {
+					logger.error("Failed to update nickname for " + m + "; " + tiedUser.getName());
+				}
 			}
 		});
 	}
