@@ -48,10 +48,10 @@ public class DiscordMessageListener extends ListenerAdapter {
 					event.getMessage().getContentDisplay()));
 			cmdHandler.handle(content, new DiscordCommandPMSupplier(user));
 		} else {
-			logger.info(
-					String.format("CHAT [%s][%s] %s: %s", event.getGuild().getName(), event.getTextChannel().getName(),
-							event.getMember().getEffectiveName(), event.getMessage().getContentDisplay()));
 			if (content.startsWith(keyWord)) {
+				logger.info(
+						String.format("CHAT [%s][%s] %s: %s", event.getGuild().getName(), event.getTextChannel().getName(),
+								event.getMember().getEffectiveName(), event.getMessage().getContentDisplay()));
 				InputSupplier supplier = new DiscordCommandChannelSupplier(user, event.getGuild().getIdLong(),
 						event.getChannel().getIdLong());
 				cmdHandler.handle(content.substring(keyWord.length()), supplier);
