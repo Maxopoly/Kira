@@ -37,7 +37,7 @@ public class DeauthDiscordCommand extends ArgumentBasedCommand {
 		if (user == null) {
 			reply.append("User not found, no action was taken\n");
 		} else {
-			boolean worked = authManager.takeDiscordRole(user);
+			boolean worked = authManager.takeDiscordRole(KiraMain.getInstance().getGuild(), user);
 			reply.append("Unregistered user with given id found in discord, role removal "
 					+ (worked ? "successfull" : "unsuccessfull") + "\n");
 			if (worked) {

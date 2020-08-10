@@ -4,14 +4,14 @@ import com.github.maxopoly.kira.user.KiraUser;
 
 public interface InputSupplier {
 
-	public long getChannelID();
+	long getChannelID();
 
-	public String getIdentifier();
+	String getIdentifier();
 
-	public KiraUser getUser();
+	KiraUser getUser();
 
-	public boolean hasPermission(String perm);
+	boolean hasPermission(String perm);
 
-	public void reportBack(String msg);
+	void reportBack(String msg);
 
 }

@@ -40,7 +40,7 @@ public class APISession {
 		this.groupMessages = new LinkedList<>();
 		this.skynets = new LinkedList<>();
 		this.newPlayers = new LinkedList<>();
-		this.connection = connection;	
+		this.connection = connection;
 	}
 
 	public void close() {

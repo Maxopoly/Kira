@@ -15,26 +15,25 @@ import com.github.maxopoly.kira.KiraMain;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.internal.requests.DeferredRestAction;
 
 public class DiscordRoleManager {
-
-	private Guild guild;
 	private long roleID;
 	private Logger logger;
 	private UserManager userManager;
 
 	private final ScheduledExecutorService scheduler;
 
-	public DiscordRoleManager(Guild guild, long roleID, Logger logger, UserManager userManager) {
-		this.guild = guild;
+	public DiscordRoleManager(long roleID, Logger logger, UserManager userManager) {
 		this.userManager = userManager;
 		this.roleID = roleID;
 		this.logger = logger;
 		this.scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleWithFixedDelay(() -> {
 			try {
-			syncFully();
+				syncFully();
 			}
 			catch (Exception e) {
 				KiraMain.getInstance().getLogger().error("Failed to fix user roles", e);
@@ -43,6 +42,7 @@ public class DiscordRoleManager {
 	}
 
 	public void giveDiscordRole(KiraUser user) {
+		Guild guild = KiraMain.getInstance().getGuild();
 		Role role = guild.getRoleById(roleID);
 		if (role == null) {
 			logger.warn(
@@ -64,10 +64,11 @@ public class DiscordRoleManager {
 			//has to be complete() instead of queue() because of a bug in JDA/Discord which results in race conditions
 			guild.modifyNickname(member, user.getName()).queue();
 		}
-		guild.addRoleToMember(member, role).queue();
+		guild.addRoleToMember(member, role).queue(); 
 	}
 
 	public void syncFully() {
+		Guild guild = KiraMain.getInstance().getGuild();
 		Set<KiraUser> authUsers = userManager.getAllUsers();
 		Role role = guild.getRoleById(roleID);
 		List<Member> members = guild.getMembersWithRoles(role);
@@ -84,7 +85,7 @@ public class DiscordRoleManager {
 			if (member.isOwner()) {
 				return;
 			}
-			takeDiscordRole(member);
+			takeDiscordRole(guild, member);
 		});
 
 		// same thing other way around, get the users which should be added and give it
@@ -113,7 +114,8 @@ public class DiscordRoleManager {
 		});
 	}
 
-	public boolean takeDiscordRole(KiraUser user) {
+	public boolean takeDiscordRole(Guild guild, KiraUser user) {
+		
 		if (!user.hasDiscord()) {
 			logger.warn("Could not remove " + user.toString() + " from auth role, no discord account associated");
 			return false;
@@ -123,10 +125,10 @@ public class DiscordRoleManager {
 			logger.warn("Could not remove " + user.toString() + " from auth role, discord account not found");
 			return false;
 		}
-		return takeDiscordRole(member);
+		return takeDiscordRole(guild, member);
 	}
 
-	public boolean takeDiscordRole(Member member) {
+	public boolean takeDiscordRole(Guild guild, Member member) {
 		Role role = guild.getRoleById(roleID);
 		if (member == null) {
 			logger.warn("Could not remove null member");

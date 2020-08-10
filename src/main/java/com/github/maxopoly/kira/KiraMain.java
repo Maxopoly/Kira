@@ -77,7 +77,7 @@ public class KiraMain {
 	private JDA jda;
 	private boolean shutdown = false;
 	private CommandHandler commandHandler;
-	private Guild guild;
+	private long guildId;
 	private UserManager userManager;
 	private ConfigManager configManager;
 	private DiscordRoleManager roleManager;
@@ -116,7 +116,7 @@ public class KiraMain {
 	}
 
 	public Guild getGuild() {
-		return guild;
+		return jda.getGuildById(guildId);
 	}
 
 	public JDA getJDA() {
@@ -208,7 +208,7 @@ public class KiraMain {
 	}
 	
 	private boolean setupAuthManager() {
-		roleManager = new DiscordRoleManager(guild, configManager.getAuthroleID(), logger, userManager);
+		roleManager = new DiscordRoleManager(configManager.getAuthroleID(), logger, userManager);
 		roleManager.syncFully();
 		return true;
 	}
@@ -237,11 +237,12 @@ public class KiraMain {
 			logger.error("No server id was provided");
 			return false;
 		}
-		guild = jda.getGuildById(serverID);
+		Guild guild = jda.getGuildById(serverID);
 		if (guild == null) {
 			logger.error("No guild with the provided id " + serverID + " could be found");
 			return false;
 		}
+		this.guildId = serverID;
 		long authID = configManager.getAuthroleID();
 		if (authID == -1L) {
 			logger.error("No auth role id was provided");
